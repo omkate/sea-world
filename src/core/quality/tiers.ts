@@ -13,6 +13,8 @@ export interface QualitySettings {
   surfaceWaves: number;
   suspendedParticles: number;
   lensEffects: boolean;
+  /** Ray-march samples for underwater light shafts. */
+  shaftSamples: number;
 }
 
 export const QUALITY: Record<QualityTier, QualitySettings> = {
@@ -25,6 +27,7 @@ export const QUALITY: Record<QualityTier, QualitySettings> = {
     surfaceWaves: 12,
     suspendedParticles: 60000,
     lensEffects: true,
+    shaftSamples: 14,
   },
   high: {
     tier: 'high',
@@ -35,6 +38,7 @@ export const QUALITY: Record<QualityTier, QualitySettings> = {
     surfaceWaves: 10,
     suspendedParticles: 36000,
     lensEffects: true,
+    shaftSamples: 9,
   },
   medium: {
     tier: 'medium',
@@ -45,6 +49,7 @@ export const QUALITY: Record<QualityTier, QualitySettings> = {
     surfaceWaves: 8,
     suspendedParticles: 18000,
     lensEffects: true,
+    shaftSamples: 6,
   },
   low: {
     tier: 'low',
@@ -55,6 +60,7 @@ export const QUALITY: Record<QualityTier, QualitySettings> = {
     surfaceWaves: 6,
     suspendedParticles: 8000,
     lensEffects: false,
+    shaftSamples: 4,
   },
 };
 

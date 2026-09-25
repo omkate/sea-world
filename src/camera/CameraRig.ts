@@ -5,7 +5,7 @@ import { stepCriticalSpring, type Spring } from '../depth/spring';
 /** Camera pitch (degrees) by depth: horizon above water, looking back up at the receding surface, then down. */
 const PITCH_BY_DEPTH = monotoneCubic(
   [-3.5, -0.6, 0.6, 4, 12, 30, 70, 150, 400, 11000],
-  [-9, -3, -1, 20, 28, 22, 5, -6, -8, -12],
+  [-11, -3, -1, 22, 35, 26, 5, -6, -8, -12],
 );
 
 const AIR_FOV = 55;

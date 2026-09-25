@@ -11,13 +11,13 @@ export interface HudReadout {
 const nf0 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 const nf1 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-export function formatHud(s: DepthState): HudReadout {
+export function formatHud(s: DepthState, lampOn = false): HudReadout {
   const above = s.depth < 0;
   return {
     depth: above ? `+${nf1.format(-s.depth)} m` : `${s.depth < 10 ? nf1.format(s.depth) : nf0.format(s.depth)} m`,
     temperature: `${nf1.format(s.temperatureC)}°C`,
     pressure: `${s.pressureAtm < 100 ? nf1.format(s.pressureAtm) : nf0.format(s.pressureAtm)} atm`,
-    light: s.lightLabel,
+    light: lampOn ? `${s.lightLabel} · LAMP` : s.lightLabel,
     zone: s.zoneName,
   };
 }
@@ -29,6 +29,7 @@ export class Hud {
   private readonly cells = new Map<keyof HudReadout, HTMLElement>();
   private readonly last: Partial<HudReadout> = {};
   private accumulator = 0;
+  lampOn = false;
 
   constructor(root: HTMLElement) {
     for (const f of FIELDS) {
@@ -42,7 +43,7 @@ export class Hud {
     this.accumulator += dt;
     if (!force && this.accumulator < 0.1) return;
     this.accumulator = 0;
-    const r = formatHud(state);
+    const r = formatHud(state, this.lampOn);
     for (const f of FIELDS) {
       if (this.last[f] === r[f]) continue;
       this.last[f] = r[f];

@@ -29,6 +29,16 @@ export function createFrameUniforms() {
     belowColor: uniform(new Vector3()) as Uniform<Vector3>,
     /** Horizontal in-scatter radiance at the camera depth (for particles). */
     ambientWater: uniform(new Vector3()) as Uniform<Vector3>,
+    /** Screen pixels per metre at 1 m distance; keeps particles from vanishing below a pixel. */
+    pixelsPerMetre: uniform(1000) as Uniform<number>,
+    /** 0..1 camera-mounted light (ROV convention), on where sunlight ends. */
+    diveLight: uniform(0) as Uniform<number>,
+    /** 0..1 how deep the camera has adapted; drives sensor grain. */
+    sensorGain: uniform(0) as Uniform<number>,
+    /** 0..1 how often generic bioluminescent flashes appear. */
+    bioluminescence: uniform(0) as Uniform<number>,
+    /** Ray-march samples for light shafts (0 disables). */
+    shaftSamples: uniform(12) as Uniform<number>,
   };
 }
 

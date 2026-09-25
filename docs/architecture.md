@@ -45,7 +45,11 @@ Rules the code follows:
 - **Waterline.** Each pixel's near-plane point is tested against the live wave height, so the split view follows the swell across the lens.
 - **Snell's window.** The underside material refracts view rays into the baked sky (n = 1.333). Beyond the critical angle it shows total internal reflection of the water below. The window appears as a consequence of the physics rather than as a texture.
 - **Medium.** Light reaching a surface is multiplied by the per-band downwelling at that surface's depth. The view path then applies `e^(−σd)`. Single-scatter in-scatter is integrated analytically along the ray, with the light field decaying as `e^(−Kd·z)` and the path clamped at the sea surface.
-- **Particles** render in a separate pass. They are composited additively, because post-effect RTT nodes reset the clear alpha to 1.
+- **Light shafts.** The view ray is ray-marched (4–14 samples by tier, jittered with interleaved gradient noise). Each sample follows the refracted sun ray back to its surface entry point and reads a moving caustic pattern there, so shafts converge in perspective, drift with the waves and blur out with depth. They are energy-neutral around the mean and fade out by ~220 m.
+- **Particles** are sunlit with caustic sparkle near the surface and lamp-lit in the deep. They are never smaller than 2 px; below that their alpha falls instead, which conserves energy. The density gate is independent of size.
+- **Dive lamp.** It switches on from 750–1,000 m (the L key toggles it) and lights particles with inverse-square falloff inside a cone, plus faint backscatter. Auto-exposure follows the brightest light actually present: `EV = min(ambient EV, LAMP_EV + log2(1/lamp))`.
+- **Camera character.** A documentary grade desaturates deep water, a vignette is stronger underwater, and sensor grain (after tone mapping) rises with the adapted exposure and doubles as dither against 8-bit banding.
+- **Particle pass** renders separately. They are composited additively, because post-effect RTT nodes reset the clear alpha to 1.
 - **fp32 precision.** Wet and dry colours are combined as a weighted sum, not with `mix()`. `mix(a, b, 1) = a + (b − a)` loses deep-water radiance (~1e‑7) next to sky radiance (~10).
 
 ## Approximations (honest list)
@@ -61,8 +65,13 @@ Rules the code follows:
 | Particle sinking | Up to ~2 cm/s so motion is visible | Real marine snow sinks ~1–100 m/day |
 | Snell's window edge | Softened over a small band | Real edge blur comes from sub-pixel wave facets |
 | Sky | Preetham-style `SkyMesh` with procedural clouds, baked to PMREM once | No time-of-day change yet |
+| Light shafts | Ray-marched single scattering over a procedural caustic pattern | Real shafts come from surface focusing, which we approximate rather than trace |
+| Caustics | Iterated-trig interference pattern, tiling every 6.5 m | Hidden by motion and depth blur; a wave-derived caustic map is future work |
+| Dive lamp | Inverse-square cone with reduced backscatter (lamps assumed offset from the port) | The ROV convention; not a specific vehicle |
+| Bioluminescent flashes | 0.15% of particles pulse blue-green (~480 nm) from 350 m, in camera-adapted units, visible only with the lamp off | Generic, unidentified plankton; species-specific displays arrive in Phase 6 |
+| Sensor grain, vignette, grade | Camera conventions, not physics | Chosen to match documentary footage |
 | Scale | 1 unit = 1 m. The camera is at true depth (float precision is fine to 11 km for Phase 1) | Chapter sets will use a floating origin (plan §4.1) |
 
 ## Not built yet (no UI exists for these)
 
-Creatures, reef, audio, god rays, caustics, bioluminescence, the discovery codex, Cinema Mode, streaming. The HUD and debug panel only show systems that exist; the debug panel reports "creatures 0 (none implemented yet)".
+Creatures, reef, seafloor caustics (there is no floor yet), audio, species bioluminescence, the discovery codex, Cinema Mode, streaming. The HUD and debug panel only show systems that exist; the debug panel reports "creatures 0 (none implemented yet)".

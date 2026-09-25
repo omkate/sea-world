@@ -16,6 +16,9 @@ describe('HUD formatting', () => {
     expect(r.pressure).toBe('13.6 atm');
     expect(r.zone).toBe('SUNLIGHT ZONE');
   });
+  it('marks the lamp next to the light level', () => {
+    expect(formatHud(updateDepthState(createDepthState(), 3000, 0, MARIANA), true).light).toBe('NONE · LAMP');
+  });
   it('uses thousands separators and whole atm at depth', () => {
     const r = at(10935);
     expect(r.depth).toBe('10,935 m');

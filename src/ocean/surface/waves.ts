@@ -31,7 +31,7 @@ export const MODERATE_TRADE_WIND_SEA: SeaState = {
   longestWavelength: 64,
   shortestWavelength: 1.1,
   slope: 0.012,
-  choppiness: 0.72,
+  choppiness: 0.86,
   spread: 0.85,
   seed: 1337,
 };
@@ -49,7 +49,9 @@ export function buildWaves(count: number, sea: SeaState = MODERATE_TRADE_WIND_SE
     const k = (2 * Math.PI) / wavelength;
     const spread = sea.spread * (0.35 + 0.65 * (i / Math.max(1, count - 1)));
     const angle = sea.windAngle + (rng() * 2 - 1) * spread;
-    const amplitude = wavelength * sea.slope * (0.75 + 0.5 * rng());
+    // Long swell carries proportionally more energy than short wind waves.
+    const swellBoost = 1 + 0.9 * (1 - i / Math.max(1, count - 1));
+    const amplitude = wavelength * sea.slope * swellBoost * (0.75 + 0.5 * rng());
     waves.push({
       dirX: Math.cos(angle),
       dirZ: Math.sin(angle),

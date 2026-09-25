@@ -14,6 +14,7 @@ import {
   float,
   length,
   max,
+  mx_noise_vec3,
   mix,
   normalize,
   pmremTexture,
@@ -34,7 +35,7 @@ import type { FrameUniforms } from '../../core/engine/uniforms';
 import type { QualitySettings } from '../../core/quality/tiers';
 
 const WATER_IOR = 1.333;
-const DEEP_WATER = new Color(0.004, 0.028, 0.05);
+const DEEP_WATER = new Color(0.004, 0.034, 0.085);
 const CREST_SCATTER = new Color(0.02, 0.16, 0.15);
 const FOAM = new Color(0.82, 0.86, 0.86);
 
@@ -56,7 +57,15 @@ export class OceanSurface {
     const fragDist: ShaderNode = length(vXZ.sub(u.cameraPos.xz));
     const main = gerstner(this.waves, vXZ, u.time, fragDist);
     const detail = gerstner(detailWaves, vXZ, u.time, fragDist);
-    const normalW: ShaderNode = normalize(main.normal.add(detail.normal.sub(vec3(0, 1, 0)).mul(0.6)));
+    // Capillary ripples and wind chop: two noise-gradient octaves finer than the Gerstner set,
+    // each fading out before it would alias.
+    const ripple = (freq: number, speed: number, strength: number, fadeFrom: number, fadeTo: number): ShaderNode => {
+      const n: ShaderNode = mx_noise_vec3(vec3(vXZ.x.mul(freq), u.time.mul(speed), vXZ.y.mul(freq)));
+      const fade: ShaderNode = float(1).sub(smoothstep(fadeFrom, fadeTo, fragDist)).mul(strength);
+      return vec3(n.x, 0, n.z).mul(fade);
+    };
+    const chop: ShaderNode = ripple(0.85, 0.9, 0.22, 25, 140).add(ripple(3.4, 1.7, 0.15, 8, 50));
+    const normalW: ShaderNode = normalize(main.normal.add(detail.normal.sub(vec3(0, 1, 0)).mul(0.6)).add(chop));
     const normalV: ShaderNode = (cameraViewMatrix as ShaderNode).mul(vec4(normalW, 0)).xyz;
     const foam: ShaderNode = smoothstep(0.62, 0.28, main.jacobian).mul(float(1).sub(smoothstep(60, 400, fragDist)));
 
@@ -107,10 +116,11 @@ export class OceanSurface {
     // Refraction discriminant: < 0 means total internal reflection. A soft ramp stands in for
     // the sub-pixel wave facets that blur the real edge of Snell's window.
     const k = float(1).sub(float(WATER_IOR * WATER_IOR).mul(float(1).sub(cosI.mul(cosI))));
-    const window = smoothstep(0.0, 0.14, k);
+    const window = smoothstep(0.0, 0.16, k);
     const schlick = float(0.02).add(float(0.98).mul(pow(float(1).sub(cosI), 5)));
     const fresnel = mix(float(1), schlick, window);
-    const sky = pmremTexture(env, normalize(refracted.add(vec3(0, 1e-4, 0))), float(0)).rgb;
+    // Slight roughness: the sky seen through a moving surface is never perfectly sharp.
+    const sky = pmremTexture(env, normalize(refracted.add(vec3(0, 1e-4, 0))), float(0.1)).rgb;
     const transmitted = sky.mul(float(1).sub(fresnel));
     const reflected = u.belowColor.mul(fresnel);
     const foamBelow = vec3(0.35, 0.42, 0.44).mul(u.belowColor.y.mul(6).add(0.05));

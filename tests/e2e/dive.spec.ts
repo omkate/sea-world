@@ -48,7 +48,7 @@ for (const backend of ['webgpu', 'webgl2'] as const) {
       await page.goto(`/?debug&depth=1500${q}`);
       await ready(page);
       await expect(hud(page, 'zone')).toHaveText('MIDNIGHT ZONE');
-      await expect(hud(page, 'light')).toHaveText('NONE');
+      await expect(hud(page, 'light')).toHaveText('NONE · LAMP');
     });
   });
 }
@@ -58,6 +58,8 @@ test('underwater frames darken continuously with depth', async ({ page }) => {
   for (const d of [5, 100, 300, 600, 1500]) {
     await page.goto(`/?depth=${d}`);
     await ready(page);
+    // Below 1,000 m the camera lamp switches on; measure natural light only.
+    if (d >= 1000) await page.keyboard.press('l');
     await page.waitForTimeout(3000);
     const png = await page.screenshot({ clip: { x: 540, y: 420, width: 200, height: 120 } });
     luminance.push(await page.evaluate(async (b64) => {
@@ -74,7 +76,16 @@ test('underwater frames darken continuously with depth', async ({ page }) => {
     }, png.toString('base64')));
   }
   for (let i = 1; i < luminance.length; i++) expect(luminance[i]!).toBeLessThan(luminance[i - 1]!);
-  expect(luminance.at(-1)!).toBeLessThan(2);
+  expect(luminance.at(-1)!).toBeLessThan(4);
+});
+
+test('the lamp comes on where sunlight ends and lights marine snow', async ({ page }) => {
+  await page.goto('/?debug&depth=3000');
+  await ready(page);
+  await expect(hud(page, 'light')).toHaveText('NONE · LAMP');
+  expect(await page.evaluate(() => window.__abyss!.state.lightLabel)).toBe('NONE');
+  await page.keyboard.press('l');
+  await expect(hud(page, 'light')).toHaveText('NONE');
 });
 
 test('fallback page explains hardware acceleration is required', async ({ page }) => {

@@ -16,10 +16,17 @@ import { inscatter } from '../../ocean/medium/optics';
 import { SuspendedParticles } from '../../particles/suspended/SuspendedParticles';
 import { Hud } from '../../ui/hud/Hud';
 import type { DebugPanel } from '../../ui/debug/DebugPanel';
-import type { Rgb } from '../../data/zones/physics';
+import { maxExposureEV, type Rgb } from '../../data/zones/physics';
+import { smoothstep } from '../math/monotoneCubic';
+import { stepCriticalSpring } from '../../depth/spring';
 
 const BASE_EXPOSURE = 0.62;
 const PARTICLE_ALBEDO = 0.8;
+/** Exposure (EV) the camera uses when its lamp is the main light source. */
+const LAMP_EV = 2;
+/** The lamp comes on where sunlight fades out, like an ROV switching its lights on. */
+const LAMP_ON_FROM = 750;
+const LAMP_ON_FULL = 1000;
 
 declare global {
   interface Window {
@@ -58,6 +65,8 @@ export class Experience {
   private lastSubmergedFor = 0;
   private time = 0;
   private readonly scratch: Rgb = [0, 0, 0];
+  private readonly lamp = { value: 0, velocity: 0 };
+  private lampEnabled = true;
 
   constructor(private readonly o: ExperienceOptions) {
     const { renderer } = o.info;
@@ -93,6 +102,7 @@ export class Experience {
     });
     addEventListener('keydown', (e) => {
       if (e.key === '`') void this.toggleDebug();
+      if (e.key === 'l' || e.key === 'L') this.lampEnabled = !this.lampEnabled;
     });
     this.resize();
     if (o.debug) {
@@ -148,7 +158,20 @@ export class Experience {
     u.cameraDepth.value = camDepth;
     u.turbidity.value = this.state.turbidity;
     u.particleDensity.value = this.state.particleDensity;
-    u.exposure.value = BASE_EXPOSURE * Math.pow(2, this.state.exposureEV);
+    const lampTarget = this.lampEnabled ? smoothstep(LAMP_ON_FROM, LAMP_ON_FULL, depth) : 0;
+    stepCriticalSpring(this.lamp, lampTarget, 5, dt);
+    const lamp = this.lamp.value < 1e-4 ? 0 : Math.min(1, this.lamp.value);
+    // Auto-exposure follows the brightest light actually present: a dimming lamp raises the
+    // exposure only as fast as its own light falls, so it never blows out the frame.
+    const lampEV = lamp > 0 ? LAMP_EV + Math.log2(1 / lamp) : Infinity;
+    const ev = Math.min(this.state.exposureEV, lampEV);
+    u.exposure.value = BASE_EXPOSURE * Math.pow(2, ev);
+    u.diveLight.value = lamp;
+    u.sensorGain.value = ev / maxExposureEV(MARIANA.kd);
+    u.bioluminescence.value = smoothstep(350, 800, depth);
+    u.shaftSamples.value = QUALITY[this.tier].shaftSamples;
+    u.pixelsPerMetre.value = renderer.domElement.height / (2 * Math.tan((cam.fov * Math.PI) / 360));
+    this.hud.lampOn = lamp > 0.5;
 
     const below = inscatter(0, -1, Infinity, 0, MARIANA.kd, this.scratch);
     u.belowColor.value.set(below[0], below[1], below[2]);

@@ -6,8 +6,8 @@ export interface SunConfig {
   azimuthDeg: number;
 }
 
-/** Mid-morning trade-wind sky over Guam: high sun, scattered cumulus. */
-export const MORNING_SUN: SunConfig = { elevationDeg: 34, azimuthDeg: 160 };
+/** Morning trade-wind sky over Guam: sun low enough to lay a glitter path, scattered cumulus. */
+export const MORNING_SUN: SunConfig = { elevationDeg: 24, azimuthDeg: 168 };
 
 export function sunDirection(cfg: SunConfig, out = new Vector3()): Vector3 {
   const phi = MathUtils.degToRad(90 - cfg.elevationDeg);
@@ -24,9 +24,9 @@ export function refractedSunDirection(sun: Vector3, ior = 1.333, out = new Vecto
 }
 
 function configureSky(sky: SkyMesh, sun: Vector3): void {
-  sky.turbidity.value = 2.2;
-  sky.rayleigh.value = 1.2;
-  sky.mieCoefficient.value = 0.004;
+  sky.turbidity.value = 1.7;
+  sky.rayleigh.value = 1.7;
+  sky.mieCoefficient.value = 0.0028;
   sky.mieDirectionalG.value = 0.82;
   sky.cloudCoverage.value = 0.34;
   sky.cloudDensity.value = 0.5;

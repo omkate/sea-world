@@ -11,6 +11,9 @@ import {
   Fn,
   getViewPosition,
   hash,
+  If,
+  int,
+  Loop,
   length,
   max,
   min,
@@ -19,10 +22,12 @@ import {
   pass,
   pow,
   renderOutput,
+  screenCoordinate,
   screenSize,
   screenUV,
   sin,
   smoothstep,
+  sqrt,
   step,
   uniform,
   vec2,
@@ -33,12 +38,24 @@ import type { FrameUniforms } from '../../core/engine/uniforms';
 import type { ShaderNode, Uniform } from '../../shaders/tsl/types';
 import { fxaa } from 'three/addons/tsl/display/FXAANode.js';
 import { gerstnerHeight } from '../../shaders/tsl/gerstner';
+import { CAUSTIC_SHAFT_MEAN, CAUSTIC_TILE, caustic } from '../../shaders/tsl/caustics';
+import { LAMP_RADIANCE } from '../../particles/suspended/SuspendedParticles';
 import type { Wave } from '../surface/waves';
 import { ABSORPTION, BAND_TO_DISPLAY, DIRECTIONAL_DEPTH_SCALE, PHASE_G, PHASE_WEIGHT, SCATTER, SUN_RADIANCE, TURBIDITY_TINT } from './optics';
 
 type N = ShaderNode;
 
 const MAX_VIEW_DISTANCE = 20000;
+/** Light shafts are marched over at most this distance (m) and fade out below SHAFT_MAX_DEPTH. */
+const SHAFT_RANGE = 45;
+const SHAFT_MAX_DEPTH = 220;
+const SHAFT_STRENGTH = 0.9;
+const LAMP_BACKSCATTER = 0.035;
+
+/** Interleaved gradient noise: low-discrepancy per-pixel jitter, far less visible than white noise. */
+const ign = (p: N): N => fract(fract(p.x.mul(0.06711056).add(p.y.mul(0.00583715))).mul(52.9829189));
+/** Cheap per-pixel white noise, stable in time within a frame. */
+const hash12 = (p: N): N => fract(sin(dot(p, vec2(12.9898, 78.233))).mul(43758.5453));
 
 const v3 = (c: readonly number[]): N => vec3(c[0]!, c[1]!, c[2]!);
 
@@ -150,15 +167,63 @@ export function createUnderwaterPipeline(
       .div(s)
       .mul(phase);
 
+    // Light shafts: march the view ray; at each sample, follow the refracted sun ray back up to
+    // where it entered the surface and read how strongly the waves focused light there.
+    const shafts: N = vec3(0).toVar();
+    const shaftDepthFade = float(1).sub(smoothstep(SHAFT_MAX_DEPTH * 0.45, SHAFT_MAX_DEPTH, camDepth));
+    If(submerged.greaterThan(0.5).and(camDepth.lessThan(SHAFT_MAX_DEPTH)).and(u.shaftSamples.greaterThan(0.5)), () => {
+      const samples: N = u.shaftSamples;
+      const range: N = min(dist, float(SHAFT_RANGE));
+      const stepLen: N = range.div(samples);
+      const jitter: N = fract(ign(screenCoordinate.xy).add(fract(t.mul(60)).mul(0.618034)));
+      const toSun: N = u.sunDirWater.negate();
+      Loop({ start: int(0), end: int(samples), type: 'int', condition: '<' }, ({ i }: { i: N }) => {
+        const tt: N = float(i).add(jitter).mul(stepLen);
+        const p: N = u.cameraPos.add(ray.mul(tt));
+        const zp: N = max(p.y.negate(), 0);
+        const inWater: N = step(p.y, 0);
+        const entry: N = p.xz.add(toSun.xz.mul(zp.div(max(toSun.y, 0.2))));
+        // The pattern blurs with depth below the surface and becomes unresolvable with distance.
+        const spread: N = float(1).add(zp.div(22)).add(tt.div(14));
+        const c: N = sqrt(caustic(entry.div(spread.mul(CAUSTIC_TILE)), t.mul(0.55), 2)).div(CAUSTIC_SHAFT_MEAN).sub(1);
+        const contrast: N = exp(zp.div(-38));
+        const light: N = exp(KD.mul(zp).negate());
+        const atten: N = exp(sigma.mul(tt).negate());
+        shafts.addAssign(light.mul(atten).mul(c.mul(contrast)).mul(stepLen).mul(inWater));
+      });
+    });
+    const shaftPhase = float(0.35).add(hg.mul(0.2));
+    const shaftLight: N = shafts.mul(b).mul(SUN_RADIANCE * SHAFT_STRENGTH).mul(shaftPhase).mul(shaftDepthFade);
+
+    // Backscatter from the camera lamp: the soft glow of lit water in front of the lens.
+    const forward: N = normalize(u.cameraWorld.mul(vec4(0, 0, -1, 0)).xyz);
+    // Lamps sit beside the port, so only a faint glow reaches the lens (backscatter).
+    const lampCone = smoothstep(0.72, 0.98, dot(ray, forward));
+    const lampPath = min(dist, float(10));
+    const lampHaze: N = b
+      .mul(LAMP_RADIANCE * LAMP_BACKSCATTER)
+      .mul(float(1).sub(exp(sigma.mul(lampPath).mul(-2))))
+      .div(sigma.mul(2))
+      .mul(lampCone)
+      .mul(u.diveLight);
+
     const pMask = submerged.mul(toggles.particles);
     const scattered = particles.sample(uv).rgb.mul(pMask);
-    const water = bandToDisplay(sceneColor.mul(downwellingAtHit).mul(transmittance).add(inscatter).add(scattered));
+    const wet: N = max(sceneColor.mul(downwellingAtHit).mul(transmittance).add(inscatter).add(shaftLight).add(lampHaze).add(scattered), vec3(0));
+    // Documentary grade: deep water loses saturation the way low-light sensors render it.
+    const graded: N = bandToDisplay(wet);
+    const luma: N = dot(graded, vec3(0.2126, 0.7152, 0.0722));
+    const water: N = mix(vec3(luma), graded, mix(float(1), float(0.72), smoothstep(30, 400, camDepth)));
     const mediumMix = submerged.mul(toggles.medium);
     // Weighted sum, not mix(): mix(a, b, 1) = a + (b − a) loses b entirely in fp32 when the
     // dry sky (~10) is ten orders of magnitude brighter than deep water (~1e-7).
     let result: N = sceneColor.add(scattered).mul(float(1).sub(mediumMix)).add(water.mul(mediumMix));
     result = mix(result, result.mul(0.35).add(vec3(0.01, 0.03, 0.035)), clamp(meniscus.mul(0.85), 0, 1));
     result = result.mul(u.exposure);
+
+    // Lens vignette: stronger behind a dome port underwater.
+    const r: N = length(uv0.sub(0.5).mul(vec2(1, 0.78))).mul(1.55);
+    result = result.mul(float(1).sub(mix(float(0.14), float(0.34), submerged).mul(smoothstep(0.35, 1.05, r))));
 
     const v = toggles.view;
     const isView = (n: number): N => step(n - 0.5, v).mul(step(v, n + 0.5));
@@ -170,6 +235,16 @@ export function createUnderwaterPipeline(
 
   const pipeline = new RenderPipeline(renderer);
   pipeline.outputColorTransform = false;
-  pipeline.outputNode = fxaa(renderOutput(output()));
+  // Sensor grain after tone mapping, so it also dithers the dark gradients (no 8-bit banding).
+  const graded: N = fxaa(renderOutput(output()));
+  const grain = Fn(() => {
+    const seed: N = screenCoordinate.xy.add(fract(u.time.mul(13.7)).mul(311.0));
+    const n: N = vec3(hash12(seed), hash12(seed.add(17.3)), hash12(seed.add(41.9))).sub(0.5);
+    const mono: N = n.x.mul(0.8).add(n.y.mul(0.2));
+    const amount: N = mix(float(0.006), float(0.05), u.sensorGain).mul(float(1).sub(u.diveLight.mul(0.45)));
+    const colour: N = graded.rgb.add(vec3(mono).add(n.mul(0.15)).mul(amount));
+    return vec4(colour, 1);
+  });
+  pipeline.outputNode = grain();
   return { pipeline, toggles };
 }
