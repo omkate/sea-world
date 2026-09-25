@@ -4,7 +4,7 @@
 
 | Budget | Target | Phase 1 measured* |
 |---|---|---|
-| Frame time | 16.6 ms | 60 FPS; dynamic resolution settles at 0.76–0.92 scale at 1856×960 with shafts |
+| Frame time | 16.6 ms | 60 FPS; dynamic resolution settles at 0.68–0.76 scale at 1856×960 on an Iris Xe (a discrete GPU should run at full resolution) |
 | Draw calls | ≤ 250 | 6 |
 | Triangles | ≤ 3 M | 0.37 M |
 | Suspended particles | 36 k (Ultra 60 k, Low 8 k) | 36 k |

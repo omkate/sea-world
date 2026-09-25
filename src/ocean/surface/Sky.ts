@@ -1,5 +1,7 @@
-import { DirectionalLight, HemisphereLight, MathUtils, PMREMGenerator, Scene, Vector3, type Texture, type WebGPURenderer } from 'three/webgpu';
+import { BackSide, SphereGeometry, Color, DirectionalLight, HemisphereLight, MathUtils, Mesh, MeshBasicNodeMaterial, PMREMGenerator, Scene, Vector3, type Texture, type WebGPURenderer } from 'three/webgpu';
 import { SkyMesh } from 'three/addons/objects/SkyMesh.js';
+import { normalize, positionWorld, smoothstep } from 'three/tsl';
+import type { ShaderNode } from '../../shaders/tsl/types';
 
 export interface SunConfig {
   elevationDeg: number;
@@ -61,9 +63,19 @@ export class OceanSky {
     configureSky(sky, this.sunDir);
     sky.showSunDisc.value = 1;
     envScene.add(sky);
+    // Below the horizon a sea-level camera sees more ocean, not the sky model's brown haze.
+    // The sky fades into deep ocean blue over ~17° so tilted wave facets darken smoothly.
+    const seaMaterial = new MeshBasicNodeMaterial({ side: BackSide, transparent: true, depthWrite: false, color: new Color(0.012, 0.045, 0.085) });
+    const dirY: ShaderNode = (normalize(positionWorld) as ShaderNode).y;
+    seaMaterial.opacityNode = smoothstep(0.0, 0.3, dirY.negate());
+    const sea = new Mesh(new SphereGeometry(90, 48, 24), seaMaterial);
+    sea.renderOrder = 1;
+    envScene.add(sea);
     const pmrem = new PMREMGenerator(renderer);
     const target = pmrem.fromScene(envScene, 0, 0.1, 100);
     pmrem.dispose();
+    sea.geometry.dispose();
+    seaMaterial.dispose();
     this.environment = target.texture;
     return target.texture;
   }

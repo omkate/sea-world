@@ -98,12 +98,15 @@ export function maxExposureEV(kd: readonly [number, number, number]): number {
   return exposureEV(SUNLIGHT_LIMIT_DEPTH, kd);
 }
 
-/** Relative suspended-particle load: surface plankton, deep-chlorophyll bump, marine snow floor. */
+/**
+ * Relative suspended-particle load: surface plankton, deep-chlorophyll bump, and marine snow
+ * that thins with depth as it is consumed and remineralised on the way down.
+ */
 export function particleDensity(depth: number, chlorophyllMaxDepth: number): number {
   const z = Math.max(0, depth);
   const surface = Math.exp(-z / 90);
   const dcm = Math.exp(-(((z - chlorophyllMaxDepth) / 45) ** 2));
-  const snow = 0.32 * Math.exp(-z / 2500) + 0.14;
+  const snow = 0.36 * Math.exp(-z / 1800) + 0.06;
   return clamp(0.55 * surface + 0.35 * dcm + snow, 0, 1);
 }
 

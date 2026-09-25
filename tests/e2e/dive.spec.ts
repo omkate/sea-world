@@ -58,8 +58,8 @@ test('underwater frames darken continuously with depth', async ({ page }) => {
   for (const d of [5, 100, 300, 600, 1500]) {
     await page.goto(`/?depth=${d}`);
     await ready(page);
-    // Below 1,000 m the camera lamp switches on; measure natural light only.
-    if (d >= 1000) await page.keyboard.press('l');
+    // From ~450 m the camera lamp switches on; measure natural light only.
+    if (d >= 450) await page.keyboard.press('l');
     await page.waitForTimeout(3000);
     const png = await page.screenshot({ clip: { x: 540, y: 420, width: 200, height: 120 } });
     luminance.push(await page.evaluate(async (b64) => {

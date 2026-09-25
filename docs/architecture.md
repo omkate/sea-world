@@ -47,7 +47,7 @@ Rules the code follows:
 - **Medium.** Light reaching a surface is multiplied by the per-band downwelling at that surface's depth. The view path then applies `e^(−σd)`. Single-scatter in-scatter is integrated analytically along the ray, with the light field decaying as `e^(−Kd·z)` and the path clamped at the sea surface.
 - **Light shafts.** The view ray is ray-marched (4–14 samples by tier, jittered with interleaved gradient noise). Each sample follows the refracted sun ray back to its surface entry point and reads a moving caustic pattern there, so shafts converge in perspective, drift with the waves and blur out with depth. They are energy-neutral around the mean and fade out by ~220 m.
 - **Particles** are sunlit with caustic sparkle near the surface and lamp-lit in the deep. They are never smaller than 2 px; below that their alpha falls instead, which conserves energy. The density gate is independent of size.
-- **Dive lamp.** It switches on from 750–1,000 m (the L key toggles it) and lights particles with inverse-square falloff inside a cone, plus faint backscatter. Auto-exposure follows the brightest light actually present: `EV = min(ambient EV, LAMP_EV + log2(1/lamp))`.
+- **Dive lamp.** It switches on from 450–650 m, as natural light becomes too dim to film by, (the L key toggles it) and lights particles with inverse-square falloff inside a cone, plus faint backscatter. Auto-exposure follows the brightest light actually present: `EV = min(ambient EV, LAMP_EV + log2(1/lamp))`.
 - **Camera character.** A documentary grade desaturates deep water, a vignette is stronger underwater, and sensor grain (after tone mapping) rises with the adapted exposure and doubles as dither against 8-bit banding.
 - **Particle pass** renders separately. They are composited additively, because post-effect RTT nodes reset the clear alpha to 1.
 - **fp32 precision.** Wet and dry colours are combined as a weighted sum, not with `mix()`. `mix(a, b, 1) = a + (b − a)` loses deep-water radiance (~1e‑7) next to sky radiance (~10).
@@ -62,8 +62,10 @@ Rules the code follows:
 | Pressure | `1 + ρgz/101325`, constant ρ | Ignores compressibility (~1.5% low at 11 km); TEOS-10 `p_from_z` is more accurate |
 | Temperature | Monotone cubic through a hand-authored tropical western-Pacific profile | Uncertain until checked against World Ocean Atlas or CTD casts |
 | Exposure | The camera adapts to 75% of light loss and stops adapting at 1,000 m | A creative convention, standing in for a low-light documentary camera |
+| Marine snow shape | Larger aggregates are irregular, elongated, slowly tumbling flakes; out-of-focus ones stay round like real bokeh. Density thins with depth (e‑folding ~1.8 km) | Deep trenches may funnel extra organic matter; not modelled |
 | Particle sinking | Up to ~2 cm/s so motion is visible | Real marine snow sinks ~1–100 m/day |
-| Snell's window edge | Softened over a small band | Real edge blur comes from sub-pixel wave facets |
+| Snell's window | Air-side Fresnel (transmitted angle), so the window dims toward its rim; three noise-ripple octaves add capillary detail | Real capillary waves are wind-driven and directional |
+| Whitecaps | Crests where the Gerstner pinch J < ~0.64–0.8 (thresholds from measured J percentiles), broken up by noise, textured as lacy filaments | No foam persistence or advection yet; the FFT phase can track foam over time |
 | Sky | Preetham-style `SkyMesh` with procedural clouds, baked to PMREM once | No time-of-day change yet |
 | Light shafts | Ray-marched single scattering over a procedural caustic pattern | Real shafts come from surface focusing, which we approximate rather than trace |
 | Caustics | Iterated-trig interference pattern, tiling every 6.5 m | Hidden by motion and depth blur; a wave-derived caustic map is future work |

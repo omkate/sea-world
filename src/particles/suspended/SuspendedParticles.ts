@@ -1,5 +1,6 @@
 import { AdditiveBlending, InstancedBufferAttribute, Scene, Sprite, SpriteNodeMaterial } from 'three/webgpu';
 import {
+  atan,
   clamp,
   cos,
   dot,
@@ -17,6 +18,7 @@ import {
   smoothstep,
   step,
   uv,
+  vec2,
   vec3,
   vec4,
 } from 'three/tsl';
@@ -135,12 +137,25 @@ export class SuspendedParticles {
       .mul(u.bioluminescence)
       .mul(transmittance);
 
-    const disc = smoothstep(0.5, 0.12, length((uv() as ShaderNode).sub(0.5)));
+    // Shape: fine particles are points; larger marine-snow aggregates are irregular, elongated,
+    // slowly tumbling flakes. Out-of-focus ones near the lens stay round, like real bokeh.
+    const q: ShaderNode = (uv() as ShaderNode).sub(0.5);
+    const round = smoothstep(0.5, 0.12, length(q));
+    const stretch = mix(float(1), float(2.3), fract(seedN.mul(57.31)));
+    const angle = atan(q.y, q.x);
+    const lobes = sin(angle.mul(3).add(seedN.mul(40))).mul(sin(angle.mul(5).add(seedN.mul(13))));
+    const outline = float(0.5).mul(float(0.72).add(lobes.mul(0.28)));
+    const flake = smoothstep(outline, outline.mul(0.3), length(q.mul(vec2(1, stretch))));
+    const flakiness = smoothstep(0.0025, 0.007, size).mul(smoothstep(0.35, 1.1, dist));
+    const disc = mix(round, flake, flakiness);
     const opacity = disc.mul(edge).mul(bokeh).mul(gate).mul(belowSurface).mul(coverage).mul(0.8);
 
     const material = new SpriteNodeMaterial({ transparent: true, depthWrite: false, blending: AdditiveBlending });
     material.positionNode = world;
-    material.scaleNode = mix(drawn, max(drawn, float(0.025)), isEmitter.mul(u.bioluminescence));
+    material.rotationNode = seedN.mul(6.2832).add(t.mul(mix(float(-0.35), float(0.35), fract(seedN.mul(91.7)))));
+    // Flakes are drawn larger so their irregular outline keeps the area of the round particle.
+    const flakeArea = mix(float(1), stretch.sqrt().mul(1.5), flakiness);
+    material.scaleNode = mix(drawn.mul(flakeArea), max(drawn, float(0.025)), isEmitter.mul(u.bioluminescence));
     material.colorNode = clamp(reflected.add(flash), 0, 1e4);
     material.opacityNode = opacity;
 

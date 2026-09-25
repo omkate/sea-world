@@ -140,6 +140,8 @@ describe('density and submersion', () => {
       expect(d).toBeLessThanOrEqual(1);
     }
     expect(particleDensity(10, 120)).toBeGreaterThan(particleDensity(5000, 120));
+    expect(particleDensity(1000, 120)).toBeGreaterThan(particleDensity(4000, 120));
+    expect(particleDensity(4000, 120)).toBeGreaterThan(particleDensity(10000, 120));
   });
 
   it('submersion is 0 in air and 1 underwater', () => {

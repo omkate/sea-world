@@ -24,9 +24,12 @@ const BASE_EXPOSURE = 0.62;
 const PARTICLE_ALBEDO = 0.8;
 /** Exposure (EV) the camera uses when its lamp is the main light source. */
 const LAMP_EV = 2;
-/** The lamp comes on where sunlight fades out, like an ROV switching its lights on. */
-const LAMP_ON_FROM = 750;
-const LAMP_ON_FULL = 1000;
+/**
+ * The lamp comes on as natural light becomes too dim to film by (~450–650 m), like an ROV
+ * switching its lights on, so there is no dead black stretch before sunlight fully ends.
+ */
+const LAMP_ON_FROM = 450;
+const LAMP_ON_FULL = 650;
 
 declare global {
   interface Window {
