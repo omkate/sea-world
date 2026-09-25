@@ -1,0 +1,68 @@
+# Architecture
+
+ABYSS is one continuous camera descent. Scroll position is the only navigation input; everything else is a function of depth.
+
+## Frame flow
+
+```
+scroll (native document) ──► ScrollInput (critically damped spring) ──► progress 0..1
+progress ──► diveCurve (monotone cubic) ──► depth (m; negative = above water)
+depth ──► updateDepthState ──► DepthState { pressure, temperature, light[rgb], zone, exposure, density, … }
+DepthState + time ──► CameraRig ──► camera
+camera + DepthState ──► FrameUniforms (one write per frame) ──► every shader reads
+RenderPipeline:  scene pass ─┐
+                 particle pass┴► UnderwaterPipeline (waterline · medium · lens) ─► AgX ─► FXAA
+Hud (≤10 Hz, text only when changed) · DebugPanel (lazy) · DynamicResolution (frame interval)
+```
+
+Rules the code follows:
+
+- **No DOM work in the render loop.** The HUD samples at 10 Hz and only writes text that changed.
+- **Pure physics.** `src/data/zones/physics.ts`, `src/ocean/medium/optics.ts`, `src/depth/*` and `src/core/quality/*` have no side effects and are unit-tested.
+- **One source of GPU truth.** `src/core/engine/uniforms.ts` holds every frame uniform. Systems never own duplicate copies.
+- **CPU mirrors of GPU math.** `waveHeight()` (CPU) and `gerstnerHeight()` (TSL) share one wave set, so the camera, the waterline test and the surface always agree.
+- **TSL typing.** Shader-graph code uses the `ShaderNode` alias (`src/shaders/tsl/types.ts`), because TSL's published types cannot follow swizzles. CPU code stays strictly typed.
+
+## Source layout
+
+| Path | Responsibility |
+|---|---|
+| `src/main.ts` | Capability probe → renderer → quality tier → `Experience`, or the fallback page |
+| `src/core/renderer` | `WebGPURenderer` (auto-falls back to WebGL2), backend and device hints |
+| `src/core/engine` | `Experience` (wiring and frame loop), frame uniforms |
+| `src/core/quality` | Tiers, tier selection, dynamic resolution, 4K pixel cap |
+| `src/depth` | Dive curve, scroll spring, `DepthState` |
+| `src/data` | Zod schemas, site profiles, physics, species manifest |
+| `src/ocean/surface` | Wave set, polar surface grid, sky and PMREM environment, surface materials |
+| `src/ocean/medium` | Optics constants and the underwater screen pass |
+| `src/particles/suspended` | Camera-relative suspended particulates |
+| `src/camera` | Depth-driven documentary rig |
+| `src/ecosystem/spawning` | Depth and site eligibility rules for species |
+| `src/ui` | HUD, debug panel, fallback |
+
+## Rendering notes
+
+- **Waterline.** Each pixel's near-plane point is tested against the live wave height, so the split view follows the swell across the lens.
+- **Snell's window.** The underside material refracts view rays into the baked sky (n = 1.333). Beyond the critical angle it shows total internal reflection of the water below. The window appears as a consequence of the physics rather than as a texture.
+- **Medium.** Light reaching a surface is multiplied by the per-band downwelling at that surface's depth. The view path then applies `e^(−σd)`. Single-scatter in-scatter is integrated analytically along the ray, with the light field decaying as `e^(−Kd·z)` and the path clamped at the sea surface.
+- **Particles** render in a separate pass. They are composited additively, because post-effect RTT nodes reset the clear alpha to 1.
+- **fp32 precision.** Wet and dry colours are combined as a weighted sum, not with `mix()`. `mix(a, b, 1) = a + (b − a)` loses deep-water radiance (~1e‑7) next to sky radiance (~10).
+
+## Approximations (honest list)
+
+| Area | What we do | Reality / plan |
+|---|---|---|
+| Surface waves | 6–12 deterministic Gerstner components | FFT/JONSWAP compute on WebGPU (Phase 2 or 12) |
+| Spectral light | 3 bands (R, G, B) plus a band→display matrix (the "blue" band is ~475 nm) | Full spectral rendering is out of scope |
+| Kd values | Jerlov Type I-like: R 0.35, G 0.07, B 0.022 m⁻¹ | Hand-picked, not measured at Guam |
+| Pressure | `1 + ρgz/101325`, constant ρ | Ignores compressibility (~1.5% low at 11 km); TEOS-10 `p_from_z` is more accurate |
+| Temperature | Monotone cubic through a hand-authored tropical western-Pacific profile | Uncertain until checked against World Ocean Atlas or CTD casts |
+| Exposure | The camera adapts to 75% of light loss and stops adapting at 1,000 m | A creative convention, standing in for a low-light documentary camera |
+| Particle sinking | Up to ~2 cm/s so motion is visible | Real marine snow sinks ~1–100 m/day |
+| Snell's window edge | Softened over a small band | Real edge blur comes from sub-pixel wave facets |
+| Sky | Preetham-style `SkyMesh` with procedural clouds, baked to PMREM once | No time-of-day change yet |
+| Scale | 1 unit = 1 m. The camera is at true depth (float precision is fine to 11 km for Phase 1) | Chapter sets will use a floating origin (plan §4.1) |
+
+## Not built yet (no UI exists for these)
+
+Creatures, reef, audio, god rays, caustics, bioluminescence, the discovery codex, Cinema Mode, streaming. The HUD and debug panel only show systems that exist; the debug panel reports "creatures 0 (none implemented yet)".

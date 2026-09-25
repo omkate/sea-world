@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#02070b" />
+    <meta name="description" content="A continuous descent from the sunlit surface above Guam to the floor of the Mariana Trench." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%234fb3e0'/%3E%3Cstop offset='1' stop-color='%23020b14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7' fill='url(%23g)'/%3E%3C/svg%3E" />
+    <title>ABYSS — The Living Ocean</title>
+  </head>
+  <body>
+    <canvas id="ocean" aria-label="A camera descending through the ocean. Scroll to dive deeper."></canvas>
+
+    <div id="dive" aria-hidden="true"></div>
+
+    <section id="hud" hidden aria-live="off" aria-label="Dive telemetry">
+      <span data-hud="depth" class="hud-depth">0 m</span>
+      <span data-hud="temperature">—</span>
+      <span data-hud="pressure">—</span>
+      <span data-hud="light">—</span>
+      <span data-hud="zone" class="hud-zone">—</span>
+    </section>
+
+    <div id="cue" aria-hidden="true"><span>Scroll to descend</span><i></i></div>
+
+    <section id="fallback" hidden>
+      <div class="fallback-column">
+        <p class="fallback-eyebrow">ABYSS — The Living Ocean</p>
+        <h1>This dive needs a hardware-accelerated browser.</h1>
+        <p>
+          The ocean here is rendered live on your graphics card with WebGPU or WebGL2, and neither is available right now.
+          Try a current version of Chrome, Edge, Safari or Firefox with hardware acceleration switched on.
+        </p>
+        <ol class="fallback-zones">
+          <li><b>0 m</b> Sunlight zone</li>
+          <li><b>200 m</b> Twilight zone</li>
+          <li><b>1,000 m</b> Midnight zone: sunlight ends</li>
+          <li><b>4,000 m</b> Abyssal zone</li>
+          <li><b>6,000 m</b> Hadal zone</li>
+          <li><b>10,935 m</b> Challenger Deep</li>
+        </ol>
+      </div>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

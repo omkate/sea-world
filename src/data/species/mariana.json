@@ -1,0 +1,3978 @@
+[
+  {
+    "id": "physalia-utriculus",
+    "commonName": "Indo-Pacific bluebottle (Pacific man o' war)",
+    "scientificName": "Physalia utriculus",
+    "taxonRank": "species",
+    "category": "Cnidarians",
+    "depthMin": 0,
+    "depthMax": 0,
+    "habitats": [
+      "surface"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.04,
+    "sizeMax": 0.1,
+    "diet": "Small prey paralysed by venomous stinging tentacles",
+    "behavior": [
+      "Drift",
+      "FollowCurrent"
+    ],
+    "locomotion": "drift",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Blue, elongate gas-filled float with a crest along the anterior half; long blue fishing tentacle (under 3 m) trailing below.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "A gas-filled float acts as a sail, so the colony is moved passively by wind and currents at the sea surface.",
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Replaces Physalia physalis: Physalia was split into at least four species (Church et al. 2024/2025); the Guam/CNMI iNaturalist records in OBIS are P. utriculus. Float size is for P. utriculus (float rarely exceeds 10 cm).",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Physalia (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Physalia&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "Australian Museum Lizard Island Field Guide: Bluebottle (Physalia utriculus)",
+        "url": "https://lifg.australian.museum/Group.html?groupId=yXXYcmIc",
+        "field": "sizeMax"
+      },
+      {
+        "label": "Church et al. bioRxiv: Global genomics of the man-o'-war (Physalia)",
+        "url": "https://www.biorxiv.org/content/10.1101/2024.07.10.602499v2",
+        "field": "scientificName"
+      },
+      {
+        "label": "NOAA Ocean Service: What is a Portuguese man o' war?",
+        "url": "https://oceanservice.noaa.gov/facts/portuguese-man-o-war.html",
+        "field": "diet"
+      },
+      {
+        "label": "WoRMS: Physalia utriculus",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=387269",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "cheilopogon-cyanopterus",
+    "commonName": "Margined flyingfish",
+    "scientificName": "Cheilopogon cyanopterus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 20,
+    "habitats": [
+      "surface",
+      "epipelagic"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.25,
+    "sizeMax": 0.4,
+    "diet": "Mostly crustaceans and other planktonic organisms",
+    "behavior": [
+      "School",
+      "Flee",
+      "Cruise"
+    ],
+    "locomotion": "flight",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark iridescent blue back, silvery white below; bluish-black pectoral 'wings'; dorsal fin with a prominent black spot.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Enlarged pectoral fins let it leap from the water and glide long distances above the surface.",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Listed from the Marianas (Parin 1996, 1999) in Myers & Donaldson 2003; FishBase distribution explicitly includes the Mariana Islands.",
+    "sources": [
+      {
+        "label": "FishBase: Cheilopogon cyanopterus",
+        "url": "https://fishbase.se/summary/Cheilopogon-cyanopterus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "sula-leucogaster",
+    "commonName": "Brown booby",
+    "scientificName": "Sula leucogaster",
+    "taxonRank": "species",
+    "category": "Birds",
+    "depthMin": 0,
+    "depthMax": 15,
+    "habitats": [
+      "surface"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.69,
+    "sizeMax": 0.74,
+    "diet": "Fish and squid caught by plunge-diving",
+    "behavior": [
+      "Dive",
+      "Surface",
+      "SearchFood"
+    ],
+    "locomotion": "flight",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark chocolate-brown head, neck and upperparts sharply demarcated from a white belly; pale yellowish bill and feet.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Captures prey by plunge-diving from the air into the upper water column.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "diet"
+    ],
+    "notes": "Total length 64-74 cm, wingspan 132-150 cm (SeaLifeBase). Breeds on Guam and the Northern Mariana Islands (ADW). Coloration and squid in diet from general knowledge, not from a fetched source.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Sula leucogaster",
+        "url": "https://www.sealifebase.se/summary/Sula-leucogaster.html"
+      },
+      {
+        "label": "Animal Diversity Web: Sula leucogaster",
+        "url": "https://animaldiversity.org/accounts/Sula_leucogaster/",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "coryphaena-hippurus",
+    "commonName": "Common dolphinfish (mahimahi)",
+    "scientificName": "Coryphaena hippurus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 85,
+    "habitats": [
+      "epipelagic",
+      "surface"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 1.0,
+    "sizeMax": 2.1,
+    "diet": "Almost all forms of fish and zooplankton; also crustaceans and squid",
+    "behavior": [
+      "School",
+      "Chase",
+      "Cruise"
+    ],
+    "locomotion": "carangiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Metallic blue-green back fading on the flanks; long single dorsal fin from above the eye almost to the tail; mature males with a prominent bony crest on the forehead.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Usually 5-10 m depth. One of the main species in Guam's troll fishery.",
+    "sources": [
+      {
+        "label": "FishBase: Coryphaena hippurus",
+        "url": "https://fishbase.se/summary/Coryphaena-hippurus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "NOAA Fisheries: Guam Tuna Troll Fishery (MMPA List of Fisheries)",
+        "url": "https://www.fisheries.noaa.gov/national/marine-mammal-protection/guam-tuna-troll-fishery-mmpa-list-fisheries",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "acropora",
+    "commonName": "Staghorn / table corals",
+    "scientificName": "Acropora",
+    "taxonRank": "genus",
+    "category": "Corals",
+    "depthMin": 0,
+    "depthMax": 30,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.5,
+    "sizeMax": 3,
+    "diet": "Photosynthetic products of symbiotic algae plus captured zooplankton",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Branching, plate or table-shaped colonies; typically brown, tan or cream, sometimes with blue or purple branch tips.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMax",
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration",
+      "diet"
+    ],
+    "notes": "Genus-level entry. Occurrence at Guam supported by 890 OBIS records in the Mariana box and a genomics study of two sympatric Guam Acropora species. Depth/size values are rendering placeholders.",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Acropora (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Acropora&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "Evolutionary genomics of two co-occurring congeneric fore reef coral species on Guam",
+        "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11746966/",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Acropora",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=205469",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "porites-lobata",
+    "commonName": "Lobe coral",
+    "scientificName": "Porites lobata",
+    "taxonRank": "species",
+    "category": "Corals",
+    "depthMin": 0,
+    "depthMax": 98,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 1,
+    "sizeMax": 5,
+    "diet": "Photosynthetic products of symbiotic algae plus captured zooplankton",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Massive lobed heads or encrusting plates with a smooth surface of tiny polyps; typically cream, yellow-brown or greenish.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration",
+      "diet"
+    ],
+    "notes": "Encrusting or forming massive heads; tolerant of exposed conditions (SeaLifeBase). Listed among Guam's massive Porites species.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Porites lobata",
+        "url": "https://www.sealifebase.se/summary/Porites-lobata.html"
+      },
+      {
+        "label": "OBIS occurrences: Porites lobata (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Porites%20lobata&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "bioRxiv 2024: Genomic data reveals habitat partitioning in massive Porites on Guam",
+        "url": "https://www.biorxiv.org/content/10.1101/2024.07.16.603743.full.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "pocillopora",
+    "commonName": "Cauliflower corals",
+    "scientificName": "Pocillopora",
+    "taxonRank": "genus",
+    "category": "Corals",
+    "depthMin": 0,
+    "depthMax": 30,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.3,
+    "sizeMax": 1,
+    "diet": "Photosynthetic products of symbiotic algae plus captured zooplankton",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Compact bushy colonies of warty branches; pink, brown or cream.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMax",
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration",
+      "diet"
+    ],
+    "notes": "Genus-level. 4,390 OBIS records in the Mariana box; one of the Guam genera studied for habitat complexity.",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Pocillopora (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Pocillopora&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "Scientific Reports 2023: Prediction of habitat complexity on coral reefs in Guam",
+        "url": "https://www.nature.com/articles/s41598-023-38138-1",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Pocillopora",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=206938",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "radianthus-magnifica",
+    "commonName": "Magnificent sea anemone",
+    "scientificName": "Radianthus magnifica",
+    "taxonRank": "species",
+    "category": "Cnidarians",
+    "depthMin": 1,
+    "depthMax": 50,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.5,
+    "sizeMax": 1,
+    "diet": "Captured zooplankton and small prey plus symbiotic algae",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dense carpet of blunt-tipped tentacles on an oral disc; column often brightly coloured (red, purple, blue or green).",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Hosts anemonefishes that are protected among its stinging tentacles.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration",
+      "diet"
+    ],
+    "notes": "Candidate 'Heteractis magnifica' is now unaccepted in WoRMS; accepted name Radianthus magnifica. 18 OBIS records in the Mariana box. Host to Amphiprion chrysopterus (and rarely A. melanopus) per FishBase.",
+    "sources": [
+      {
+        "label": "WoRMS: Radianthus magnifica",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=854493",
+        "field": "scientificName"
+      },
+      {
+        "label": "SeaLifeBase: Heteractis magnifica",
+        "url": "https://www.sealifebase.se/summary/Heteractis-magnifica.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "OBIS occurrences: Radianthus magnifica (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Radianthus%20magnifica&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "amphiprion-chrysopterus",
+    "commonName": "Orange-fin anemonefish",
+    "scientificName": "Amphiprion chrysopterus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 40,
+    "habitats": [
+      "coral-reef",
+      "reef-wall"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.12,
+    "sizeMax": 0.17,
+    "diet": "Planktonic copepods, algae, worms and pelagic tunicates",
+    "behavior": [
+      "Territorial",
+      "Hide",
+      "StationKeep"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark brown to blackish body with two blue-white vertical bars; orange-yellow fins.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Lives among the stinging tentacles of host anemones (including Radianthus/Heteractis magnifica).",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "sizeTypical"
+    ],
+    "notes": "Native to Guam (Myers & Donaldson 2003). A. ocellaris is NOT native. Inhabits passages and outer reef slopes.",
+    "sources": [
+      {
+        "label": "FishBase: Amphiprion chrysopterus",
+        "url": "https://fishbase.se/summary/Amphiprion-chrysopterus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "amphiprion-melanopus",
+    "commonName": "Red and black anemonefish",
+    "scientificName": "Amphiprion melanopus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 1,
+    "depthMax": 18,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.08,
+    "sizeMax": 0.12,
+    "diet": "Planktonic copepods and algae",
+    "behavior": [
+      "Territorial",
+      "Hide",
+      "StationKeep"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Orange-red body with a dark blackish flank patch and one white head bar.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Usually hosted by the bubble-tip anemone Entacmaea quadricolor; males guard and aerate eggs.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "sizeTypical"
+    ],
+    "notes": "Listed for Guam in Myers & Donaldson 2003 and the subject of a territorial-behaviour study on Guam (Ross 1978).",
+    "sources": [
+      {
+        "label": "FishBase: Amphiprion melanopus",
+        "url": "https://fishbase.se/summary/Amphiprion-melanopus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "Territorial Behavior and Ecology of the Anemonefish Amphiprion melanopus on Guam",
+        "url": "https://www.researchgate.net/publication/229805887_Territorial_Behavior_and_Ecology_of_the_Anemonefish_Amphiprion_melanopus_on_Guam1",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "acanthurus-triostegus",
+    "commonName": "Convict surgeonfish",
+    "scientificName": "Acanthurus triostegus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 90,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.17,
+    "sizeMax": 0.27,
+    "diet": "Filamentous algae",
+    "behavior": [
+      "Graze",
+      "School"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Olive-grey body with 4 black vertical bars (one through the yellow eye, one on the tail base), shading sharply to white below.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "adaptation": "A sharp, erectile scalpel-like spine on each side of the tail base for defence.",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Grazes filamentous algae in large aggregations; juveniles abundant in tide pools.",
+    "sources": [
+      {
+        "label": "FishBase: Acanthurus triostegus",
+        "url": "https://fishbase.se/summary/Acanthurus-triostegus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "naso-lituratus",
+    "commonName": "Orangespine unicornfish",
+    "scientificName": "Naso lituratus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 90,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.3,
+    "sizeMax": 0.46,
+    "diet": "Leafy brown algae (Sargassum, Dictyota)",
+    "behavior": [
+      "Graze",
+      "Cruise"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Brown to bluish-grey body, ventral half yellowish; two large plates with forward-pointing keels on the tail base; no forehead horn.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical"
+    ],
+    "notes": "Usually 5-30 m. Max length 46 cm SL.",
+    "sources": [
+      {
+        "label": "FishBase: Naso lituratus",
+        "url": "https://fishbase.se/summary/Naso-lituratus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "chaetodon-lunula",
+    "commonName": "Raccoon butterflyfish",
+    "scientificName": "Chaetodon lunula",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 170,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.15,
+    "sizeMax": 0.2,
+    "diet": "Nudibranchs, tubeworm tentacles and other benthic invertebrates; also algae and coral polyps",
+    "behavior": [
+      "SearchFood",
+      "Rest"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Yellow-orange body with a black 'raccoon mask' band across the eye and a white band behind it; diagonal dark stripes on the flank.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Largely nocturnal, usually in pairs or small groups.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "sizeTypical"
+    ],
+    "sources": [
+      {
+        "label": "FishBase: Chaetodon lunula",
+        "url": "https://fishbase.se/summary/Chaetodon-lunula.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "pygoplites-diacanthus",
+    "commonName": "Royal angelfish",
+    "scientificName": "Pygoplites diacanthus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 110,
+    "habitats": [
+      "coral-reef",
+      "reef-wall"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.18,
+    "sizeMax": 0.25,
+    "diet": "Sponges and tunicates",
+    "behavior": [
+      "SearchFood",
+      "Hide"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Orange-yellow body with blue-edged white vertical bars; blue and yellow fins.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "sizeTypical"
+    ],
+    "notes": "Coral-rich areas, often near caves.",
+    "sources": [
+      {
+        "label": "FishBase: Pygoplites diacanthus",
+        "url": "https://fishbase.se/summary/Pygoplites-diacanthus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "chlorurus-spilurus",
+    "commonName": "Pacific bullethead parrotfish",
+    "scientificName": "Chlorurus spilurus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 50,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.3,
+    "sizeMax": 0.486,
+    "diet": "Benthic algae scraped from reef substrate",
+    "behavior": [
+      "Graze",
+      "School"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Initial phase dark brown; terminal-phase males green with pink/orange markings.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "depthMax",
+      "sizeTypical",
+      "visual.coloration",
+      "diet"
+    ],
+    "notes": "Myers & Donaldson 2003 list 'Chlorurus sordidus' for the Marianas; the Pacific population is now C. spilurus (C. sordidus restricted to the Indian Ocean in FishBase). Depth/diet taken from the pre-split C. sordidus account.",
+    "sources": [
+      {
+        "label": "FishBase: Chlorurus spilurus",
+        "url": "https://fishbase.se/summary/Chlorurus-spilurus.html"
+      },
+      {
+        "label": "FishBase: Chlorurus sordidus",
+        "url": "https://fishbase.se/summary/Chlorurus-sordidus.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Chlorurus spilurus",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=712772",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "bolbometopon-muricatum",
+    "commonName": "Green humphead parrotfish",
+    "scientificName": "Bolbometopon muricatum",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 40,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.7,
+    "sizeMax": 1.3,
+    "diet": "Benthic algae, live coral and shellfish",
+    "behavior": [
+      "Graze",
+      "School",
+      "Rest"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Juveniles brownish-green with five vertical rows of whitish spots; adults a dull uniform colour with a prominent bulbous forehead bump.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Sometimes rams its head against corals to break them up for feeding.",
+    "rarity": "rare",
+    "representation": "hero",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration"
+    ],
+    "notes": "Nearly extirpated at Guam; extremely rare throughout US Pacific reefs 2000-2009 (NMFS 90-day finding). IUCN Vulnerable. Show as a rare encounter. FishBase colour text for adults was truncated.",
+    "sources": [
+      {
+        "label": "FishBase: Bolbometopon muricatum",
+        "url": "https://fishbase.se/summary/Bolbometopon-muricatum.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "Federal Register 2010: 90-day finding on petition to list the bumphead parrotfish",
+        "url": "https://www.federalregister.gov/documents/2010/04/02/2010-7495/endangered-and-threatened-wildlife-notice-of-90-day-finding-on-a-petition-to-list-the-bumphead",
+        "field": "rarity"
+      }
+    ]
+  },
+  {
+    "id": "labroides-dimidiatus",
+    "commonName": "Bluestreak cleaner wrasse",
+    "scientificName": "Labroides dimidiatus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 100,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.1,
+    "sizeMax": 0.14,
+    "diet": "Crustacean ectoparasites and mucus of other fishes",
+    "behavior": [
+      "Clean",
+      "StationKeep",
+      "Territorial"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Slender body with a black lateral stripe widening toward the tail on a pale-to-blue background; often a yellow back in deep water.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Operates fixed cleaning stations that other reef fish visit to have parasites removed.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "sizeTypical"
+    ],
+    "notes": "Usually 1-30 m.",
+    "sources": [
+      {
+        "label": "FishBase: Labroides dimidiatus",
+        "url": "https://fishbase.se/summary/Labroides-dimidiatus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "balistoides-conspicillum",
+    "commonName": "Clown triggerfish",
+    "scientificName": "Balistoides conspicillum",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 1,
+    "depthMax": 75,
+    "habitats": [
+      "reef-wall",
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.35,
+    "sizeMax": 0.5,
+    "diet": "Sea urchins, crabs and other crustaceans, molluscs and tunicates",
+    "behavior": [
+      "SearchFood",
+      "Territorial",
+      "Hide"
+    ],
+    "locomotion": "balistiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Large white spots on a dark belly; black spots on a yellow back; yellow snout with a white/yellow band in front of the eye; orange-yellow lips; broad pale band on the tail.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical"
+    ],
+    "notes": "Solitary; along steep drop-offs; uncommon to rare through most of its range.",
+    "sources": [
+      {
+        "label": "FishBase: Balistoides conspicillum",
+        "url": "https://fishbase.se/summary/Balistoides-conspicillum.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "cephalopholis-argus",
+    "commonName": "Peacock hind",
+    "scientificName": "Cephalopholis argus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 40,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.4,
+    "sizeMax": 0.6,
+    "diet": "Mainly fishes (75-95%), also crustaceans",
+    "behavior": [
+      "Ambush",
+      "Territorial"
+    ],
+    "locomotion": "subcarangiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark brown body densely covered with small black-edged blue spots; often 5-6 pale bars on the rear body and a pale chest area.",
+      "camouflage": [
+        "cryptic"
+      ],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Prefers the 1-10 m reef zone; harem groups defended by a territorial male.",
+    "sources": [
+      {
+        "label": "FishBase: Cephalopholis argus",
+        "url": "https://fishbase.se/summary/Cephalopholis-argus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "chromis-viridis",
+    "commonName": "Blue-green chromis",
+    "scientificName": "Chromis viridis",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 1,
+    "depthMax": 20,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.07,
+    "sizeMax": 0.1,
+    "diet": "Plankton",
+    "behavior": [
+      "School",
+      "Hide"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Iridescent pale blue-green.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Large aggregations hover over branching Acropora thickets and dive into them when threatened.",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "sizeTypical"
+    ],
+    "sources": [
+      {
+        "label": "FishBase: Chromis viridis",
+        "url": "https://fishbase.se/summary/Chromis-viridis.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "dascyllus-aruanus",
+    "commonName": "Whitetail dascyllus (humbug)",
+    "scientificName": "Dascyllus aruanus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 20,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.06,
+    "sizeMax": 0.1,
+    "diet": "Zooplankton, benthic invertebrates and algae",
+    "behavior": [
+      "School",
+      "Territorial",
+      "Hide"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "White with three black vertical bars; brown spot on snout; black pelvic fins; pale tail.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Aggregates above staghorn Acropora thickets.",
+    "sources": [
+      {
+        "label": "FishBase: Dascyllus aruanus",
+        "url": "https://fishbase.se/summary/Dascyllus-aruanus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "pterois-volitans",
+    "commonName": "Red lionfish",
+    "scientificName": "Pterois volitans",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 2,
+    "depthMax": 55,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.3,
+    "sizeMax": 0.457,
+    "diet": "Small fishes, shrimps and crabs",
+    "behavior": [
+      "Ambush",
+      "Hide",
+      "Rest"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Red-brown and white vertical stripes; long fan-like pectoral fins and venomous dorsal spines; often tentacles above the eyes. Colour variable with habitat.",
+      "camouflage": [
+        "cryptic"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Herds prey into a corner with widespread pectoral fins, then swallows it in one strike; venomous dorsal spines deter predators.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "NATIVE in the Marianas: FishBase native range covers the western Pacific to the Marquesas; recorded at Guam since Fowler 1925. Hides by day, hunts at night.",
+    "sources": [
+      {
+        "label": "FishBase: Pterois volitans",
+        "url": "https://fishbase.se/summary/Pterois-volitans.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "gymnothorax-javanicus",
+    "commonName": "Giant moray",
+    "scientificName": "Gymnothorax javanicus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 50,
+    "habitats": [
+      "coral-reef",
+      "reef-wall"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 1.5,
+    "sizeMax": 3,
+    "diet": "Primarily fishes, occasionally crustaceans",
+    "behavior": [
+      "Hide",
+      "Ambush"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Adults with black specks grading into leopard-like spots behind the head and a black area around the gill opening; juveniles tan with large black spots.",
+      "camouflage": [
+        "cryptic"
+      ],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical"
+    ],
+    "notes": "Largest Indo-Pacific moray (to ~3 m); solitary in reef holes.",
+    "sources": [
+      {
+        "label": "FishBase: Gymnothorax javanicus",
+        "url": "https://fishbase.se/summary/Gymnothorax-javanicus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "triaenodon-obesus",
+    "commonName": "Whitetip reef shark",
+    "scientificName": "Triaenodon obesus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 330,
+    "habitats": [
+      "coral-reef",
+      "reef-wall"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 1.6,
+    "sizeMax": 2.13,
+    "diet": "Benthic fishes, octopus, spiny lobsters and crabs",
+    "behavior": [
+      "Rest",
+      "Cruise",
+      "SearchFood"
+    ],
+    "locomotion": "carangiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Grey above, lighter below, sometimes with dark spots; conspicuous white tips on the first dorsal and upper tail lobe; short broad snout.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Rests in caves or under ledges by day and hunts in reef crevices at night.",
+    "rarity": "common",
+    "representation": "hero",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Usually 8-40 m. FishBase: 'throughout Micronesia'.",
+    "sources": [
+      {
+        "label": "FishBase: Triaenodon obesus",
+        "url": "https://fishbase.se/summary/Triaenodon-obesus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "chelonia-mydas",
+    "commonName": "Green sea turtle",
+    "scientificName": "Chelonia mydas",
+    "taxonRank": "species",
+    "category": "Reptiles",
+    "depthMin": 0,
+    "depthMax": 200,
+    "habitats": [
+      "coral-reef",
+      "seagrass",
+      "epipelagic"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 1.0,
+    "sizeMax": 1.2,
+    "diet": "Seagrasses and algae (herbivorous as adults)",
+    "behavior": [
+      "Graze",
+      "Surface",
+      "Rest"
+    ],
+    "locomotion": "flipper",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark brown, grey or olive carapace; pale yellow-to-white underside.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "hero",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Adults 3-4 ft (0.9-1.2 m). Uses nearshore waters around Guam and has nested on Naval Base Guam beaches.",
+    "sources": [
+      {
+        "label": "NOAA Fisheries: Green Turtle",
+        "url": "https://www.fisheries.noaa.gov/species/green-turtle"
+      },
+      {
+        "label": "SeaLifeBase: Chelonia mydas",
+        "url": "https://www.sealifebase.se/summary/Chelonia-mydas.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "NOAA: Sea turtle tagging in the Naval Base Guam area",
+        "url": "https://repository.library.noaa.gov/view/noaa/15114",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "eretmochelys-imbricata",
+    "commonName": "Hawksbill turtle",
+    "scientificName": "Eretmochelys imbricata",
+    "taxonRank": "species",
+    "category": "Reptiles",
+    "depthMin": 0,
+    "depthMax": 300,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.75,
+    "sizeMax": 0.9,
+    "diet": "Mainly sponges; also algae, corals and other invertebrates",
+    "behavior": [
+      "SearchFood",
+      "Surface",
+      "Rest"
+    ],
+    "locomotion": "flipper",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Mottled shell in amber, orange, red, yellow, black and brown; narrow hawk-like beak.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Narrow beak reaches into reef crevices to feed on sponges.",
+    "rarity": "rare",
+    "representation": "hero",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Fewer than 10 females nest annually in Guam + CNMI (NMFS/USFWS 5-year review). Shell length 2-3 ft.",
+    "sources": [
+      {
+        "label": "NOAA Fisheries: Hawksbill Turtle",
+        "url": "https://www.fisheries.noaa.gov/species/hawksbill-turtle"
+      },
+      {
+        "label": "SeaLifeBase: Eretmochelys imbricata",
+        "url": "https://www.sealifebase.se/summary/Eretmochelys-imbricata.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "NMFS/USFWS Hawksbill sea turtle 5-year review",
+        "url": "https://repository.library.noaa.gov/view/noaa/17041/noaa_17041_DS1.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "phyllidia-varicosa",
+    "commonName": "Varicose wart slug",
+    "scientificName": "Phyllidia varicosa",
+    "taxonRank": "species",
+    "category": "Mollusks",
+    "depthMin": 10,
+    "depthMax": 20,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.07,
+    "diet": "Sponges",
+    "behavior": [
+      "Graze"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Black body with longitudinal rows of warty ridges tipped yellow and pale blue-grey; yellow rhinophores.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "depthMax",
+      "visual.coloration",
+      "diet",
+      "sizeTypical"
+    ],
+    "notes": "SeaLifeBase depth (10-20 m) is from a single reference and probably too narrow. 2 OBIS records in the Mariana box.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Phyllidia varicosa",
+        "url": "https://www.sealifebase.se/summary/Phyllidia-varicosa.html"
+      },
+      {
+        "label": "OBIS occurrences: Phyllidia varicosa (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Phyllidia%20varicosa&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "stenopus-hispidus",
+    "commonName": "Banded coral shrimp",
+    "scientificName": "Stenopus hispidus",
+    "taxonRank": "species",
+    "category": "Crustaceans",
+    "depthMin": 1,
+    "depthMax": 200,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.07,
+    "diet": "Small arthropods and invertebrates; parasites and dead tissue picked from reef fishes",
+    "behavior": [
+      "Clean",
+      "Hide",
+      "StationKeep"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Red and white banded body and claws with long white antennae.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Acts as a cleaner, removing parasites and injured tissue from reef fishes.",
+    "rarity": "common",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration"
+    ],
+    "notes": "Replaces Lysmata amboinensis (no Mariana record found). 108 OBIS records in the Mariana box. Lives in deep crevices and under overhangs.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Stenopus hispidus",
+        "url": "https://www.sealifebase.se/summary/Stenopus-hispidus.html"
+      },
+      {
+        "label": "OBIS occurrences: Stenopus hispidus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Stenopus%20hispidus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "spirobranchus",
+    "commonName": "Christmas tree worms",
+    "scientificName": "Spirobranchus",
+    "taxonRank": "genus",
+    "category": "Worms",
+    "depthMin": 3,
+    "depthMax": 30,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.03,
+    "sizeMax": 0.2,
+    "diet": "Filter-feeds on plankton",
+    "behavior": [
+      "FilterFeed",
+      "Hide"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Paired spiral crowns of feathery radioles in many colours (red, orange, yellow, blue, white) rising from a calcareous tube embedded in live coral.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Retracts its crown into its tube in a fraction of a second when disturbed.",
+    "rarity": "common",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration",
+      "adaptation"
+    ],
+    "notes": "Genus-level: S. giganteus in the strict sense is Caribbean; Indo-Pacific populations are the S. corniculatus complex (both accepted in WoRMS). OBIS: 441 'S. giganteus' + 10 S. corniculatus records in the Mariana box. sizeMax is the tube (to 20 cm).",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Spirobranchus corniculatus",
+        "url": "https://www.sealifebase.se/summary/Spirobranchus-corniculatus.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "SeaLifeBase: Spirobranchus giganteus",
+        "url": "https://www.sealifebase.se/summary/Spirobranchus-giganteus.html",
+        "field": "sizeMax"
+      },
+      {
+        "label": "OBIS occurrences: Spirobranchus giganteus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Spirobranchus%20giganteus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "OBIS occurrences: Spirobranchus corniculatus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Spirobranchus%20corniculatus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "linckia-laevigata",
+    "commonName": "Blue sea star",
+    "scientificName": "Linckia laevigata",
+    "taxonRank": "species",
+    "category": "Echinoderms",
+    "depthMin": 0,
+    "depthMax": 60,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.25,
+    "sizeMax": 0.4,
+    "diet": "Detritus, turf algae, bacterial film and small invertebrates",
+    "behavior": [
+      "Graze"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Bright blue with long cylindrical arms (colour morphs also exist).",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "Found on sunlit rocks, dead coral and rubble. 264 OBIS records in the Mariana box.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Linckia laevigata",
+        "url": "https://www.sealifebase.se/summary/Linckia-laevigata.html"
+      },
+      {
+        "label": "OBIS occurrences: Linckia laevigata (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Linckia%20laevigata&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "thunnus-albacares",
+    "commonName": "Yellowfin tuna",
+    "scientificName": "Thunnus albacares",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 1,
+    "depthMax": 1602,
+    "habitats": [
+      "epipelagic"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 1.5,
+    "sizeMax": 2.39,
+    "diet": "Fishes, crustaceans and squids",
+    "behavior": [
+      "School",
+      "Chase",
+      "Cruise"
+    ],
+    "locomotion": "thunniform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark metallic blue back, silvery-yellow flanks and belly; bright yellow second dorsal, anal fin and finlets.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration"
+    ],
+    "notes": "Usually 1-250 m; rarely below 250 m in the tropics due to oxygen sensitivity. Schools with dolphins and under floating objects.",
+    "sources": [
+      {
+        "label": "FishBase: Thunnus albacares",
+        "url": "https://fishbase.se/summary/Thunnus-albacares.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "katsuwonus-pelamis",
+    "commonName": "Skipjack tuna",
+    "scientificName": "Katsuwonus pelamis",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 260,
+    "habitats": [
+      "epipelagic"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.8,
+    "sizeMax": 1.1,
+    "diet": "Fishes, crustaceans, cephalopods and molluscs",
+    "behavior": [
+      "School",
+      "Chase",
+      "Cruise"
+    ],
+    "locomotion": "thunniform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark purplish-blue back, silvery flanks with 4-6 dark longitudinal stripes on the belly.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration"
+    ],
+    "notes": "Schools at the surface with birds, drifting objects, sharks and whales.",
+    "sources": [
+      {
+        "label": "FishBase: Katsuwonus pelamis",
+        "url": "https://fishbase.se/summary/Katsuwonus-pelamis.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "stenella-longirostris",
+    "commonName": "Spinner dolphin",
+    "scientificName": "Stenella longirostris",
+    "taxonRank": "species",
+    "category": "Mammals",
+    "depthMin": 0,
+    "depthMax": 300,
+    "habitats": [
+      "epipelagic",
+      "surface"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 1.8,
+    "sizeMax": 2.1,
+    "diet": "Small fish, shrimp and squid that migrate up at night",
+    "behavior": [
+      "School",
+      "Rest",
+      "Surface",
+      "Dive"
+    ],
+    "locomotion": "fluke",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Tripartite pattern: dark grey back, light grey sides, white belly; long slender beak.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Rests in shallow bays by day and forages offshore at night on prey rising from 200-300 m.",
+    "rarity": "common",
+    "representation": "hero",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMax"
+    ],
+    "notes": "Most frequently encountered nearshore cetacean in the Pacific Islands region; NOAA photo-ID work around Guam/CNMI. 345 OBIS records in the Mariana box. depthMax = depth of nocturnal prey (650-1000 ft), not a measured dive depth.",
+    "sources": [
+      {
+        "label": "NOAA Fisheries: Spinner Dolphin",
+        "url": "https://www.fisheries.noaa.gov/species/spinner-dolphin"
+      },
+      {
+        "label": "OBIS occurrences: Stenella longirostris (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Stenella%20longirostris&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "carcharhinus-longimanus",
+    "commonName": "Oceanic whitetip shark",
+    "scientificName": "Carcharhinus longimanus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 1082,
+    "habitats": [
+      "epipelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 2.7,
+    "sizeMax": 4,
+    "diet": "Oceanic bony fishes (incl. tuna and mahimahi), squid, sea turtles, seabirds and carrion",
+    "behavior": [
+      "Cruise",
+      "Investigate",
+      "SearchFood"
+    ],
+    "locomotion": "carangiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark grey (bronze-tinged) back, whitish belly; huge rounded first dorsal and long wide pectoral fins with white or mottled tips.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "rarity": "rare",
+    "representation": "hero",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Usually 0-152 m. Marianas record is a sight record (Myers & Donaldson 1996). Often accompanied by pilot fish, remoras and dolphinfish.",
+    "sources": [
+      {
+        "label": "FishBase: Carcharhinus longimanus",
+        "url": "https://fishbase.se/summary/Carcharhinus-longimanus.html"
+      },
+      {
+        "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "mobula-alfredi",
+    "commonName": "Reef manta ray",
+    "scientificName": "Mobula alfredi",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 120,
+    "habitats": [
+      "coral-reef",
+      "epipelagic"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 3,
+    "sizeMax": 4.5,
+    "diet": "Planktonic organisms and probably small bony fishes",
+    "behavior": [
+      "FilterFeed",
+      "Cruise",
+      "Clean"
+    ],
+    "locomotion": "rajiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Black back with pale shoulder patches; white belly with individually unique dark spots; cephalic fins either side of a wide terminal mouth.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "rarity": "uncommon",
+    "representation": "hero",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "Documented in Tumon Bay, Guam. 4 OBIS records in the Mariana box. sizeMax 4.5 m disc width (FishBase, corrected 2025). M. birostris NOT included (see catalogue).",
+    "sources": [
+      {
+        "label": "FishBase: Mobula alfredi",
+        "url": "https://fishbase.se/summary/Mobula-alfredi.html"
+      },
+      {
+        "label": "Guam Coral Reef Initiative: Marianas Reefs",
+        "url": "https://www.guamcoralreefs.info/marianas-reefs",
+        "field": "regions"
+      },
+      {
+        "label": "OBIS occurrences: Mobula alfredi (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Mobula%20alfredi&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "physeter-macrocephalus",
+    "commonName": "Sperm whale",
+    "scientificName": "Physeter macrocephalus",
+    "taxonRank": "species",
+    "category": "Mammals",
+    "depthMin": 0,
+    "depthMax": 3200,
+    "habitats": [
+      "epipelagic",
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 12,
+    "sizeMax": 16,
+    "diet": "Squid, sharks, skates and fish",
+    "behavior": [
+      "Dive",
+      "Surface",
+      "Rest",
+      "SearchFood"
+    ],
+    "locomotion": "fluke",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark grey, sometimes white belly patches; huge block-like head about one-third of body length; single blowhole on the left; small paddle flippers.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Hunts deep-sea squid on dives that routinely reach ~600 m and last ~45 minutes.",
+    "rarity": "uncommon",
+    "representation": "hero",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Most frequently sighted cetacean (18 sightings) on NOAA's Mariana Archipelago Cetacean Survey. Females ~12 m, males ~16 m (NOAA).",
+    "sources": [
+      {
+        "label": "NOAA Fisheries: Sperm Whale",
+        "url": "https://www.fisheries.noaa.gov/species/sperm-whale"
+      },
+      {
+        "label": "SeaLifeBase: Physeter macrocephalus",
+        "url": "https://www.sealifebase.se/summary/Physeter-macrocephalus.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "NOAA: Cetacean and Seabird Data Collected During the Mariana Archipelago Cetacean Survey",
+        "url": "https://repository.library.noaa.gov/view/noaa/41728/noaa_41728_DS1.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "diaphus",
+    "commonName": "Headlight lanternfishes",
+    "scientificName": "Diaphus",
+    "taxonRank": "genus",
+    "category": "Fish",
+    "depthMin": 100,
+    "depthMax": 1400,
+    "habitats": [
+      "mesopelagic",
+      "epipelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.1,
+    "diet": "Zooplankton",
+    "behavior": [
+      "VerticalMigrate",
+      "School",
+      "BioluminescentSignal"
+    ],
+    "locomotion": "subcarangiform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Dark body with silvery sides; rows of ventral photophores and enlarged luminous organs near the eyes.",
+      "photophores": true,
+      "bioluminescenceColor": "blue",
+      "camouflage": [
+        "counterillumination"
+      ]
+    },
+    "adaptation": "Migrates from ~500-600 m by day to within ~15-100 m of the surface at night (D. schmidti).",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration",
+      "visual.bioluminescenceColor",
+      "diet"
+    ],
+    "notes": "Genus-level. OBIS records in the Mariana box include D. schmidti (13.1N 145.7E), D. parri, D. fragilis, D. regani, D. luetkeni. Depth values from D. schmidti (100-1400 m, max 5.3 cm SL).",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Diaphus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Diaphus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "FishBase: Diaphus schmidti",
+        "url": "https://fishbase.se/summary/Diaphus-schmidti.html",
+        "field": "depthMax"
+      }
+    ]
+  },
+  {
+    "id": "argyropelecus-hemigymnus",
+    "commonName": "Half-naked hatchetfish",
+    "scientificName": "Argyropelecus hemigymnus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 100,
+    "depthMax": 700,
+    "habitats": [
+      "mesopelagic"
+    ],
+    "regions": [
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.035,
+    "sizeMax": 0.051,
+    "diet": "Calanoid copepods, small fishes",
+    "behavior": [
+      "VerticalMigrate",
+      "Idle"
+    ],
+    "locomotion": "subcarangiform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Bright silvery, deep hatchet-shaped body (dusky at night); ventral photophores.",
+      "photophores": true,
+      "camouflage": [
+        "mirror-sides",
+        "counterillumination"
+      ]
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "visual.photophores",
+      "sizeTypical"
+    ],
+    "notes": "Usual range 100-700 m (recorded 0-2400 m). 'Tropical and subtropical waters of all oceans' (FishBase). OBIS has 21 Argyropelecus records in the Mariana box but species-level Mariana record not confirmed.",
+    "sources": [
+      {
+        "label": "FishBase: Argyropelecus hemigymnus",
+        "url": "https://fishbase.se/summary/Argyropelecus-hemigymnus.html"
+      },
+      {
+        "label": "OBIS occurrences: Argyropelecus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Argyropelecus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "cyclothone",
+    "commonName": "Bristlemouths",
+    "scientificName": "Cyclothone",
+    "taxonRank": "genus",
+    "category": "Fish",
+    "depthMin": 200,
+    "depthMax": 2700,
+    "habitats": [
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.076,
+    "diet": "Mainly copepods",
+    "behavior": [
+      "Idle",
+      "SearchFood"
+    ],
+    "locomotion": "subcarangiform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Brown to brown-black with dense stellate pigment (C. microdon); small photophores.",
+      "photophores": true,
+      "camouflage": [
+        "black-pigment"
+      ]
+    },
+    "adaptation": "Does not undertake diel vertical migration (C. microdon), saving energy in the food-poor deep.",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.photophores",
+      "sizeTypical"
+    ],
+    "notes": "Genus-level; among the most abundant vertebrates. 90 OBIS records in the Mariana box. Values from C. microdon (usually 500-2700 m; max 7.6 cm).",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Cyclothone (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Cyclothone&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "FishBase: Cyclothone microdon",
+        "url": "https://fishbase.se/summary/Cyclothone-microdon.html",
+        "field": "depthMax"
+      }
+    ]
+  },
+  {
+    "id": "nanomia-bijuga",
+    "commonName": "Common siphonophore",
+    "scientificName": "Nanomia bijuga",
+    "taxonRank": "species",
+    "category": "Cnidarians",
+    "depthMin": 0,
+    "depthMax": 800,
+    "habitats": [
+      "mesopelagic",
+      "epipelagic"
+    ],
+    "regions": [
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.2,
+    "sizeMax": 0.3,
+    "diet": "Plankton; a principal krill predator in Monterey Bay",
+    "behavior": [
+      "VerticalMigrate",
+      "Drift",
+      "Feed"
+    ],
+    "locomotion": "jet",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Transparent colony: small gas float, a column of swimming bells and a trailing stem of feeding polyps and tentacles.",
+      "camouflage": [
+        "transparent"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Colony of specialised zooids; swimming bells jet the colony through daily vertical migrations of hundreds of metres.",
+    "rarity": "common",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "bioluminescent",
+      "visual.coloration"
+    ],
+    "notes": "Mostly 200-400 m. No OBIS record in the Mariana box (27 in the wider W Pacific box).",
+    "sources": [
+      {
+        "label": "MBARI: Common siphonophore",
+        "url": "https://www.mbari.org/animal/common-siphonophore/"
+      },
+      {
+        "label": "SeaLifeBase: Nanomia bijuga",
+        "url": "https://www.sealifebase.se/summary/Nanomia-bijuga.html"
+      },
+      {
+        "label": "OBIS occurrences: Nanomia bijuga (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Nanomia%20bijuga&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "histioteuthis",
+    "commonName": "Cock-eyed (jewel) squids",
+    "scientificName": "Histioteuthis",
+    "taxonRank": "genus",
+    "category": "Cephalopods",
+    "depthMin": 200,
+    "depthMax": 1000,
+    "habitats": [
+      "mesopelagic"
+    ],
+    "regions": [
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.2,
+    "sizeMax": 0.3,
+    "diet": "Small fishes and crustaceans",
+    "behavior": [
+      "Idle",
+      "Ambush",
+      "BioluminescentSignal"
+    ],
+    "locomotion": "jet",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Pink-to-red body studded with seed-like photophores ('strawberry squid'); one large upward-looking left eye and one small downward-looking eye.",
+      "photophores": true,
+      "camouflage": [
+        "red-pigment",
+        "counterillumination"
+      ]
+    },
+    "adaptation": "Mismatched eyes: the large eye scans for silhouettes above, the small eye watches for bioluminescent flashes below.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "diet",
+      "sizeMax"
+    ],
+    "notes": "Size from H. heteropsis (~20 cm total length). OBIS W Pacific records (e.g. H. pacifica off Philippines); none in the Mariana box.",
+    "sources": [
+      {
+        "label": "MBARI: The curious eyes of the cockeyed squid",
+        "url": "https://www.mbari.org/news/the-curious-eyes-of-the-cockeyed-squid/"
+      },
+      {
+        "label": "OBIS occurrences: Histioteuthis (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Histioteuthis&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "atolla-wyvillei",
+    "commonName": "Atolla jellyfish (alarm jelly)",
+    "scientificName": "Atolla wyvillei",
+    "taxonRank": "species",
+    "category": "Cnidarians",
+    "depthMin": 500,
+    "depthMax": 4000,
+    "habitats": [
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.1,
+    "sizeMax": 0.17,
+    "diet": "Crustaceans and gelatinous zooplankton",
+    "behavior": [
+      "Pulse",
+      "BioluminescentSignal",
+      "Flee"
+    ],
+    "locomotion": "pulse",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Deep red bell with a ring of short tentacles and one long trailing tentacle.",
+      "camouflage": [
+        "red-pigment"
+      ],
+      "bioluminescenceColor": "blue",
+      "photophores": false
+    },
+    "adaptation": "When attacked, emits spinning 'pinwheel' flashes of blue light that may attract larger predators to its attacker (burglar alarm).",
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "depthMax"
+    ],
+    "notes": "MBARI gives Atolla spp. 500-5000 m and bell to 15 cm; SeaLifeBase 0-1500 m for A. wyvillei. 23 OBIS records in the W Pacific box, none in the Mariana box.",
+    "sources": [
+      {
+        "label": "MBARI: Deep-sea crown jelly",
+        "url": "https://www.mbari.org/animal/deep-sea-crown-jelly/"
+      },
+      {
+        "label": "SeaLifeBase: Atolla wyvillei",
+        "url": "https://www.sealifebase.se/summary/Atolla-wyvillei.html"
+      },
+      {
+        "label": "OBIS occurrences: Atolla wyvillei (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Atolla%20wyvillei&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "euphausiacea",
+    "commonName": "Krill",
+    "scientificName": "Euphausiacea",
+    "taxonRank": "order",
+    "category": "Plankton",
+    "depthMin": 0,
+    "depthMax": 1000,
+    "habitats": [
+      "epipelagic",
+      "mesopelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.02,
+    "sizeMax": 0.06,
+    "diet": "Phytoplankton and small zooplankton",
+    "behavior": [
+      "VerticalMigrate",
+      "School",
+      "BioluminescentSignal"
+    ],
+    "locomotion": "swarm",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Translucent shrimp-like body with reddish pigment spots; paired eyestalk and thoracic photophores plus unpaired abdominal photophores.",
+      "photophores": true,
+      "camouflage": [
+        "transparent",
+        "counterillumination"
+      ]
+    },
+    "adaptation": "Nearly all species carry luciferin-luciferase photophores; many migrate toward the surface at night to feed.",
+    "rarity": "common",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMax",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Group-level. Adults ~6-60 mm depending on species. 17 OBIS records in the Mariana box.",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Euphausiacea (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Euphausiacea&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "IMAS Zooplankton key: Euphausiacea",
+        "url": "https://www.imas.utas.edu.au/zooplankton/image-key/malacostraca/euphausiacea",
+        "field": "sizeMax"
+      },
+      {
+        "label": "The luminescence and photophores of euphausiid crustaceans",
+        "url": "https://www.researchgate.net/publication/229961180_The_luminescence_and_photophores_of_euphausiid_crustaceans",
+        "field": "bioluminescent"
+      }
+    ]
+  },
+  {
+    "id": "melanostomias",
+    "commonName": "Scaleless black dragonfishes",
+    "scientificName": "Melanostomias",
+    "taxonRank": "genus",
+    "category": "Fish",
+    "depthMin": 50,
+    "depthMax": 1500,
+    "habitats": [
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.2,
+    "sizeMax": 0.26,
+    "diet": "Midwater fishes and crustaceans",
+    "behavior": [
+      "LureActivate",
+      "Ambush",
+      "VerticalMigrate"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Black, elongate, scaleless body; rows of photophores along the body and a luminous chin barbel.",
+      "photophores": true,
+      "camouflage": [
+        "black-pigment"
+      ]
+    },
+    "adaptation": "A light-producing chin barbel acts as a lure for prey.",
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "diet",
+      "sizeTypical"
+    ],
+    "notes": "Genus-level in place of M. melanops: NOAA describes M. melanops from the North Atlantic (50-1500 m); FishBase gives 350-1024 m and says it is 'also known from the Indian and Pacific', but no Mariana record was found. OBIS Mariana-box records are M. valdiviae (624 m), M. tentaculatus (200 m) and M. margaritifer (640 m). Size from M. melanops (26 cm SL).",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Melanostomias (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Melanostomias&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "NOAA Ocean Exploration: Dragon fish charms ROV",
+        "url": "https://oceanexplorer.noaa.gov/multimedia/okeanos-explorations-ex1907-dailyupdates-nov4-media-dive04-dragonfish/",
+        "field": "depthMax"
+      },
+      {
+        "label": "FishBase: Melanostomias melanops",
+        "url": "https://fishbase.se/summary/Melanostomias-melanops.html",
+        "field": "sizeMax"
+      }
+    ]
+  },
+  {
+    "id": "chauliodus-sloani",
+    "commonName": "Sloane's viperfish",
+    "scientificName": "Chauliodus sloani",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 200,
+    "depthMax": 4700,
+    "habitats": [
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.25,
+    "sizeMax": 0.35,
+    "diet": "Midwater fishes (mainly lanternfishes) and crustaceans",
+    "behavior": [
+      "Ambush",
+      "VerticalMigrate",
+      "LureActivate"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Iridescent silver, slender body with long serial rows of photophores; long fang-like teeth.",
+      "photophores": true,
+      "camouflage": []
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "Usually 494-1000 m; may migrate toward the surface at night. 4 OBIS records in the Mariana box.",
+    "sources": [
+      {
+        "label": "FishBase: Chauliodus sloani",
+        "url": "https://fishbase.se/summary/Chauliodus-sloani.html"
+      },
+      {
+        "label": "OBIS occurrences: Chauliodus sloani (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Chauliodus%20sloani&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "melanocetus-johnsonii",
+    "commonName": "Humpback anglerfish (black seadevil)",
+    "scientificName": "Melanocetus johnsonii",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 100,
+    "depthMax": 4500,
+    "habitats": [
+      "bathypelagic",
+      "mesopelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.1,
+    "sizeMax": 0.18,
+    "diet": "Fishes and crustaceans; can swallow prey larger than itself",
+    "behavior": [
+      "LureActivate",
+      "Ambush",
+      "Idle"
+    ],
+    "locomotion": "labriform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Black, globular body with huge mouth and fang-like teeth; a luminous lure (esca) on a head spine.",
+      "camouflage": [
+        "black-pigment"
+      ],
+      "bioluminescenceColor": "blue-green",
+      "photophores": false
+    },
+    "adaptation": "Females lure prey with a bioluminescent esca; males are dwarfed (max 2.9 cm) and free-living.",
+    "rarity": "rare",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "visual.bioluminescenceColor",
+      "sizeTypical"
+    ],
+    "notes": "Usually 100-1500 m. sizeMax is female (18 cm). 2 OBIS records in the Mariana box.",
+    "sources": [
+      {
+        "label": "FishBase: Melanocetus johnsonii",
+        "url": "https://fishbase.se/summary/Melanocetus-johnsonii.html"
+      },
+      {
+        "label": "OBIS occurrences: Melanocetus johnsonii (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Melanocetus%20johnsonii&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "eurypharynx-pelecanoides",
+    "commonName": "Pelican eel (gulper eel)",
+    "scientificName": "Eurypharynx pelecanoides",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 500,
+    "depthMax": 7625,
+    "habitats": [
+      "bathypelagic"
+    ],
+    "regions": [
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.55,
+    "sizeMax": 1,
+    "diet": "Mainly crustaceans; also fishes and cephalopods",
+    "behavior": [
+      "Drift",
+      "Feed"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Black, scaleless eel-like body; enormous distensible mouth; whip-like tail ending in a luminous organ.",
+      "camouflage": [
+        "black-pigment"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Jaws make up most of the body's front half, allowing it to engulf prey in a huge distensible pouch.",
+    "rarity": "rare",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "visual.coloration"
+    ],
+    "notes": "Usually 1200-1400 m. Circumglobal; 28 OBIS records in the W Pacific box, none in the Mariana box.",
+    "sources": [
+      {
+        "label": "FishBase: Eurypharynx pelecanoides",
+        "url": "https://fishbase.se/summary/Eurypharynx-pelecanoides.html"
+      },
+      {
+        "label": "OBIS occurrences: Eurypharynx pelecanoides (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Eurypharynx%20pelecanoides&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "anoplogaster-cornuta",
+    "commonName": "Common fangtooth",
+    "scientificName": "Anoplogaster cornuta",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 500,
+    "depthMax": 4992,
+    "habitats": [
+      "bathypelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.15,
+    "sizeMax": 0.18,
+    "diet": "Crustaceans when young, mainly fish as adults",
+    "behavior": [
+      "Cruise",
+      "Ambush",
+      "School"
+    ],
+    "locomotion": "subcarangiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Uniformly blackish or dark blackish-brown; short deep body; large head with long fang-like teeth.",
+      "camouflage": [
+        "black-pigment"
+      ],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "Adults mainly 500-2000 m (young near surface). 3 OBIS records in the Mariana box.",
+    "sources": [
+      {
+        "label": "FishBase: Anoplogaster cornuta",
+        "url": "https://fishbase.se/summary/Anoplogaster-cornuta.html"
+      },
+      {
+        "label": "OBIS occurrences: Anoplogaster cornuta (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Anoplogaster%20cornuta&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "vampyroteuthis-infernalis",
+    "commonName": "Vampire squid",
+    "scientificName": "Vampyroteuthis infernalis",
+    "taxonRank": "species",
+    "category": "Cephalopods",
+    "depthMin": 600,
+    "depthMax": 1200,
+    "habitats": [
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.2,
+    "sizeMax": 0.3,
+    "diet": "Marine snow (detritus) and small zooplankton",
+    "behavior": [
+      "Drift",
+      "Feed",
+      "BioluminescentSignal"
+    ],
+    "locomotion": "pulse",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Dark reddish-brown, webbed arms; blue light organs at the arm tips.",
+      "camouflage": [
+        "red-pigment"
+      ],
+      "bioluminescenceColor": "blue",
+      "photophores": true
+    },
+    "adaptation": "Uses two long sticky filaments to collect marine snow, a low-energy strategy for life in the oxygen minimum zone.",
+    "rarity": "rare",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "MBARI 600-900 m; SeaLifeBase 100-3000 m (usually 900-1100). W Pacific OBIS records (Philippines, Japan); none in the Mariana box.",
+    "sources": [
+      {
+        "label": "MBARI: Vampire squid",
+        "url": "https://www.mbari.org/animal/vampire-squid/"
+      },
+      {
+        "label": "SeaLifeBase: Vampyroteuthis infernalis",
+        "url": "https://www.sealifebase.se/summary/Vampyroteuthis-infernalis.html"
+      },
+      {
+        "label": "OBIS occurrences: Vampyroteuthis infernalis (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Vampyroteuthis%20infernalis&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "malacosteus-niger",
+    "commonName": "Stoplight loosejaw",
+    "scientificName": "Malacosteus niger",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 500,
+    "depthMax": 3886,
+    "habitats": [
+      "bathypelagic",
+      "mesopelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.18,
+    "sizeMax": 0.256,
+    "diet": "Crustaceans and fishes",
+    "behavior": [
+      "Ambush",
+      "BioluminescentSignal",
+      "SearchFood"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": true,
+    "visual": {
+      "coloration": "Dark body; large suborbital photophore emitting far-red light (~710 nm) plus a smaller postorbital photophore; floorless, hinged lower jaw.",
+      "photophores": true,
+      "bioluminescenceColor": "red (710 nm) and blue",
+      "camouflage": [
+        "black-pigment"
+      ]
+    },
+    "adaptation": "Hunts with a red searchlight invisible to most prey, and sees it using a chlorophyll-derived photosensitiser in its retina.",
+    "rarity": "hidden",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "visual.coloration",
+      "sizeTypical"
+    ],
+    "notes": "Does not undergo substantial diel migration; remains below 500 m. 2 OBIS records in the Mariana box.",
+    "sources": [
+      {
+        "label": "FishBase: Malacosteus niger",
+        "url": "https://fishbase.se/summary/Malacosteus-niger.html"
+      },
+      {
+        "label": "OBIS occurrences: Malacosteus niger (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Malacosteus%20niger&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "Localisation of the bacteriochlorophyll-derived photosensitizer in the retina of Malacosteus niger",
+        "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5171636/",
+        "field": "adaptation"
+      }
+    ]
+  },
+  {
+    "id": "architeuthis-dux",
+    "commonName": "Giant squid",
+    "scientificName": "Architeuthis dux",
+    "taxonRank": "species",
+    "category": "Cephalopods",
+    "depthMin": 200,
+    "depthMax": 1000,
+    "habitats": [
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 8,
+    "sizeMax": 13,
+    "diet": "Deep-sea fishes and squids",
+    "behavior": [
+      "Cruise",
+      "Ambush"
+    ],
+    "locomotion": "jet",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Reddish to maroon; enormous eyes; eight arms and two long feeding tentacles with suckered clubs.",
+      "camouflage": [
+        "red-pigment"
+      ],
+      "photophores": false
+    },
+    "rarity": "hidden",
+    "representation": "hero",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "sizeTypical",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Nearest OBIS record: ~27N 142E (Ogasawara, ~900 m depth). No confirmed Mariana record. Largest recorded ~13 m (Smithsonian).",
+    "sources": [
+      {
+        "label": "Smithsonian Ocean: How big is the giant squid?",
+        "url": "https://ocean.si.edu/ocean-life/invertebrates/giant-squid",
+        "field": "sizeMax"
+      },
+      {
+        "label": "SeaLifeBase: Architeuthis dux",
+        "url": "https://www.sealifebase.se/summary/Architeuthis-dux.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "OBIS occurrences: Architeuthis dux (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Architeuthis%20dux&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "alviniconcha-hessleri",
+    "commonName": "Hessler's hairy snail",
+    "scientificName": "Alviniconcha hessleri",
+    "taxonRank": "species",
+    "category": "Mollusks",
+    "depthMin": 1400,
+    "depthMax": 3600,
+    "habitats": [
+      "hydrothermal-vent"
+    ],
+    "regions": [
+      "Mariana Trough"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.08,
+    "diet": "Chemosynthetic bacterial endosymbionts in the gill",
+    "behavior": [
+      "Idle",
+      "Graze"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark shell covered with bristle-like 'hairs' (spines of the periostracum).",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Hosts chemosynthetic bacteria in its gill that fix carbon using vent chemicals.",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration"
+    ],
+    "notes": "Foundation species of Mariana back-arc vents; described from Alice Springs (~3600 m); Forecast Vent at 1470 m. Size from genus range (20-60 mm typical).",
+    "sources": [
+      {
+        "label": "Thomas et al. 2021, Beta diversity differs among hydrothermal vent systems (PLOS ONE)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8389485",
+        "field": "regions"
+      },
+      {
+        "label": "Population History of Alviniconcha hessleri in the Mariana Trough (Springer)",
+        "url": "https://link.springer.com/chapter/10.1007/978-4-431-54865-2_26",
+        "field": "depthMax"
+      },
+      {
+        "label": "WoRMS: Alviniconcha hessleri",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=449947",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "austinograea-williamsi",
+    "commonName": "Mariana vent crab",
+    "scientificName": "Austinograea williamsi",
+    "taxonRank": "species",
+    "category": "Crustaceans",
+    "depthMin": 1450,
+    "depthMax": 3676,
+    "habitats": [
+      "hydrothermal-vent"
+    ],
+    "regions": [
+      "Mariana Trough"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.08,
+    "diet": "Scavenger/predator among snail beds",
+    "behavior": [
+      "Scavenge",
+      "SearchFood"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Pale, whitish bythograeid crab.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Lives among Alviniconcha beds at Mariana back-arc vents.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Austinograea williamsi",
+        "url": "https://www.sealifebase.se/summary/Austinograea-williamsi.html"
+      },
+      {
+        "label": "Thomas et al. 2021, Beta diversity differs among hydrothermal vent systems (PLOS ONE)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8389485",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Austinograea williamsi",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=410819",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "rimicaris-vandoverae",
+    "commonName": "Mariana vent shrimp",
+    "scientificName": "Rimicaris vandoverae",
+    "taxonRank": "species",
+    "category": "Crustaceans",
+    "depthMin": 1470,
+    "depthMax": 3640,
+    "habitats": [
+      "hydrothermal-vent"
+    ],
+    "regions": [
+      "Mariana Trough"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.04,
+    "sizeMax": 0.06,
+    "diet": "Bacteria (epibiotic/grazed)",
+    "behavior": [
+      "Graze",
+      "School"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Pale translucent alvinocaridid shrimp.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "sizeTypical",
+      "sizeMax",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Candidate 'Chorocaris vandoverae' is a superseded combination (WoRMS). Strongly associated with Alviniconcha beds.",
+    "sources": [
+      {
+        "label": "WoRMS: Rimicaris vandoverae",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=932591",
+        "field": "scientificName"
+      },
+      {
+        "label": "Thomas et al. 2021, Beta diversity differs among hydrothermal vent systems (PLOS ONE)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8389485",
+        "field": "regions"
+      },
+      {
+        "label": "Zootaxa 5406: Revision of Rimicaris with a new species from the Mariana Arc",
+        "url": "https://mapress.com/zt/article/view/zootaxa.5406.4.1",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "bathymodiolus-septemdierum",
+    "commonName": "Deep-sea vent mussel",
+    "scientificName": "Bathymodiolus septemdierum",
+    "taxonRank": "species",
+    "category": "Mollusks",
+    "depthMin": 1300,
+    "depthMax": 3600,
+    "habitats": [
+      "hydrothermal-vent"
+    ],
+    "regions": [
+      "Mariana Trough",
+      "Mariana Arc"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.08,
+    "sizeMax": 0.12,
+    "diet": "Chemosynthetic symbiotic bacteria plus filter feeding",
+    "behavior": [
+      "FilterFeed",
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Brown periostracum-covered mussel shells in dense beds.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMax",
+      "sizeTypical",
+      "sizeMax",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Occurs on both Mariana arc and back-arc vents in areas of diffuse venting.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Bathymodiolus septemdierum",
+        "url": "https://www.sealifebase.se/summary/Bathymodiolus-septemdierum.html",
+        "field": "depthMin"
+      },
+      {
+        "label": "Thomas et al. 2021, Beta diversity differs among hydrothermal vent systems (PLOS ONE)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8389485",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Bathymodiolus septemdierum",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=505971",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "gandalfus-yunohana",
+    "commonName": "Yunohana vent crab",
+    "scientificName": "Gandalfus yunohana",
+    "taxonRank": "species",
+    "category": "Crustaceans",
+    "depthMin": 400,
+    "depthMax": 1500,
+    "habitats": [
+      "hydrothermal-vent"
+    ],
+    "regions": [
+      "Mariana Arc"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.07,
+    "diet": "Scavenger/predator",
+    "behavior": [
+      "Scavenge",
+      "SearchFood"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Pale bythograeid crab.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "depthMax",
+      "sizeTypical",
+      "sizeMax",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "The only species found at all sampled Mariana volcanic-arc vent sites (Thomas et al. 2021). Depth/size are placeholders.",
+    "sources": [
+      {
+        "label": "Thomas et al. 2021, Beta diversity differs among hydrothermal vent systems (PLOS ONE)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8389485",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Gandalfus yunohana",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=440292",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "lamellibrachia-satsuma",
+    "commonName": "Satsuma tubeworm",
+    "scientificName": "Lamellibrachia satsuma",
+    "taxonRank": "species",
+    "category": "Worms",
+    "depthMin": 400,
+    "depthMax": 500,
+    "habitats": [
+      "hydrothermal-vent"
+    ],
+    "regions": [
+      "Mariana Arc"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.75,
+    "sizeMax": 2,
+    "diet": "Chemosynthetic endosymbiotic bacteria (no gut)",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Long whitish-tan chitinous tubes topped with a red branchial plume.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Lacks a gut; relies on internal sulfur-oxidising symbionts.",
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration"
+    ],
+    "notes": "Answers the siboglinid question: no vestimentiferans are reported from Mariana back-arc vents, but L. satsuma is recorded from Nikko (and Daikoku) seamounts on the northern Mariana Arc at ~400-500 m (JAMSTEC records via OBIS at 23.1N 142.3E, 444-449 m). OBIS also has Sclerolinum (frenulate siboglinid) at 18.1N 147.1E.",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Siboglinidae (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Siboglinidae&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "Genomic and transcriptomic analyses of Lamellibrachia satsuma (PMC)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10291997/",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Lamellibrachia satsuma",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=265816",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "riftia-pachyptila",
+    "commonName": "Giant tube worm",
+    "scientificName": "Riftia pachyptila",
+    "taxonRank": "species",
+    "category": "Worms",
+    "depthMin": 2500,
+    "depthMax": 2700,
+    "habitats": [
+      "hydrothermal-vent"
+    ],
+    "regions": [
+      "East Pacific Rise"
+    ],
+    "sites": [
+      "east-pacific-rise"
+    ],
+    "sizeTypical": 1,
+    "sizeMax": 2,
+    "diet": "Chemoautotrophic endosymbiotic bacteria in the trophosome (no mouth or gut)",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "White tubes topped with a bright red, haemoglobin-rich branchial plume.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Its haemoglobin binds both oxygen and hydrogen sulfide, delivering them to symbiotic bacteria.",
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "depthMax",
+      "visual.coloration"
+    ],
+    "notes": "NOT present at Mariana; East Pacific Rise only. Depth from a single locality (2564-2673 m). SeaLifeBase max 200 cm TL.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Riftia pachyptila",
+        "url": "https://www.sealifebase.se/summary/Riftia-pachyptila.html"
+      },
+      {
+        "label": "Animal Diversity Web: Riftia pachyptila",
+        "url": "https://animaldiversity.org/accounts/Riftia_pachyptila/",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "peniagone-leander",
+    "commonName": "Peniagone sea cucumber",
+    "scientificName": "Peniagone leander",
+    "taxonRank": "species",
+    "category": "Echinoderms",
+    "depthMin": 5571,
+    "depthMax": 5571,
+    "habitats": [
+      "abyssal-plain"
+    ],
+    "regions": [
+      "Mariana Trench"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.15,
+    "sizeMax": 0.3,
+    "diet": "Surface sediment detritus",
+    "behavior": [
+      "Graze",
+      "Drift"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Semi-transparent gelatinous elpidiid holothurian.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "depthMax",
+      "sizeTypical",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Replaces Scotoplanes: first recorded from the Mariana Trench area at 5,571 m (J. Oceanol. Limnol. 2020). Only one depth point known locally.",
+    "sources": [
+      {
+        "label": "Rediscovery of Peniagone leander: first record from the Mariana Trench area",
+        "url": "https://link.springer.com/article/10.1007/s00343-020-0067-9",
+        "field": "regions"
+      },
+      {
+        "label": "SeaLifeBase: Peniagone leander",
+        "url": "https://www.sealifebase.se/summary/Peniagone-leander.html",
+        "field": "sizeMax"
+      }
+    ]
+  },
+  {
+    "id": "psychropotes-longicauda",
+    "commonName": "Gummy squirrel",
+    "scientificName": "Psychropotes longicauda",
+    "taxonRank": "species",
+    "category": "Echinoderms",
+    "depthMin": 1100,
+    "depthMax": 5173,
+    "habitats": [
+      "abyssal-plain"
+    ],
+    "regions": [
+      "Western Pacific"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.25,
+    "sizeMax": 0.6,
+    "diet": "Sinking particles and sediment detritus",
+    "behavior": [
+      "Graze",
+      "Drift"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Translucent yellowish body with a large tail-like dorsal appendage; red feeding tentacles.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Its tall tail-like appendage may act as a sail to catch weak deep currents.",
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration"
+    ],
+    "notes": "No Mariana record confirmed (1 OBIS record in the W Pacific box). Widely distributed in the abyss worldwide.",
+    "sources": [
+      {
+        "label": "SeaLifeBase: Psychropotes longicauda",
+        "url": "https://www.sealifebase.se/summary/Psychropotes-longicauda.html"
+      },
+      {
+        "label": "NOAA Ocean Exploration: Sea cucumber (gummy squirrel)",
+        "url": "https://oceanexplorer.noaa.gov/multimedia/daily-image-media-20210201/"
+      },
+      {
+        "label": "OBIS occurrences: Psychropotes longicauda (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Psychropotes%20longicauda&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "bathypterois",
+    "commonName": "Tripodfishes",
+    "scientificName": "Bathypterois",
+    "taxonRank": "genus",
+    "category": "Fish",
+    "depthMin": 878,
+    "depthMax": 5610,
+    "habitats": [
+      "abyssal-plain"
+    ],
+    "regions": [
+      "Western Pacific"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.25,
+    "sizeMax": 0.37,
+    "diet": "Planktonic crustaceans and copepods",
+    "behavior": [
+      "StationKeep",
+      "Ambush"
+    ],
+    "locomotion": "subcarangiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark body perched on elongated pelvic and tail fin rays; sensory pectoral rays spread forward.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Stands on stilt-like fin rays facing the current, intercepting drifting prey.",
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration"
+    ],
+    "notes": "Genus-level. Depths span B. grallator (878-4720 m) and B. longipes (2615-5610 m, 'widely scattered localities in the Pacific'). W Pacific OBIS records are B. guentheri/B. atricolor (Philippines); no Mariana record found.",
+    "sources": [
+      {
+        "label": "FishBase: Bathypterois grallator",
+        "url": "https://fishbase.se/summary/Bathypterois-grallator.html"
+      },
+      {
+        "label": "FishBase: Bathypterois longipes",
+        "url": "https://fishbase.se/summary/Bathypterois-longipes.html"
+      },
+      {
+        "label": "OBIS occurrences: Bathypterois (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Bathypterois&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "grimpoteuthis",
+    "commonName": "Dumbo octopuses",
+    "scientificName": "Grimpoteuthis",
+    "taxonRank": "genus",
+    "category": "Cephalopods",
+    "depthMin": 1000,
+    "depthMax": 7000,
+    "habitats": [
+      "abyssal-plain",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Western Pacific"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.25,
+    "sizeMax": 1.8,
+    "diet": "Small crustaceans (copepods, amphipods, isopods), bivalves, snails and bristle worms",
+    "behavior": [
+      "Drift",
+      "SearchFood"
+    ],
+    "locomotion": "flipper",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Semi-translucent, bell-shaped webbed body with two ear-like fins above the eyes.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Flaps ear-like fins and uses cirri on its arms to waft tiny prey to the mouth.",
+    "rarity": "uncommon",
+    "representation": "hero",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions"
+    ],
+    "notes": "Mariana occurrence unconfirmed; OBIS W Pacific records ~23N 154E at 5.5-5.8 km depth.",
+    "sources": [
+      {
+        "label": "Natural History Museum: What is a dumbo octopus?",
+        "url": "https://www.nhm.ac.uk/discover/what-is-a-dumbo-octopus.html"
+      },
+      {
+        "label": "OBIS occurrences: Grimpoteuthis (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Grimpoteuthis&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "coryphaenoides-yaquinae",
+    "commonName": "Abyssal grenadier (Pacific)",
+    "scientificName": "Coryphaenoides yaquinae",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 3400,
+    "depthMax": 7012,
+    "habitats": [
+      "abyssal-plain",
+      "hadal-trench"
+    ],
+    "regions": [
+      "Mariana Trench"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.45,
+    "sizeMax": 0.63,
+    "diet": "Scavenger and predator at bait falls",
+    "behavior": [
+      "Scavenge",
+      "Cruise",
+      "SearchFood"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dark greyish-brown rattail with a large head and long tapering tail.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Deepest macrourid record: 7,012 m in the Mariana Trench (observed 4,506-7,012 m; trapped 4,441-6,081 m) (Linley et al. 2016).",
+    "sources": [
+      {
+        "label": "FishBase: Coryphaenoides yaquinae",
+        "url": "https://fishbase.se/summary/Coryphaenoides-yaquinae.html"
+      },
+      {
+        "label": "Linley et al. 2016: Fishes of the hadal zone (Deep-Sea Research I)",
+        "url": "https://www.sciencedirect.com/science/article/pii/S0967063716300656",
+        "field": "depthMax"
+      }
+    ]
+  },
+  {
+    "id": "osedax",
+    "commonName": "Bone-eating worms",
+    "scientificName": "Osedax",
+    "taxonRank": "genus",
+    "category": "Worms",
+    "depthMin": 10,
+    "depthMax": 4000,
+    "habitats": [
+      "whale-fall"
+    ],
+    "regions": [
+      "Western Pacific"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.04,
+    "sizeMax": 0.07,
+    "diet": "Collagen and lipids from whale bone, digested via a root system and symbiotic bacteria",
+    "behavior": [
+      "Idle",
+      "Feed"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Brilliant red feathery plumes on a trunk rooted into bone, forming a 'shag carpet' on whale skeletons.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Mouthless and gutless; grows roots into bone to extract nutrients.",
+    "rarity": "rare",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions"
+    ],
+    "notes": "Genus-level; 32+ species at 10-4000 m. No Mariana record found (OBIS W Pacific records off Japan, e.g. O. japonicus). Female size 2-7 cm.",
+    "sources": [
+      {
+        "label": "MBARI: Osedax studies",
+        "url": "https://www.mbari.org/project/osedax-studies/"
+      },
+      {
+        "label": "OBIS occurrences: Osedax (W Pacific box 0-35N 120-160E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Osedax&geometry=POLYGON%28%28120%200%2C160%200%2C160%2035%2C120%2035%2C120%200%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "eptatretus-carlhubbsi",
+    "commonName": "Giant hagfish",
+    "scientificName": "Eptatretus carlhubbsi",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 481,
+    "depthMax": 1574,
+    "habitats": [
+      "rocky-seafloor"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.8,
+    "sizeMax": 1.2,
+    "diet": "Scavenger",
+    "behavior": [
+      "Scavenge",
+      "Hide"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Elongate eel-like body, purplish-brown; slime glands along the flanks.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "diet",
+      "visual.coloration"
+    ],
+    "notes": "Bathyal rather than abyssal (481-1574 m) but the only deep hagfish confirmed for the region: FishBase range 'Wake Island, Guam, and Hawaii'; OBIS record at 1,016 m, 15N 145.2E. 'Largest known hagfish' (FishBase) but no length given there.",
+    "sources": [
+      {
+        "label": "FishBase: Eptatretus carlhubbsi",
+        "url": "https://fishbase.se/summary/Eptatretus-carlhubbsi.html"
+      },
+      {
+        "label": "OBIS occurrences: Eptatretus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Eptatretus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "eurythenes-plasticus",
+    "commonName": "Eurythenes plasticus (scavenging amphipod)",
+    "scientificName": "Eurythenes plasticus",
+    "taxonRank": "species",
+    "category": "Crustaceans",
+    "depthMin": 6010,
+    "depthMax": 6949,
+    "habitats": [
+      "hadal-trench"
+    ],
+    "regions": [
+      "Mariana Trench"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.05,
+    "sizeMax": 0.154,
+    "diet": "Scavenger at food falls",
+    "behavior": [
+      "Scavenge",
+      "SearchFood"
+    ],
+    "locomotion": "swarm",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Pinkish-red amphipod.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Large scavenging amphipod; the holotype contained ingested microplastic.",
+    "rarity": "common",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "Described from baited traps at 6,010-6,949 m in the Mariana Trench (Weston et al. 2020). sizeMax is the genus maximum (154 mm).",
+    "sources": [
+      {
+        "label": "Zootaxa 4748: New species of Eurythenes from hadal depths of the Mariana Trench",
+        "url": "https://www.mapress.com/zt/article/view/zootaxa.4748.1.9"
+      },
+      {
+        "label": "OBIS occurrences: Eurythenes (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Eurythenes&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "pseudoliparis-swirei",
+    "commonName": "Mariana snailfish",
+    "scientificName": "Pseudoliparis swirei",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 6198,
+    "depthMax": 8178,
+    "habitats": [
+      "hadal-trench"
+    ],
+    "regions": [
+      "Mariana Trench"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.18,
+    "sizeMax": 0.226,
+    "diet": "Amphipods",
+    "behavior": [
+      "Cruise",
+      "Feed",
+      "SearchFood"
+    ],
+    "locomotion": "anguilliform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Translucent, unpigmented pinkish-white skin; gelatinous tadpole-shaped body.",
+      "camouflage": [
+        "transparent"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Thin, incompletely ossified bones, an open skull and an inflated stomach are among its adaptations to hadal depths.",
+    "rarity": "uncommon",
+    "representation": "hero",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "Usually 7,000-8,000 m; aggregates at bait and feeds on amphipod swarms. Endemic to the Mariana Trench.",
+    "sources": [
+      {
+        "label": "FishBase: Pseudoliparis swirei",
+        "url": "https://fishbase.se/summary/Pseudoliparis-swirei.html"
+      },
+      {
+        "label": "Wang et al. 2019: Morphology and genome of a snailfish from the Mariana Trench (Nature Ecol Evol)",
+        "url": "https://www.nature.com/articles/s41559-019-0864-8",
+        "field": "visual.coloration"
+      },
+      {
+        "label": "University of Hawaii News: There's a deeper fish in the sea",
+        "url": "https://www.hawaii.edu/news/2017/11/29/theres-a-deeper-fish-in-the-sea/"
+      }
+    ]
+  },
+  {
+    "id": "hirondellea-gigas",
+    "commonName": "Giant hadal amphipod",
+    "scientificName": "Hirondellea gigas",
+    "taxonRank": "species",
+    "category": "Crustaceans",
+    "depthMin": 7353,
+    "depthMax": 10900,
+    "habitats": [
+      "hadal-trench"
+    ],
+    "regions": [
+      "Mariana Trench",
+      "Challenger Deep"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.035,
+    "sizeMax": 0.05,
+    "diet": "Scavenger; digests sunken plant/wood debris with a unique cellulase",
+    "behavior": [
+      "Scavenge",
+      "SearchFood"
+    ],
+    "locomotion": "swarm",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Pale whitish amphipod.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Produces a unique cellulase that lets it digest sunken wood debris in the food-poor trench floor.",
+    "rarity": "common",
+    "representation": "particle",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "visual.coloration"
+    ],
+    "notes": "Collected ~10,897 m in Challenger Deep; lives in swarms at or below ~10,000 m (NatGeo); shallowest OBIS record seen 7,353 m. >3 cm, up to ~5 cm.",
+    "sources": [
+      {
+        "label": "Kobayashi et al. 2012: Hirondellea gigas cellulase (PLOS ONE)",
+        "url": "https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0042727",
+        "field": "adaptation"
+      },
+      {
+        "label": "National Geographic: Deep-sea shrimp-like creatures survive by eating wood",
+        "url": "https://www.nationalgeographic.com/travel/article/120828-amphipods-oceans-mariana-trench-wood-science-animals",
+        "field": "sizeMax"
+      },
+      {
+        "label": "OBIS occurrences: Hirondellea gigas (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Hirondellea%20gigas&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Hirondellea gigas",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=428677",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
+    "id": "elpidiidae-hadal",
+    "commonName": "Hadal sea cucumbers (cf. Peniagone)",
+    "scientificName": "Elpidiidae",
+    "taxonRank": "family",
+    "category": "Echinoderms",
+    "depthMin": 10876,
+    "depthMax": 10908,
+    "habitats": [
+      "hadal-trench"
+    ],
+    "regions": [
+      "Challenger Deep"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.1,
+    "sizeMax": 0.2,
+    "diet": "Surface sediment detritus",
+    "behavior": [
+      "Graze",
+      "Drift"
+    ],
+    "locomotion": "crawl",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Elongate, semi-transparent bodies with extended oral tentacles.",
+      "camouflage": [
+        "transparent"
+      ],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "sizeMax",
+      "diet"
+    ],
+    "notes": "65 individuals seen at 10,876-10,908 m in Challenger Deep submersible video, tentatively Peniagone (Gallo et al. 2015). Holothurians are the dominant hadal megafauna.",
+    "sources": [
+      {
+        "label": "Gallo et al. 2015: Submersible- and lander-observed community patterns in the Mariana and New Britain trenches",
+        "url": "https://www.sciencedirect.com/science/article/pii/S0967063715000060"
+      }
+    ]
+  },
+  {
+    "id": "xenophyophoroidea",
+    "commonName": "Xenophyophores (giant foraminifera)",
+    "scientificName": "Xenophyophoroidea",
+    "taxonRank": "group",
+    "category": "Microorganisms",
+    "depthMin": 500,
+    "depthMax": 10641,
+    "habitats": [
+      "hadal-trench",
+      "abyssal-plain"
+    ],
+    "regions": [
+      "Mariana Trench",
+      "Sirena Deep"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.1,
+    "sizeMax": 0.25,
+    "diet": "Particles trapped from the water and sediment",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Fragile, sediment-coloured agglutinated tests shaped like crumpled balls, plates or tubes.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Among the largest single cells known; agglutinated tests trap particles and host other small organisms.",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMin",
+      "visual.coloration"
+    ],
+    "notes": "Recorded to 10,641 m in the Sirena Deep, Mariana Trench (Scripps 2011). Cells often >10 cm.",
+    "sources": [
+      {
+        "label": "Scripps: Scientists ID giant amoebas in the extreme deep",
+        "url": "https://scripps.ucsd.edu/news/scientists-id-giant-amoebas-extreme-deep",
+        "field": "depthMax"
+      },
+      {
+        "label": "NOAA Ocean Exploration: Xenophyophore",
+        "url": "https://oceanexplorer.noaa.gov/multimedia/xenophyophore/"
+      },
+      {
+        "label": "WoRMS: Xenophyophoroidea",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=736980",
+        "field": "scientificName"
+      }
+    ]
+  }
+]
