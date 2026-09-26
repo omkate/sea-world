@@ -37,6 +37,8 @@ export function createFrameUniforms() {
     sensorGain: uniform(0) as Uniform<number>,
     /** 0..1 how often generic bioluminescent flashes appear. */
     bioluminescence: uniform(0) as Uniform<number>,
+    /** Camera white balance per band (documentary custom WB for depth). */
+    whiteBalance: uniform(new Vector3(1, 1, 1)) as Uniform<Vector3>,
     /** Ray-march samples for light shafts (0 disables). */
     shaftSamples: uniform(12) as Uniform<number>,
   };

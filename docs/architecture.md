@@ -40,12 +40,18 @@ Rules the code follows:
 | `src/ecosystem/spawning` | Depth and site eligibility rules for species |
 | `src/ui` | HUD, debug panel, fallback |
 
+## Asset pipeline
+
+`pnpm assets` (`scripts/fetch-assets.ts`) reads `assets/sources.json`, checks each model's licence through the Sketchfab API (the token lives in the git-ignored `.env.local`), downloads the GLB, then bakes node transforms, optionally crops stands or cut seabed, decimates to a triangle budget, re-centres on its base, converts textures to 1024 px WebP (or strips them for skeleton scans), and meshopt-compresses. Results go to `public/assets/models/` and `assets/manifest.json`.
+
+At runtime `AssetLibrary` expands quantized attributes to float, bakes each model into one geometry and scales it to the real colony size given in the sources. Photographic scans keep their texture; museum skeleton scans get living-tissue colour in the shader. A scan is placed only if its species or genus is recorded at Guam in the species manifest. `/dev/models.html` renders every model for review.
+
 ## Rendering notes
 
 - **Waterline.** Each pixel's near-plane point is tested against the live wave height, so the split view follows the swell across the lens.
 - **Snell's window.** The underside material refracts view rays into the baked sky (n = 1.333). Beyond the critical angle it shows total internal reflection of the water below. The window appears as a consequence of the physics rather than as a texture.
 - **Medium.** Light reaching a surface is multiplied by the per-band downwelling at that surface's depth. The view path then applies `e^(−σd)`. Single-scatter in-scatter is integrated analytically along the ray, with the light field decaying as `e^(−Kd·z)` and the path clamped at the sea surface.
-- **Light shafts.** The view ray is ray-marched (4–14 samples by tier, jittered with interleaved gradient noise). Each sample follows the refracted sun ray back to its surface entry point and reads a moving caustic pattern there, so shafts converge in perspective, drift with the waves and blur out with depth. They are energy-neutral around the mean and fade out by ~220 m.
+- **Light shafts.** Computed in a separate pass at 35% of the internal resolution and disc-blurred (12 taps), which removes sampling noise with no dither pattern. The view ray is ray-marched (4–14 samples by tier, jittered per pixel). Each sample follows the refracted sun ray back to its surface entry point and reads a moving caustic pattern there, so shafts converge in perspective, drift with the waves and blur out with depth. They are energy-neutral around the mean and fade out by ~220 m.
 - **Particles** are sunlit with caustic sparkle near the surface and lamp-lit in the deep. They are never smaller than 2 px; below that their alpha falls instead, which conserves energy. The density gate is independent of size.
 - **Dive lamp.** It switches on from 450–650 m, as natural light becomes too dim to film by, (the L key toggles it) and lights particles with inverse-square falloff inside a cone, plus faint backscatter. Auto-exposure follows the brightest light actually present: `EV = min(ambient EV, LAMP_EV + log2(1/lamp))`.
 - **Camera character.** A documentary grade desaturates deep water, a vignette is stronger underwater, and sensor grain (after tone mapping) rises with the adapted exposure and doubles as dither against 8-bit banding.

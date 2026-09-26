@@ -12,8 +12,10 @@ import { OceanSky, refractedSunDirection } from '../../ocean/surface/Sky';
 import { OceanSurface } from '../../ocean/surface/OceanSurface';
 import { waveHeight } from '../../ocean/surface/waves';
 import { createUnderwaterPipeline } from '../../ocean/medium/UnderwaterPipeline';
-import { inscatter } from '../../ocean/medium/optics';
+import { inscatter, whiteBalance, WHITE_BALANCE_STRENGTH } from '../../ocean/medium/optics';
 import { SuspendedParticles } from '../../particles/suspended/SuspendedParticles';
+import { ReefChapter } from '../../environments/reef/ReefChapter';
+import { AssetLibrary } from '../../assets/AssetLibrary';
 import { Hud } from '../../ui/hud/Hud';
 import type { DebugPanel } from '../../ui/debug/DebugPanel';
 import { maxExposureEV, type Rgb } from '../../data/zones/physics';
@@ -57,6 +59,8 @@ export class Experience {
   private readonly sky = new OceanSky();
   private readonly surface: OceanSurface;
   private readonly particles: SuspendedParticles;
+  private reef: ReefChapter | null = null;
+  private readonly library = new AssetLibrary();
   private readonly pipeline: ReturnType<typeof createUnderwaterPipeline>;
   private readonly hud: Hud;
   private readonly drs: DynamicResolution;
@@ -87,7 +91,7 @@ export class Experience {
     this.particles = new SuspendedParticles(this.u, QUALITY.ultra.suspendedParticles, this.surface.waves);
     this.particles.setCount(q.suspendedParticles);
 
-    this.pipeline = createUnderwaterPipeline(renderer, this.scene, this.particles.scene, this.camera, this.u, this.surface.waves, MARIANA.kd);
+    this.pipeline = createUnderwaterPipeline(renderer, this.scene, this.particles.scene, this.camera, this.u, this.surface.waves, MARIANA.kd, q.fsr);
     this.pipeline.toggles.lens.value = q.lensEffects ? 1 : 0;
 
     this.scroll = new ScrollInput(o.dom.spacer);
@@ -118,11 +122,24 @@ export class Experience {
     }
   }
 
+  /** Compile every pipeline up front so the first frames never stall on shader builds. */
+  async prepare(): Promise<void> {
+    const { renderer } = this.o.info;
+    this.reef = await ReefChapter.create(this.u, MARIANA.kd, this.library, (x, z) => waveHeight(this.surface.waves, x, z, this.time));
+    this.scene.add(this.reef.group);
+    await renderer.compileAsync(this.scene, this.camera);
+    await renderer.compileAsync(this.particles.scene, this.camera);
+  }
+
   start(): void {
     this.o.info.renderer.setAnimationLoop((t) => this.frame(t));
   }
 
+  /** CPU time spent in the last frame's JavaScript (simulation + render submission), ms. */
+  cpuMs = 0;
+
   private frame(timestamp: number): void {
+    const cpuStart = performance.now();
     this.timer.update(timestamp);
     const dt = Math.min(this.timer.getDelta(), 0.1);
     this.time += dt;
@@ -173,8 +190,13 @@ export class Experience {
     u.sensorGain.value = ev / maxExposureEV(MARIANA.kd);
     u.bioluminescence.value = smoothstep(350, 800, depth);
     u.shaftSamples.value = QUALITY[this.tier].shaftSamples;
-    u.pixelsPerMetre.value = renderer.domElement.height / (2 * Math.tan((cam.fov * Math.PI) / 360));
+    u.pixelsPerMetre.value = (renderer.domElement.height * this.drs.scale) / (2 * Math.tan((cam.fov * Math.PI) / 360));
     this.hud.lampOn = lamp > 0.5;
+    // Cameras white-balance for the shallows; below ~70 m there is no red or green left to
+    // restore and real footage simply turns deep blue, so the correction fades out.
+    const wbStrength = WHITE_BALANCE_STRENGTH * (1 - lamp) * (1 - smoothstep(25, 70, depth));
+    const wb = whiteBalance(depth, MARIANA.kd, wbStrength, this.scratch);
+    u.whiteBalance.value.set(wb[0], wb[1], wb[2]);
 
     const below = inscatter(0, -1, Infinity, 0, MARIANA.kd, this.scratch);
     u.belowColor.value.set(below[0], below[1], below[2]);
@@ -183,6 +205,11 @@ export class Experience {
     u.ambientWater.value.set(lr * ambient, lg * ambient, lb * ambient);
 
     this.surface.update(u, cam.position.x, cam.position.z);
+    // Each side of the sea surface is only visible from its own side of the water; skipping the
+    // hidden one saves a full pass of the wave vertex shader (the waterline keeps both).
+    this.surface.top.visible = cam.position.y > -3;
+    this.surface.under.visible = cam.position.y < 3;
+    this.reef?.update(dt, this.time, cam, depth, QUALITY[this.tier].scenery);
 
     renderer.info.reset();
     this.pipeline.pipeline.render();
@@ -192,11 +219,12 @@ export class Experience {
     this.debug?.frame(dt * 1000, this.state);
 
     this.adaptQuality(this.drs.sample(dt * 1000, dt));
+    this.cpuMs = this.cpuMs * 0.9 + (performance.now() - cpuStart) * 0.1;
   }
 
   /** Frame interval (not CPU time) drives resolution, so GPU-bound frames are caught too. */
   private adaptQuality(verdict: ReturnType<DynamicResolution['sample']>): void {
-    if (verdict === 'up' || verdict === 'down') this.resize();
+    if (verdict === 'up' || verdict === 'down') this.pipeline.setInternalScale(this.drs.scale);
     if (verdict === 'starved' && this.tier !== 'low') {
       this.tier = stepDown(this.tier);
       const q = QUALITY[this.tier];
@@ -212,7 +240,10 @@ export class Experience {
     const q = QUALITY[this.tier];
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
-    renderer.setPixelRatio(effectivePixelRatio(devicePixelRatio, this.drs.scale, innerWidth, innerHeight, q.maxPixels));
+    // The canvas is always native (capped at the tier's output size, 4K on desktop); the
+    // internal render scale is applied per pass and upscaled with FSR 1.
+    renderer.setPixelRatio(effectivePixelRatio(devicePixelRatio, 1, innerWidth, innerHeight, q.maxPixels));
+    this.pipeline.setInternalScale(this.drs.scale);
     renderer.setSize(innerWidth, innerHeight);
   }
 
@@ -226,12 +257,9 @@ export class Experience {
           getTier: () => this.tier,
           getRenderScale: () => this.drs.scale,
           getParticleCount: () => this.particles.sprite.count,
+          getCpuMs: () => this.cpuMs,
           jumpToDepth: (d) => this.scroll.jumpTo(progressForDepth(d)),
           toggles: this.pipeline.toggles,
-          setSurfaceVisible: (v) => {
-            this.surface.top.visible = v;
-            this.surface.under.visible = v;
-          },
         },
         this.o.dom.debugRoot,
       );

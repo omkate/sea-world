@@ -8,6 +8,7 @@ pnpm dev              # http://localhost:5173
 pnpm test             # unit tests (physics, dive curve, quality, optics, species, HUD)
 pnpm test:e2e         # Playwright: both backends, scroll, deep links, darkness, fallback
 pnpm build
+pnpm assets          # re-download and optimise licensed 3D scans (needs SKETCHFAB_TOKEN in .env.local)
 ```
 
 Keys: **L** toggles the dive lamp in the deep, and the backtick key opens the dev panel.

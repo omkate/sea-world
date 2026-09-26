@@ -1,4 +1,4 @@
-import { RenderPipeline, type Camera, type Scene, type WebGPURenderer } from 'three/webgpu';
+import { RenderPipeline, Vector2, type Camera, type Scene, type WebGPURenderer } from 'three/webgpu';
 import {
   abs,
   clamp,
@@ -22,6 +22,7 @@ import {
   pass,
   pow,
   renderOutput,
+  rtt,
   screenCoordinate,
   screenSize,
   screenUV,
@@ -37,6 +38,7 @@ import {
 import type { FrameUniforms } from '../../core/engine/uniforms';
 import type { ShaderNode, Uniform } from '../../shaders/tsl/types';
 import { fxaa } from 'three/addons/tsl/display/FXAANode.js';
+import { fsr1 } from 'three/addons/tsl/display/FSR1Node.js';
 import { gerstnerHeight } from '../../shaders/tsl/gerstner';
 import { CAUSTIC_SHAFT_MEAN, CAUSTIC_TILE, caustic } from '../../shaders/tsl/caustics';
 import { LAMP_RADIANCE } from '../../particles/suspended/SuspendedParticles';
@@ -50,12 +52,36 @@ const MAX_VIEW_DISTANCE = 20000;
 const SHAFT_RANGE = 45;
 const SHAFT_MAX_DEPTH = 220;
 const SHAFT_STRENGTH = 0.9;
+/** Fraction of the internal render resolution used for the light-shaft pass. */
+const SHAFT_RESOLUTION = 0.35;
 const LAMP_BACKSCATTER = 0.035;
 
-/** Interleaved gradient noise: low-discrepancy per-pixel jitter, far less visible than white noise. */
-const ign = (p: N): N => fract(fract(p.x.mul(0.06711056).add(p.y.mul(0.00583715))).mul(52.9829189));
-/** Cheap per-pixel white noise, stable in time within a frame. */
-const hash12 = (p: N): N => fract(sin(dot(p, vec2(12.9898, 78.233))).mul(43758.5453));
+/**
+ * Bilinear upscale plus a 5-tap contrast-adaptive sharpen, clamped to the local min/max so it
+ * never rings. A fraction of FSR 1's cost; used below the Ultra tier.
+ */
+function sharpenUpscale(tex: N, texel: N): N {
+  const c: N = tex.sample(screenUV).rgb;
+  const n: N = tex.sample(screenUV.add(vec2(0, texel.y))).rgb;
+  const s: N = tex.sample(screenUV.sub(vec2(0, texel.y))).rgb;
+  const e: N = tex.sample(screenUV.add(vec2(texel.x, 0))).rgb;
+  const w: N = tex.sample(screenUV.sub(vec2(texel.x, 0))).rgb;
+  const lo: N = min(min(min(n, s), min(e, w)), c);
+  const hi: N = max(max(max(n, s), max(e, w)), c);
+  const sharpened: N = c.add(c.mul(4).sub(n).sub(s).sub(e).sub(w).mul(0.18));
+  const result: N = clamp(sharpened, lo, hi);
+  return vec4(result, 1);
+}
+
+/**
+ * Per-pixel, per-frame white noise from an integer PCG hash of the pixel index. Unlike
+ * sin-based hashes (moiré at large coordinates) or interleaved gradient noise (diagonal
+ * structure), it shows no pattern. Index stays below 2^24 so float→uint is exact.
+ */
+const pixelNoise = (frame: N, channel: number): N => {
+  const px: N = floor(screenCoordinate.x).add(floor(screenCoordinate.y).mul(4099));
+  return hash(px.add(frame.mul(16411)).add(channel * 331));
+};
 
 const v3 = (c: readonly number[]): N => vec3(c[0]!, c[1]!, c[2]!);
 
@@ -71,7 +97,8 @@ export interface PipelineToggles {
 /**
  * Screen pass that turns a dry render into a camera underwater:
  *  1. per-pixel waterline test against the live wave field at the near plane
- *  2. downwelling attenuation at the surface point, then per-channel view-path extinction
+ *  2. per-channel view-path extinction (surfaces light themselves with depth-attenuated sun,
+ *     see shaders/tsl/underwaterLighting.ts; the sea surface itself sits at depth 0)
  *  3. analytic single-scatter in-scattering with a forward-peaked phase toward the refracted sun
  *  4. lens effects: underwater shimmer near the surface, droplets after surfacing
  *  5. particle layer added on top (particles carry their own extinction; the layer is
@@ -85,6 +112,7 @@ export function createUnderwaterPipeline(
   u: FrameUniforms,
   waves: readonly Wave[],
   kd: readonly [number, number, number],
+  useFsr: boolean,
 ) {
   const scenePass = pass(scene, camera);
   const particlePass = pass(particleScene, camera);
@@ -121,6 +149,60 @@ export function createUnderwaterPipeline(
     return vec3(d.mul(inside).mul(-0.006), inside);
   });
 
+  /**
+   * Light shafts: march the view ray; at each sample, follow the refracted sun ray back up to
+   * where it entered the surface and read how strongly the waves focused light there. Runs at
+   * reduced resolution and is Gaussian-blurred: shafts are low-frequency, and the blur removes
+   * the sampling noise of a short, jittered march (no visible speckle or dither pattern).
+   */
+  const shaftField = Fn(() => {
+    const uv: N = screenUV;
+    const t = u.time;
+    const camDepth: N = max(u.cameraDepth, 0);
+    const d = depth.sample(uv).x;
+    const dist: N = min(length(getViewPosition(uv, d, u.projectionInverse)), MAX_VIEW_DISTANCE);
+    const ray: N = normalize(u.cameraWorld.mul(vec4(getViewPosition(uv, float(0), u.projectionInverse), 0)).xyz);
+    const b = v3(SCATTER).add(v3(TURBIDITY_TINT).mul(u.turbidity));
+    const sigma = v3(ABSORPTION).add(b);
+    const submerged: N = step(0.3, u.cameraDepth);
+    const shafts: N = vec3(0).toVar();
+    If(submerged.greaterThan(0.5).and(camDepth.lessThan(SHAFT_MAX_DEPTH)).and(u.shaftSamples.greaterThan(0.5)), () => {
+      const samples: N = u.shaftSamples;
+      const range: N = min(dist, float(SHAFT_RANGE));
+      const stepLen: N = range.div(samples);
+      const jitter: N = pixelNoise(floor(t.mul(60)).mod(256), 7);
+      const toSun: N = u.sunDirWater.negate();
+      Loop({ start: int(0), end: int(samples), type: 'int', condition: '<' }, ({ i }: { i: N }) => {
+        const tt: N = float(i).add(jitter).mul(stepLen);
+        const p: N = u.cameraPos.add(ray.mul(tt));
+        const zp: N = max(p.y.negate(), 0);
+        const inWater: N = step(p.y, 0);
+        const entry: N = p.xz.add(toSun.xz.mul(zp.div(max(toSun.y, 0.2))));
+        // The pattern blurs with depth below the surface and becomes unresolvable with distance.
+        const spread: N = float(1).add(zp.div(22)).add(tt.div(14));
+        const c: N = sqrt(caustic(entry.div(spread.mul(CAUSTIC_TILE)), t.mul(0.55), 2)).div(CAUSTIC_SHAFT_MEAN).sub(1);
+        const contrast: N = exp(zp.div(-38));
+        const light: N = exp(KD.mul(zp).negate());
+        const atten: N = exp(sigma.mul(tt).negate());
+        shafts.addAssign(light.mul(atten).mul(c.mul(contrast)).mul(stepLen).mul(inWater));
+      });
+    });
+    return vec4(shafts, 1);
+  });
+  const shaftRT: N = rtt(shaftField(), null, null, { resolutionScale: SHAFT_RESOLUTION });
+  // 12-tap disc blur over the low-resolution field (signed values, so no 8-bit blur passes).
+  const shaftTexel = uniform(new Vector2(1 / 640, 1 / 360)) as Uniform<Vector2>;
+  const DISC: readonly (readonly [number, number])[] = Array.from({ length: 12 }, (_, i) => {
+    const r = Math.sqrt((i + 0.5) / 12) * 3.2;
+    const a = i * 2.39996;
+    return [Math.cos(a) * r, Math.sin(a) * r] as const;
+  });
+  const blurredShafts = (uv: N): N => {
+    let sum: N = shaftRT.sample(uv).rgb;
+    for (const [x, y] of DISC) sum = sum.add(shaftRT.sample(uv.add(vec2(x, y).mul(shaftTexel))).rgb);
+    return sum.div(DISC.length + 1);
+  };
+
   const output = Fn(() => {
     const uv0: N = screenUV;
     const t = u.time;
@@ -148,8 +230,6 @@ export function createUnderwaterPipeline(
 
     const b = v3(SCATTER).add(v3(TURBIDITY_TINT).mul(u.turbidity));
     const sigma = v3(ABSORPTION).add(b);
-    const hitDepth = max(u.cameraPos.y.add(ray.y.mul(dist)).negate(), 0);
-    const downwellingAtHit = exp(KD.mul(hitDepth).negate());
     const transmittance = exp(sigma.mul(dist).negate());
 
     const toSurface = camDepth.div(max(ray.y, 1e-4));
@@ -167,31 +247,9 @@ export function createUnderwaterPipeline(
       .div(s)
       .mul(phase);
 
-    // Light shafts: march the view ray; at each sample, follow the refracted sun ray back up to
-    // where it entered the surface and read how strongly the waves focused light there.
-    const shafts: N = vec3(0).toVar();
+    // Light shafts come from a separate quarter-resolution pass, blurred (see shaftField).
+    const shafts: N = blurredShafts(uv);
     const shaftDepthFade = float(1).sub(smoothstep(SHAFT_MAX_DEPTH * 0.45, SHAFT_MAX_DEPTH, camDepth));
-    If(submerged.greaterThan(0.5).and(camDepth.lessThan(SHAFT_MAX_DEPTH)).and(u.shaftSamples.greaterThan(0.5)), () => {
-      const samples: N = u.shaftSamples;
-      const range: N = min(dist, float(SHAFT_RANGE));
-      const stepLen: N = range.div(samples);
-      const jitter: N = fract(ign(screenCoordinate.xy).add(fract(t.mul(60)).mul(0.618034)));
-      const toSun: N = u.sunDirWater.negate();
-      Loop({ start: int(0), end: int(samples), type: 'int', condition: '<' }, ({ i }: { i: N }) => {
-        const tt: N = float(i).add(jitter).mul(stepLen);
-        const p: N = u.cameraPos.add(ray.mul(tt));
-        const zp: N = max(p.y.negate(), 0);
-        const inWater: N = step(p.y, 0);
-        const entry: N = p.xz.add(toSun.xz.mul(zp.div(max(toSun.y, 0.2))));
-        // The pattern blurs with depth below the surface and becomes unresolvable with distance.
-        const spread: N = float(1).add(zp.div(22)).add(tt.div(14));
-        const c: N = sqrt(caustic(entry.div(spread.mul(CAUSTIC_TILE)), t.mul(0.55), 2)).div(CAUSTIC_SHAFT_MEAN).sub(1);
-        const contrast: N = exp(zp.div(-38));
-        const light: N = exp(KD.mul(zp).negate());
-        const atten: N = exp(sigma.mul(tt).negate());
-        shafts.addAssign(light.mul(atten).mul(c.mul(contrast)).mul(stepLen).mul(inWater));
-      });
-    });
     const shaftPhase = float(0.35).add(hg.mul(0.2));
     const shaftLight: N = shafts.mul(b).mul(SUN_RADIANCE * SHAFT_STRENGTH).mul(shaftPhase).mul(shaftDepthFade);
 
@@ -209,9 +267,9 @@ export function createUnderwaterPipeline(
 
     const pMask = submerged.mul(toggles.particles);
     const scattered = particles.sample(uv).rgb.mul(pMask);
-    const wet: N = max(sceneColor.mul(downwellingAtHit).mul(transmittance).add(inscatter).add(shaftLight).add(lampHaze).add(scattered), vec3(0));
+    const wet: N = max(sceneColor.mul(transmittance).add(inscatter).add(shaftLight).add(lampHaze).add(scattered), vec3(0));
     // Documentary grade: deep water loses saturation the way low-light sensors render it.
-    const graded: N = bandToDisplay(wet);
+    const graded: N = bandToDisplay(wet.mul(u.whiteBalance));
     const luma: N = dot(graded, vec3(0.2126, 0.7152, 0.0722));
     const water: N = mix(vec3(luma), graded, mix(float(1), float(0.72), smoothstep(30, 400, camDepth)));
     const mediumMix = submerged.mul(toggles.medium);
@@ -227,7 +285,7 @@ export function createUnderwaterPipeline(
 
     const v = toggles.view;
     const isView = (n: number): N => step(n - 0.5, v).mul(step(v, n + 0.5));
-    result = mix(result, sceneColor.mul(downwellingAtHit).mul(transmittance).mul(u.exposure), isView(1));
+    result = mix(result, sceneColor.mul(transmittance).mul(u.exposure), isView(1));
     result = mix(result, inscatter.mul(u.exposure), isView(2));
     result = mix(result, vec3(dist.div(1000)), isView(3));
     return vec4(result, 1);
@@ -236,15 +294,33 @@ export function createUnderwaterPipeline(
   const pipeline = new RenderPipeline(renderer);
   pipeline.outputColorTransform = false;
   // Sensor grain after tone mapping, so it also dithers the dark gradients (no 8-bit banding).
-  const graded: N = fxaa(renderOutput(output()));
+  // Resolution strategy: everything expensive (scene, particles, medium, shafts, AA) runs at an
+  // internal scale chosen by dynamic resolution; FSR 1 then upscales and sharpens to the
+  // native canvas (up to 3840×2160). Grain is added at output resolution.
+  const medium: N = rtt(output(), null, null, { resolutionScale: 1 });
+  const antialiased: N = rtt(fxaa(renderOutput(medium)), null, null, { resolutionScale: 1 });
+  const texel = uniform(new Vector2(1 / 1920, 1 / 1080)) as Uniform<Vector2>;
+  const upscaled: N = useFsr ? fsr1(antialiased, 0.25) : sharpenUpscale(antialiased, texel);
   const grain = Fn(() => {
-    const seed: N = screenCoordinate.xy.add(fract(u.time.mul(13.7)).mul(311.0));
-    const n: N = vec3(hash12(seed), hash12(seed.add(17.3)), hash12(seed.add(41.9))).sub(0.5);
+    const frame: N = floor(u.time.mul(60)).mod(256);
+    const n: N = vec3(pixelNoise(frame, 0), pixelNoise(frame, 1), pixelNoise(frame, 2)).sub(0.5);
     const mono: N = n.x.mul(0.8).add(n.y.mul(0.2));
     const amount: N = mix(float(0.006), float(0.05), u.sensorGain).mul(float(1).sub(u.diveLight.mul(0.45)));
-    const colour: N = graded.rgb.add(vec3(mono).add(n.mul(0.15)).mul(amount));
+    const colour: N = upscaled.rgb.add(vec3(mono).add(n.mul(0.15)).mul(amount));
     return vec4(colour, 1);
   });
   pipeline.outputNode = grain();
-  return { pipeline, toggles };
+
+  /** Internal render scale (0..1] for every pass before the upscaler. */
+  const setInternalScale = (scale: number): void => {
+    const size = renderer.getDrawingBufferSize(new Vector2());
+    texel.value.set(1 / Math.max(1, Math.floor(size.x * scale)), 1 / Math.max(1, Math.floor(size.y * scale)));
+    scenePass.setResolutionScale(scale);
+    shaftRT.setResolutionScale(scale * SHAFT_RESOLUTION);
+    shaftTexel.value.set(1 / Math.max(1, size.x * scale * SHAFT_RESOLUTION), 1 / Math.max(1, size.y * scale * SHAFT_RESOLUTION));
+    particlePass.setResolutionScale(scale);
+    medium.setResolutionScale(scale);
+    antialiased.setResolutionScale(scale);
+  };
+  return { pipeline, toggles, setInternalScale };
 }

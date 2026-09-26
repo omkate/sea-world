@@ -1,0 +1,90 @@
+[
+  {
+    "id": "porites-lutea",
+    "uid": "179015ba8987426dbc4cd0224baacb18",
+    "role": "coral-massive",
+    "species": "Porites lutea",
+    "size": 1.4,
+    "triangles": 3600,
+    "textures": true,
+    "note": "Living colony scan; Indo-Pacific massive coral.",
+    "cropBelow": 0.36,
+    "cropRadius": 0.72
+  },
+  {
+    "id": "acropora-humilis",
+    "uid": "3b0705ef74fb41fba4c9557277305335",
+    "role": "coral-digitate",
+    "species": "Acropora humilis",
+    "size": 0.6,
+    "triangles": 4000,
+    "textures": false,
+    "note": "Digitate Acropora skeleton scan; tissue colour added in shader.",
+    "cropBelow": 0.32
+  },
+  {
+    "id": "pocillopora-grandis",
+    "uid": "ec6c9d4d94ba4d4ea68e34bc99ce5131",
+    "role": "coral-branching",
+    "species": "Pocillopora grandis",
+    "size": 0.7,
+    "triangles": 5000,
+    "textures": false,
+    "note": "Skeleton scan; tissue colour added in shader."
+  },
+  {
+    "id": "tridacna-squamosa",
+    "uid": "4f08856d40e14a9780a7f7714a4ff5a7",
+    "role": "clam",
+    "species": "Tridacna squamosa",
+    "size": 0.3,
+    "triangles": 3000,
+    "textures": false,
+    "note": "Giant clam shell scan; mantle added in shader.",
+    "rotate": [
+      -90,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "green-turtle",
+    "uid": "c92be549c8194136914883309a13a6b5",
+    "role": "hero",
+    "species": "Chelonia mydas",
+    "size": 1.0,
+    "triangles": 16218,
+    "textures": true,
+    "note": "Sea turtle model (green turtle appearance)."
+  },
+  {
+    "id": "whitetip-reef-shark",
+    "uid": "b0eebe62de934532b2eb574d969fb3c9",
+    "role": "hero",
+    "species": "Triaenodon obesus",
+    "size": 2.1,
+    "triangles": 8000,
+    "textures": true,
+    "note": "Whitetip reef shark model. Also used, scaled to 3 m, to stand in for the oceanic whitetip (Carcharhinus longimanus), a larger carcharhinid with the same body plan."
+  },
+  {
+    "id": "manta-ray",
+    "uid": "cee021520e274e2f90f0de23728b698b",
+    "role": "hero",
+    "species": "Mobula alfredi",
+    "size": 3.2,
+    "triangles": 8000,
+    "textures": true,
+    "note": "Model is titled 'giant oceanic manta' (M. birostris); the two species share a body plan and it stands in for the reef manta (M. alfredi) recorded at Guam."
+  },
+  {
+    "id": "spinner-dolphin",
+    "uid": "b3a6445083564b188c90f692a81140e8",
+    "role": "hero",
+    "species": "Stenella longirostris",
+    "size": 1.9,
+    "triangles": 8000,
+    "textures": true,
+    "note": "Model depicts a bottlenose dolphin; stretched lengthwise at load to approximate the slimmer spinner dolphin (Stenella longirostris) resident around Guam."
+  }
+]

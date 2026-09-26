@@ -79,6 +79,24 @@ body.ready #hud {
   color: var(--ink);
 }
 
+#loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 11px var(--mono);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+
+body.ready #loading,
+body.fallback-mode #loading {
+  opacity: 0;
+}
+
 #cue {
   position: fixed;
   left: 50%;
@@ -222,4 +240,66 @@ body.fallback-mode {
   #cue i {
     animation: none;
   }
+}
+
+.credits-toggle {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  font: 10px var(--mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  background: none;
+  border: 0;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.credits-toggle:hover,
+.credits-toggle:focus-visible {
+  color: var(--ink);
+}
+
+.credits-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 52px;
+  width: min(420px, calc(100vw - 32px));
+  max-height: 60vh;
+  overflow: auto;
+  padding: 16px 18px;
+  background: rgba(2, 10, 16, 0.86);
+  border: 1px solid rgba(160, 220, 240, 0.12);
+  border-radius: 8px;
+  font: 12px/1.5 var(--font);
+  color: var(--ink);
+  backdrop-filter: blur(8px);
+}
+
+.credits-panel h2 {
+  margin: 0 0 10px;
+  font: 10px var(--mono);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.credits-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.credits-panel li {
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.credits-panel a {
+  color: var(--ink);
+}
+
+.credits-panel small {
+  color: var(--ink-dim);
 }

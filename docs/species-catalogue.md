@@ -1,8 +1,8 @@
 # ABYSS species catalogue (Mariana)
 
-Source of truth: `src/data/species/mariana.json` (70 entries; validates against `SpeciesManifestSchema`). Depth in metres, size in metres.
+Source of truth: `src/data/species/mariana.json` (74 entries; validates against `SpeciesManifestSchema`). Depth in metres, size in metres.
 
-Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `uncertain` if *any* field could not be confirmed from a fetched source; those fields are listed in `uncertainFields` (most are only `visual.coloration` / `sizeTypical`). Entries flagged on depth/region are called out in the key note.
+Verification: **12 verified**, **62 uncertain**, 0 unverified. An entry is `uncertain` if *any* field could not be confirmed from a fetched source; those fields are listed in `uncertainFields` (most are only `visual.coloration` / `sizeTypical`). Entries flagged on depth/region are called out in the key note.
 
 ## Surface
 
@@ -39,6 +39,10 @@ Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `unce
 | Whitetip reef shark | *Triaenodon obesus* | 0–330 | verified | Usually 8-40 m. |
 | Green sea turtle | *Chelonia mydas* | 0–200 | verified | Adults 3-4 ft (0.9-1.2 m). |
 | Hawksbill turtle | *Eretmochelys imbricata* | 0–300 | verified | Fewer than 10 females nest annually in Guam + CNMI (NMFS/USFWS 5-year review). |
+| Lesser valley brain coral | *Platygyra daedalea* | 3–30 | uncertain (sizeTypical, depthMax) | Listed for the Marianas (Randall 2003); 149 OBIS records in the Mariana box incl. NOAA CRED at Guam. |
+| Bird's-nest coral | *Seriatopora hystrix* | 0–40 | uncertain (depthMax, sizeTypical) | Listed for the Marianas (Randall 2003); SeaLifeBase 0-183 m judged implausible, capped at documented ~40 m mesophotic colonies. |
+| Lace hydrocoral (stylasterid) | *Stylaster sanguineus* | 30–128 | uncertain (regions, depthMin, sizeTypical, sizeMax, visual.coloration) | Mariana occurrence NOT confirmed: Randall 2003 lists Marianas Stylaster only to letter-group level; no OBIS/GBIF records in the box. Hydrozoan filed under Corals. |
+| Fluted giant clam | *Tridacna squamosa* | 0–42 | verified | Guam voucher in Paulay 2003 + OBIS Guam records since 1963; SeaLifeBase/NMFS call it introduced at Guam, so native status is disputed. |
 
 ## Reef micro
 

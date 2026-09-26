@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extinction, inscatter } from '../../src/ocean/medium/optics';
+import { extinction, inscatter, whiteBalance, WHITE_BALANCE_MAX_GAIN } from '../../src/ocean/medium/optics';
 import { MARIANA } from '../../src/data/sites/mariana';
 
 const KD = MARIANA.kd;
@@ -35,5 +35,16 @@ describe('underwater optics', () => {
     const inf = inscatter(20, 0, Infinity, 0, KD)[2];
     expect(near).toBeLessThan(far);
     expect(far).toBeLessThanOrEqual(inf);
+  });
+
+  it('white balance restores red relative to blue, capped, green unchanged', () => {
+    const wb = whiteBalance(15, KD, 0.55);
+    expect(wb[0]).toBeGreaterThan(wb[1]);
+    expect(wb[1]).toBeGreaterThan(wb[2]);
+    const raw = whiteBalance(500, KD, 0.55);
+    expect(raw[0] / raw[2]).toBeLessThanOrEqual(WHITE_BALANCE_MAX_GAIN + 1e-9);
+    expect(wb[1]).toBeCloseTo(1, 9);
+    expect(whiteBalance(0, KD, 0.55)).toEqual([1, 1, 1]);
+    expect(whiteBalance(30, KD, 0)).toEqual([1, 1, 1]);
   });
 });

@@ -4,10 +4,10 @@ export const TIER_ORDER: readonly QualityTier[] = ['low', 'medium', 'high', 'ult
 
 export interface QualitySettings {
   tier: QualityTier;
-  /** Max device-pixel-ratio multiplier the dynamic resolution may reach. */
+  /** Internal render scale range (before FSR upscaling) that dynamic resolution may use. */
   maxRenderScale: number;
   minRenderScale: number;
-  /** Absolute cap on internal render pixels (3840×2160 on ultra). */
+  /** Cap on output (canvas) pixels: 3840×2160 on desktop tiers. */
   maxPixels: number;
   surfaceSegments: number;
   surfaceWaves: number;
@@ -15,6 +15,10 @@ export interface QualitySettings {
   lensEffects: boolean;
   /** Ray-march samples for underwater light shafts. */
   shaftSamples: number;
+  /** Distance (m) beyond which reef colonies are culled; the medium hides them anyway. */
+  scenery: number;
+  /** FSR 1 upscaling (high quality, costly on integrated GPUs); otherwise bilinear + sharpen. */
+  fsr: boolean;
 }
 
 export const QUALITY: Record<QualityTier, QualitySettings> = {
@@ -28,39 +32,47 @@ export const QUALITY: Record<QualityTier, QualitySettings> = {
     suspendedParticles: 60000,
     lensEffects: true,
     shaftSamples: 14,
+    fsr: true,
+    scenery: 80,
   },
   high: {
     tier: 'high',
     maxRenderScale: 1,
     minRenderScale: 0.55,
-    maxPixels: 2560 * 1440,
+    maxPixels: 3840 * 2160,
     surfaceSegments: 288,
     surfaceWaves: 10,
     suspendedParticles: 36000,
     lensEffects: true,
     shaftSamples: 9,
+    fsr: false,
+    scenery: 55,
   },
   medium: {
     tier: 'medium',
     maxRenderScale: 0.85,
     minRenderScale: 0.5,
-    maxPixels: 1920 * 1080,
+    maxPixels: 2560 * 1440,
     surfaceSegments: 192,
     surfaceWaves: 8,
     suspendedParticles: 18000,
     lensEffects: true,
     shaftSamples: 6,
+    fsr: false,
+    scenery: 42,
   },
   low: {
     tier: 'low',
     maxRenderScale: 0.7,
     minRenderScale: 0.45,
-    maxPixels: 1280 * 720,
+    maxPixels: 1920 * 1080,
     surfaceSegments: 128,
     surfaceWaves: 6,
     suspendedParticles: 8000,
     lensEffects: false,
     shaftSamples: 4,
+    fsr: false,
+    scenery: 32,
   },
 };
 

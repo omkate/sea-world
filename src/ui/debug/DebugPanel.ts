@@ -7,9 +7,9 @@ export interface DebugHooks {
   getTier: () => string;
   getRenderScale: () => number;
   getParticleCount: () => number;
+  getCpuMs: () => number;
   jumpToDepth: (depth: number) => void;
   toggles: Record<string, { value: number }>;
-  setSurfaceVisible: (visible: boolean) => void;
 }
 
 /** Hidden developer overlay (?debug or the ` key). Loaded lazily so it costs nothing otherwise. */
@@ -35,7 +35,7 @@ export class DebugPanel {
     const panel = new DebugPanel(hooks, root);
     const { GUI } = await import('lil-gui');
     const gui = new GUI({ title: 'ABYSS · dev' });
-    const params = { depth: 0, surface: true };
+    const params = { depth: 0 };
     gui.add(params, 'depth', -3.5, 10935, 1).name('jump to depth (m)').onFinishChange((d: number) => hooks.jumpToDepth(d));
     const fx = gui.addFolder('Systems');
     const view = hooks.toggles['view'];
@@ -48,7 +48,6 @@ export class DebugPanel {
       const p = { [name]: u.value > 0.5 };
       fx.add(p, name).onChange((on: boolean) => (u.value = on ? 1 : 0));
     }
-    fx.add(params, 'surface').name('ocean surface').onChange((on: boolean) => hooks.setSurfaceVisible(on));
     panel.gui = gui;
     return panel;
   }
@@ -74,6 +73,7 @@ export class DebugPanel {
     this.stats.textContent = [
       `FPS          ${this.fps.toFixed(0)}`,
       `frame        ${this.frameMs.toFixed(2)} ms`,
+      `cpu          ${this.hooks.getCpuMs().toFixed(2)} ms`,
       `draw calls   ${info.render.drawCalls}`,
       `triangles    ${info.render.triangles.toLocaleString()}`,
       `textures     ${info.memory.textures}`,

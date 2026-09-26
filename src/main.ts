@@ -2,6 +2,7 @@ import './styles.css';
 import { createRenderer } from './core/renderer/createRenderer';
 import { parseTier, selectTier } from './core/quality/tiers';
 import { showFallback } from './ui/fallback/fallback';
+import { mountCredits } from './ui/credits/Credits';
 
 async function boot(): Promise<void> {
   const params = new URLSearchParams(location.search);
@@ -46,7 +47,9 @@ async function boot(): Promise<void> {
     startDepth,
     debug: params.has('debug'),
   });
+  await experience.prepare();
   experience.start();
+  mountCredits(document.body);
   document.body.classList.add('ready');
   document.body.dataset.backend = info.backend;
   document.body.dataset.tier = tier;

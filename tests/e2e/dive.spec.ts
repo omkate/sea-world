@@ -75,8 +75,10 @@ test('underwater frames darken continuously with depth', async ({ page }) => {
       return sum / (data.length / 4);
     }, png.toString('base64')));
   }
-  for (let i = 1; i < luminance.length; i++) expect(luminance[i]!).toBeLessThan(luminance[i - 1]!);
-  expect(luminance.at(-1)!).toBeLessThan(4);
+  // Natural light falls monotonically through the sunlit and twilight zones…
+  for (let i = 1; i < luminance.length - 1; i++) expect(luminance[i]!).toBeLessThan(luminance[i - 1]!);
+  // …and below 1,000 m only the camera's sensor-noise floor remains.
+  expect(luminance.at(-1)!).toBeLessThan(3);
 });
 
 test('the lamp comes on where sunlight ends and lights marine snow', async ({ page }) => {

@@ -53,3 +53,24 @@ export function inscatter(
   }
   return out;
 }
+
+/**
+ * Documentary custom white balance: underwater cameras are white-balanced for the depth they
+ * film at, which restores part of the red and green the water column removed. Gains are
+ * relative to blue, partial (strength < 1), capped, then normalised so green is unchanged
+ * (the dominant band of the water itself), which keeps overall brightness steady.
+ */
+export const WHITE_BALANCE_STRENGTH = 0.55;
+export const WHITE_BALANCE_MAX_GAIN = 7;
+
+export function whiteBalance(depth: number, kd: readonly [number, number, number], strength: number, out: Rgb = [1, 1, 1]): Rgb {
+  const z = Math.max(0, depth);
+  const blue = Math.exp(-kd[2] * z);
+  for (let i = 0; i < 3; i++) {
+    const ratio = blue / Math.max(Math.exp(-kd[i]! * z), 1e-12);
+    out[i] = Math.min(WHITE_BALANCE_MAX_GAIN, ratio ** strength);
+  }
+  const g = out[1];
+  for (let i = 0; i < 3; i++) out[i] = out[i]! / g;
+  return out;
+}

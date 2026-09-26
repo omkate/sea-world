@@ -412,6 +412,225 @@
     ]
   },
   {
+    "id": "platygyra-daedalea",
+    "commonName": "Lesser valley brain coral",
+    "scientificName": "Platygyra daedalea",
+    "taxonRank": "species",
+    "category": "Corals",
+    "depthMin": 3,
+    "depthMax": 30,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.4,
+    "sizeMax": 1,
+    "diet": "Zooxanthellate: hosts photosynthetic symbiotic algae (listed without the azooxanthellate mark in Randall 2003)",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Massive meandroid (brain-like) heads with thick walls and ragged, exsert septa; commonly brightly coloured, usually brown walls with grey or green valleys.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "sizeTypical",
+      "depthMax"
+    ],
+    "notes": "Listed for the Marianas in Randall 2003 (Randall & Myers 1983 in-situ figure); 149 OBIS records in the Mariana box including NOAA CRED 2009 surveys at Guam. Depth 3-30 m is SeaLifeBase; CRED records are labelled 30-51 m, so the true max may be deeper (units not confirmed). Max colony 1 m (SeaLifeBase); sizeTypical is an estimate. WoRMS flags the name as an 'unreplaced junior homonym' but still treats it as the valid name; Corals of the World calls it a species complex. Habitat: most reef environments, especially back-reef margins.",
+    "sources": [
+      {
+        "label": "WoRMS: Platygyra daedalea",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=207489",
+        "field": "scientificName"
+      },
+      {
+        "label": "Randall 2003, Annotated checklist of hydrozoan and scleractinian corals from Guam and other Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/6-corals.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "OBIS occurrences: Platygyra daedalea (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Platygyra%20daedalea&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "SeaLifeBase: Platygyra daedalea",
+        "url": "https://www.sealifebase.se/summary/Platygyra-daedalea.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "Corals of the World: Platygyra daedalea",
+        "url": "https://www.coralsoftheworld.org/species_factsheets/species_factsheet_summary/platygyra-daedalea/",
+        "field": "visual.coloration"
+      }
+    ]
+  },
+  {
+    "id": "seriatopora-hystrix",
+    "commonName": "Bird's-nest coral (thin birdsnest coral)",
+    "scientificName": "Seriatopora hystrix",
+    "taxonRank": "species",
+    "category": "Corals",
+    "depthMin": 0,
+    "depthMax": 40,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.2,
+    "sizeMax": 0.3,
+    "diet": "Zooxanthellate: hosts photosynthetic symbiotic algae (SeaLifeBase)",
+    "behavior": [
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Dense bushy thickets of thin (2-5 mm) branches tapering to needle-like points; pink, less commonly cream, blue or green.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMax",
+      "sizeTypical"
+    ],
+    "notes": "Listed for the Marianas in Randall 2003 (Randall & Myers 1983 in-situ figure). Only 1 OBIS record in the Mariana box (~15.3N, Tinian/Saipan area). SeaLifeBase gives 0-183 m (usually 6-20 m); 183 m is implausible for a zooxanthellate coral, so depthMax is capped at the ~40 m mesophotic colonies documented at Okinawa (PMC9329301). Shallow reef environments, especially intertidal reef flats; IUCN Vulnerable. Species complex (Corals of the World).",
+    "sources": [
+      {
+        "label": "WoRMS: Seriatopora hystrix",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=206973",
+        "field": "scientificName"
+      },
+      {
+        "label": "Randall 2003, Annotated checklist of hydrozoan and scleractinian corals from Guam and other Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/6-corals.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "OBIS occurrences: Seriatopora hystrix (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Seriatopora%20hystrix&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "SeaLifeBase: Seriatopora hystrix",
+        "url": "https://www.sealifebase.se/summary/Seriatopora-hystrix.html",
+        "field": "sizeMax"
+      },
+      {
+        "label": "Corals of the World: Seriatopora hystrix",
+        "url": "https://www.coralsoftheworld.org/species_factsheets/species_factsheet_summary/seriatopora-hystrix/",
+        "field": "visual.coloration"
+      },
+      {
+        "label": "Limited acclimation of early life stages of Seriatopora hystrix from mesophotic depth (PMC)",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9329301/",
+        "field": "depthMax"
+      }
+    ]
+  },
+  {
+    "id": "stylaster-sanguineus",
+    "commonName": "Lace hydrocoral (stylasterid)",
+    "scientificName": "Stylaster sanguineus",
+    "taxonRank": "species",
+    "category": "Corals",
+    "depthMin": 30,
+    "depthMax": 128,
+    "habitats": [
+      "reef-wall"
+    ],
+    "regions": [
+      "Western Pacific"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.1,
+    "sizeMax": 0.3,
+    "diet": "Captures small plankton prey with its polyps; azooxanthellate (no symbiotic algae)",
+    "behavior": [
+      "Idle",
+      "FilterFeed"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Delicate fan-shaped (flabellate) calcareous colonies with slender zigzag branches; Stylaster skeleton and tissue can be orange, red, pink, purple, yellow or white.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "rarity": "uncommon",
+    "representation": "instanced",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "regions",
+      "depthMin",
+      "sizeTypical",
+      "sizeMax",
+      "visual.coloration"
+    ],
+    "notes": "Mariana occurrence NOT confirmed: Randall 2003 lists 9 Stylaster morphospecies from the Marianas but only to letter-group level (one = S. gracilis), not S. sanguineus; 0 OBIS and 0 GBIF records in the Mariana box (GBIF records from Marshall Islands, FSM, Australia etc.). Category 'Corals' used because it is a calcified hydrocoral ('lace coral') listed in Randall's coral checklist, although taxonomically it is a hydrozoan (Stylasteridae), not an anthozoan. Depth 30-128 m (SeaLifeBase); WoRMS gives 'reef to 128 m', so it may occur shallower. Colour and size are genus-level (colonies up to 30 cm tall); Stylaster favours caves and the undersides of ledges.",
+    "sources": [
+      {
+        "label": "WoRMS: Stylaster sanguineus",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=285906",
+        "field": "scientificName"
+      },
+      {
+        "label": "SeaLifeBase: Stylaster sanguineus",
+        "url": "https://www.sealifebase.se/summary/Stylaster-sanguineus.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "Randall 2003, Annotated checklist of hydrozoan and scleractinian corals from Guam and other Mariana Islands (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/6-corals.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "OBIS occurrences: Stylaster sanguineus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Stylaster%20sanguineus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "GBIF: Stylaster sanguineus",
+        "url": "https://www.gbif.org/species/2265347",
+        "field": "regions"
+      },
+      {
+        "label": "Reef Corals of the Indo-Malayan Seas: genus Stylaster",
+        "url": "https://indo-malayan-reef-corals.linnaeus.naturalis.nl/linnaeus_ng/app/views/species/nsr_taxon.php?id=27829",
+        "field": "visual.coloration"
+      },
+      {
+        "label": "Lizard Island Reef Research Foundation: Stylasterid corals",
+        "url": "https://lirrf.org/stylasterid-corals/",
+        "field": "diet"
+      }
+    ]
+  },
+  {
     "id": "radianthus-magnifica",
     "commonName": "Magnificent sea anemone",
     "scientificName": "Radianthus magnifica",
@@ -613,7 +832,7 @@
     "locomotion": "labriform",
     "bioluminescent": false,
     "visual": {
-      "coloration": "Olive-grey body with 4 black vertical bars (one through the yellow eye, one on the tail base), shading sharply to white below.",
+      "coloration": "Pale greenish-grey body shading to white below, with six narrow black vertical bars: the first oblique through the eye, the last on the caudal peduncle.",
       "camouflage": [
         "countershading"
       ],
@@ -634,6 +853,11 @@
         "label": "Myers & Donaldson 2003, The fishes of the Mariana Islands (Micronesica 35-36)",
         "url": "https://micronesica.org/sites/default/files/30-fishes.pdf",
         "field": "regions"
+      },
+      {
+        "label": "Wikipedia: Acanthurus triostegus (six black bars, first through the eye)",
+        "url": "https://en.wikipedia.org/wiki/Acanthurus_triostegus",
+        "field": "visual.coloration"
       }
     ]
   },
@@ -1675,6 +1899,77 @@
         "label": "OBIS occurrences: Linckia laevigata (Mariana box 10-24N 140-150E)",
         "url": "https://api.obis.org/v3/occurrence?scientificname=Linckia%20laevigata&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
         "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "tridacna-squamosa",
+    "commonName": "Fluted giant clam",
+    "scientificName": "Tridacna squamosa",
+    "taxonRank": "species",
+    "category": "Mollusks",
+    "depthMin": 0,
+    "depthMax": 42,
+    "habitats": [
+      "coral-reef"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.3,
+    "sizeMax": 0.45,
+    "diet": "Mainly sugars from symbiotic zooxanthellae in the mantle, supplemented by filter-feeding plankton and uptake of dissolved matter",
+    "behavior": [
+      "FilterFeed",
+      "Idle"
+    ],
+    "locomotion": "sessile",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Greyish-white shell, often tinged orange, yellow or pink/mauve, with 4-12 folds bearing large leaf-like fluted scales; mantle greyish purple with light-blue rhomboid spots along the margin and yellow/blue ringed spots toward the centre (mottled blue, green, yellow, orange or brown).",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "Farms symbiotic zooxanthellae in its sunlit mantle, which supply most of the adult clam's nutrition.",
+    "rarity": "uncommon",
+    "representation": "instanced",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Guam: voucher UGI 3062 and Saipan/Tinian records (Rosewater 1965) in Paulay 2003, with no 'introduced' note; OBIS has Guam records from 1963 (DMNS), 2003 (NOAA CRED, 12 m) and 2024 iNaturalist. CAVEAT: SeaLifeBase and the 2024 NMFS proposed rule (citing CITES 2004) say it was 'introduced in Hawaii and Guam' (PMDC shipped 500 to UOG Marine Lab in the 1980s), so native vs introduced status at Guam is disputed. Reef flats, patch reefs and slopes, often on dead plate coral or rubble; adults attached by byssus or free-living. Proposed ESA Threatened (similarity of appearance); IUCN LC.",
+    "sources": [
+      {
+        "label": "WoRMS: Tridacna squamosa",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=207674",
+        "field": "scientificName"
+      },
+      {
+        "label": "Paulay 2003, Marine Bivalvia (Mollusca) of Guam (Micronesica 35-36)",
+        "url": "https://micronesica.org/sites/default/files/12-bivalves.pdf",
+        "field": "regions"
+      },
+      {
+        "label": "OBIS occurrences: Tridacna squamosa (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Tridacna%20squamosa&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "SeaLifeBase: Tridacna squamosa",
+        "url": "https://www.sealifebase.se/summary/Tridacna-squamosa.html",
+        "field": "sizeMax"
+      },
+      {
+        "label": "NMFS 2024 proposed listing determinations for ten giant clam species (Federal Register 2024-14970)",
+        "url": "https://public-inspection.federalregister.gov/2024-14970.pdf",
+        "field": "visual.coloration"
+      },
+      {
+        "label": "NOAA Fisheries: Fluted giant clam",
+        "url": "https://www.fisheries.noaa.gov/species/fluted-giant-clam",
+        "field": "depthMax"
       }
     ]
   },
