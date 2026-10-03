@@ -34,6 +34,8 @@ export interface SchoolOptions {
    * are not used.
    */
   wrap?: Vector3;
+  /** Extra rolling about the body axis (rad amplitude), e.g. hatchetfish tilting their mirrors. */
+  roll?: number;
 }
 
 const TABLE = 4096;
@@ -407,7 +409,7 @@ export class School {
       if (r.lengthSq() < 1e-6) r.set(1, 0, 0);
       r.normalize();
       up.crossVectors(f, r);
-      const bank = -turnSign * Math.min(1, turnRate / o.maxTurn) * 0.35;
+      const bank = -turnSign * Math.min(1, turnRate / o.maxTurn) * 0.35 + (o.roll ? Math.sin(time * 0.9 + pers * 40) * o.roll : 0);
       if (bank !== 0) {
         r.applyAxisAngle(f, bank);
         up.applyAxisAngle(f, bank);

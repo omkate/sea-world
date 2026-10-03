@@ -69,17 +69,61 @@ function photophoreGlow(
   const dark: ShaderNode = smoothstep(200, 400, depth);
   let level: ShaderNode = float(p.brightness);
   if (p.flash) {
-    // ~0.5 s flashes every 5–12 s, out of step between fish.
-    const period: ShaderNode = mix(float(5), float(12), variation);
-    const phase: ShaderNode = fract((u.time as ShaderNode).div(period).add(variation.mul(37)));
-    const window: ShaderNode = float(0.5).div(period);
-    level = level.add(smoothstep(0, window.mul(0.2), phase).mul(smoothstep(window, window.mul(0.4), phase)).mul(4));
+    // Flashes: ~0.5 s every 5–12 s out of step between fish, or as waves sweeping across the
+    // layer (a 1 s front moving at 1.5 m/s every 4 s, slightly ragged between fish).
+    const period: ShaderNode = p.flashWave ? float(4) : mix(float(5), float(12), variation);
+    const offset: ShaderNode = p.flashWave
+      ? (positionWorld as ShaderNode).x.add((positionWorld as ShaderNode).y.mul(0.5)).div(-1.5 * 4).add(variation.mul(0.06))
+      : variation.mul(37);
+    const phase: ShaderNode = fract((u.time as ShaderNode).div(period).add(offset));
+    const window: ShaderNode = float(p.flashWave ? 1 : 0.5).div(period);
+    level = level.add(smoothstep(0, window.mul(0.2), phase).mul(smoothstep(window, window.mul(0.4), phase)).mul(p.flashWave ? 6 : 4));
   }
   let glow: ShaderNode = col(p.color).mul(dots).mul(level).mul(PHOTOPHORE_ADAPTED).div(u.exposure as ShaderNode).mul(dark);
   // Counterillumination matches the brightness of the water seen looking up from below, so the
   // belly vanishes against it from beneath (and reads as a faint glow from the side).
   if (p.counterillumination) glow = glow.add((u.waterAboveColor as ShaderNode).mul(smoothstep(-0.35, -0.75, v)).mul(0.9));
   return glow.mul(onBody);
+}
+
+/**
+ * Mirror flanks: the reflection of the water seen along the mirrored view ray, approximated by
+ * blending horizontal and overhead water radiance by how far the reflection points upward.
+ * Upright, a mirror shows the horizontal water (it vanishes); tilted, it catches the bright
+ * water overhead and flashes.
+ */
+/**
+ * The single-scattering water model understates the radiance overhead (in clear ocean water it
+ * is roughly ten times the horizontal; the model gives ~2×), so the overhead term is scaled up.
+ */
+const OVERHEAD_GAIN = 5;
+
+function mirrorReflection(u: FrameUniforms, normal: ShaderNode): ShaderNode {
+  const view: ShaderNode = normalize((positionWorld as ShaderNode).sub(cameraPosition));
+  const r: ShaderNode = view.sub(normal.mul(dot(view, normal).mul(2)));
+  const up: ShaderNode = smoothstep(0.1, 0.8, r.y);
+  const overhead: ShaderNode = (u.waterAboveColor as ShaderNode).mul(OVERHEAD_GAIN);
+  return mix(u.waterColor as ShaderNode, overhead, up).mul(smoothstep(-0.2, 0.2, r.y).mul(0.7).add(0.3));
+}
+
+function emission(
+  u: FrameUniforms,
+  kd: readonly [number, number, number],
+  pattern: FishPattern,
+  s: ShaderNode,
+  v: ShaderNode,
+  onBody: ShaderNode,
+  variation: ShaderNode,
+  normal: ShaderNode,
+): ShaderNode | undefined {
+  let e: ShaderNode | undefined = pattern.photophores ? photophoreGlow(u, kd, pattern.photophores, s, v, onBody, variation) : undefined;
+  if (pattern.mirror) {
+    // Silver flank only (below the dark back).
+    const flank: ShaderNode = smoothstep(pattern.bellyLine + 0.1, pattern.bellyLine - 0.1, v).mul(onBody);
+    const m: ShaderNode = mirrorReflection(u, normal).mul(flank).mul(pattern.mirror);
+    e = e ? e.add(m) : m;
+  }
+  return e;
 }
 
 /**
@@ -211,7 +255,7 @@ export function createFishMaterial(
     specular: float(0.06).add(float(pattern.sheen).mul(0.18).mul(onBody)).add(glint.mul(0.6)),
     rim: float(0.25).add(isFin.mul(0.15)),
     subject: float(1),
-    emissive: pattern.photophores ? photophoreGlow(u, kd, pattern.photophores, s, v, onBody, variation) : undefined,
+    emissive: emission(u, kd, pattern, s, v, onBody, variation, normal),
   });
 
   const m = new MeshBasicNodeMaterial({ side: DoubleSide });

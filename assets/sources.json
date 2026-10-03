@@ -86,5 +86,20 @@
     "triangles": 8000,
     "textures": true,
     "note": "Model depicts a bottlenose dolphin; stretched lengthwise at load to approximate the slimmer spinner dolphin (Stenella longirostris) resident around Guam."
+  },
+  {
+    "id": "sperm-whale",
+    "uid": "3076676b30294c119ec2065c3bf3dc47",
+    "role": "hero",
+    "species": "Physeter macrocephalus",
+    "size": 12.0,
+    "triangles": 16000,
+    "textures": true,
+    "note": "Sperm whale model, stored upright in its file (head +y) and reoriented to lie level with the head toward +z; shown at the female length recorded around the Marianas (~12 m, NOAA).",
+    "rotate": [
+      90,
+      0,
+      0
+    ]
   }
 ]

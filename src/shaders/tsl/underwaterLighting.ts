@@ -15,7 +15,7 @@ export const SKY_UNDERWATER = 1.1;
 /** Camera fill: a low-power video light, like documentary crews use on reefs (radiance at 1 m). */
 export const FILL_LIGHT = 0.45;
 /** Dive lamp strength relative to the fill, used where sunlight is gone. */
-export const LAMP_LIGHT = 1.6;
+export const LAMP_LIGHT = 3;
 
 export interface SurfaceInputs {
   albedo: ShaderNode;

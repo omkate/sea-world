@@ -8,6 +8,7 @@ import { PredatorBeat } from '../../ecosystem/predation/PredatorBeat';
 import { Spotter } from '../../ecosystem/spotter/Spotter';
 import { PELAGIC_FISH } from '../../creatures/fish/pelagicFish';
 import { HeroSwimmer } from '../../creatures/hero/HeroSwimmer';
+import { WhaleEncounter } from '../../creatures/hero/WhaleEncounter';
 import type { Wanderer } from '../../creatures/hero/Wanderer';
 import type { SightingSource } from '../../discovery/scanner/Scanner';
 import { inOpenWater, openWaterSchool } from '../openWater';
@@ -36,6 +37,7 @@ export class OpenBlueChapter {
   private readonly swimmers: HeroSwimmer[] = [];
   private readonly bigAnimals: Wanderer[] = [];
   private spotter: Spotter | null = null;
+  private readonly whale: WhaleEncounter | null;
   private readonly camForward = new Vector3();
   private readonly baitCentre = new Vector3();
   private readonly tunaCentre = new Vector3();
@@ -91,6 +93,11 @@ export class OpenBlueChapter {
     if (baitGroup >= 0 && tunaGroup >= 0) this.bait = { home: baitHome, group: baitGroup, tunaGroup };
     this.fish.build(u, kd, this.group);
 
+    // A sperm whale passes through the open blue (plan §6.2: a distant pass), 18 m out so the
+    // 12 m animal fits the frame, lit by the last of the blue daylight.
+    this.whale = allowed('physeter-macrocephalus', 215) ? new WhaleEncounter(u, kd, library.get('sperm-whale'), { encounter: [195, 240], ahead: 18, seed: 151 }) : null;
+    if (this.whale) this.group.add(this.whale.whale.mesh);
+
     // Oceanic whitetips patrol the blue, and now and then come up to inspect the camera. Rendered
     // with the reef-shark scan scaled up (same carcharhinid body plan; noted in the manifest).
     for (const [i, d] of [170, 225].entries()) {
@@ -117,6 +124,7 @@ export class OpenBlueChapter {
     if (!this.group.visible) return;
     this.updateBeat(dt, camera.position);
     this.spotter?.update(dt, camera);
+    this.whale?.update(dt, camera);
     camera.getWorldDirection(this.camForward);
     for (const h of this.swimmers) h.update(dt, camera.position, this.camForward);
     this.fish.update(dt, time, camera.position);
@@ -138,13 +146,15 @@ export class OpenBlueChapter {
 
   /** Animals placed in the chapter, and those simulated right now (none while it is inactive). */
   creatureCounts(): CreatureCounts {
-    const c = addCounts(this.fish.counts(), { total: this.swimmers.length, simulated: this.swimmers.length });
+    const whale = this.whale ? 1 : 0;
+    const c = addCounts(this.fish.counts(), { total: this.swimmers.length + whale, simulated: this.swimmers.length + (this.whale?.whale.mesh.visible ? 1 : 0) });
     return { total: c.total, simulated: this.group.visible ? c.simulated : 0 };
   }
 
   /** One sighting source per species this chapter renders, for the discovery scanner. */
   sightings(): SightingSource[] {
     const sources = this.fish.sightings();
+    if (this.whale) sources.push(this.whale.sighting());
     const sharks = this.swimmers;
     if (sharks.length > 0) {
       sources.push({

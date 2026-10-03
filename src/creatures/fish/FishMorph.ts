@@ -90,6 +90,11 @@ export interface FishPhotophores {
   brightness: number;
   /** Occasional brighter flashes (signalling), every ~5–12 s per fish. */
   flash: boolean;
+  /**
+   * Flashes sweep through the group as waves (a band of light crossing the layer every few
+   * seconds) instead of each fish flashing on its own timer.
+   */
+  flashWave?: boolean;
   /** A ventral glow matched to the downwelling light, hiding the silhouette from below. */
   counterillumination: boolean;
 }
@@ -112,6 +117,11 @@ export interface FishPattern {
   sheen: number;
   roughness: number;
   photophores?: FishPhotophores;
+  /**
+   * Mirror flanks (0..1): an upright mirror reflects the water beside it and vanishes; tilted,
+   * it catches the much brighter water overhead and flashes (hatchetfish, lanternfish).
+   */
+  mirror?: number;
 }
 
 export const rgb = (r: number, g: number, b: number): Rgb => ({ r, g, b });

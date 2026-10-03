@@ -41,6 +41,12 @@ export function createFrameUniforms() {
     sensorGain: uniform(0) as Uniform<number>,
     /** 0..1 how often generic bioluminescent flashes appear. */
     bioluminescence: uniform(0) as Uniform<number>,
+    /**
+     * A bioluminescence constellation (0..1): extra plankton emitters flashing in fronts that
+     * ripple out from `constellationOrigin`, set by the midnight zone's first scene.
+     */
+    constellation: uniform(0) as Uniform<number>,
+    constellationOrigin: uniform(new Vector3()) as Uniform<Vector3>,
     /** Camera white balance per band (documentary custom WB for depth). */
     whiteBalance: uniform(new Vector3(1, 1, 1)) as Uniform<Vector3>,
     /** Ray-march samples for light shafts (0 disables). */

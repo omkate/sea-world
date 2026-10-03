@@ -44,6 +44,10 @@ const PARTICLE_GAIN = 3.2;
 const BIOLUMINESCENT_FRACTION = 0.0015;
 /** Flash brightness in camera-adapted units: visible to a low-light camera, lost under the lamp. */
 const FLASH_ADAPTED = 2.2;
+/** Fraction of particles that join a constellation, and how its fronts ripple out. */
+const CONSTELLATION_FRACTION = 0.12;
+const FRONT_SPEED = 1.5;
+const FRONT_PERIOD = 2.2;
 
 /**
  * Suspended organic particles: plankton, detritus and marine snow, in a camera-relative
@@ -136,6 +140,12 @@ export class SuspendedParticles {
       .mul(isEmitter)
       .mul(u.bioluminescence)
       .mul(transmittance);
+    // Constellation: fronts of flashes rippling out from an origin near the lens, as a
+    // disturbance sets off one emitter after another.
+    const isCascade = step(1 - CONSTELLATION_FRACTION, fract(seedN.mul(4271.9))).mul(u.constellation);
+    const front = fract(t.sub(length(world.sub(u.constellationOrigin)).div(FRONT_SPEED)).div(FRONT_PERIOD).add(seedN.mul(0.04)));
+    const cascadePulse = smoothstep(0, 0.04, front).mul(smoothstep(0.25, 0.07, front));
+    const cascade: ShaderNode = vec3(0.02, 0.55, 1.0).mul(FLASH_ADAPTED * 2).div(u.exposure).mul(cascadePulse).mul(isCascade).mul(transmittance);
 
     // Shape: fine particles are points; larger marine-snow aggregates are irregular, elongated,
     // slowly tumbling flakes. Out-of-focus ones near the lens stay round, like real bokeh.
@@ -148,15 +158,17 @@ export class SuspendedParticles {
     const flake = smoothstep(outline, outline.mul(0.3), length(q.mul(vec2(1, stretch))));
     const flakiness = smoothstep(0.0025, 0.007, size).mul(smoothstep(0.35, 1.1, dist));
     const disc = mix(round, flake, flakiness);
-    const opacity = disc.mul(edge).mul(bokeh).mul(gate).mul(belowSurface).mul(coverage).mul(0.8);
+    // Constellation emitters ignore the snow's density gate: they are lit plankton, not drift.
+    const present = mix(gate.mul(coverage), float(1), isCascade);
+    const opacity = disc.mul(edge).mul(bokeh).mul(present).mul(belowSurface).mul(0.8);
 
     const material = new SpriteNodeMaterial({ transparent: true, depthWrite: false, blending: AdditiveBlending });
     material.positionNode = world;
     material.rotationNode = seedN.mul(6.2832).add(t.mul(mix(float(-0.35), float(0.35), fract(seedN.mul(91.7)))));
     // Flakes are drawn larger so their irregular outline keeps the area of the round particle.
     const flakeArea = mix(float(1), stretch.sqrt().mul(1.5), flakiness);
-    material.scaleNode = mix(drawn.mul(flakeArea), max(drawn, float(0.025)), isEmitter.mul(u.bioluminescence));
-    material.colorNode = clamp(reflected.add(flash), 0, 1e4);
+    material.scaleNode = mix(drawn.mul(flakeArea), max(drawn, float(0.025)), max(isEmitter.mul(u.bioluminescence), isCascade)).add(isCascade.mul(0.015));
+    material.colorNode = clamp(reflected.add(flash).add(cascade), 0, 1e4);
     material.opacityNode = opacity;
 
     this.sprite = new Sprite(material);

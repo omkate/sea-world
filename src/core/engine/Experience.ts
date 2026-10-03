@@ -17,6 +17,8 @@ import { SuspendedParticles } from '../../particles/suspended/SuspendedParticles
 import { ReefChapter } from '../../environments/reef/ReefChapter';
 import { OpenBlueChapter } from '../../environments/openBlue/OpenBlueChapter';
 import { TwilightChapter } from '../../environments/twilight/TwilightChapter';
+import { MidnightChapter } from '../../environments/midnight/MidnightChapter';
+import { lampAllowance } from '../../environments/midnight/scenes';
 import { AssetLibrary } from '../../assets/AssetLibrary';
 import { Hud } from '../../ui/hud/Hud';
 import type { DebugPanel } from '../../ui/debug/DebugPanel';
@@ -40,6 +42,12 @@ const LAMP_EV = 2;
  */
 const LAMP_ON_FROM = 450;
 const LAMP_ON_FULL = 650;
+/**
+ * The sensor's gain ceiling (EV): a camera can only amplify so far. It also keeps light drawn in
+ * camera-adapted units (bioluminescence) above fp16's range once sunlight has gone, where the
+ * natural-light exposure would climb past +20 EV and round such light to zero.
+ */
+const MAX_SENSOR_EV = 13;
 
 declare global {
   interface Window {
@@ -70,6 +78,7 @@ export class Experience {
   private reef: ReefChapter | null = null;
   private openBlue: OpenBlueChapter | null = null;
   private twilight: TwilightChapter | null = null;
+  private midnight: MidnightChapter | null = null;
   private scanner: Scanner | null = null;
   private discovery: DiscoveryLayer | null = null;
   private readonly library = new AssetLibrary();
@@ -139,12 +148,15 @@ export class Experience {
     const { renderer } = this.o.info;
     this.reef = await ReefChapter.create(this.u, MARIANA.kd, this.library, (x, z) => waveHeight(this.surface.waves, x, z, this.time));
     this.scene.add(this.reef.group);
-    // The reef has loaded every model the open blue reuses (the whitetip scan).
+    // The reef has loaded every model the open blue reuses (the whitetip scan); add the whale.
+    await this.library.load(['sperm-whale']);
     this.openBlue = new OpenBlueChapter(this.u, MARIANA.kd, this.library);
     this.scene.add(this.openBlue.group);
     this.twilight = new TwilightChapter(this.u, MARIANA.kd);
     this.scene.add(this.twilight.group);
-    this.mountDiscovery([...this.reef.sightings(), ...this.openBlue.sightings(), ...this.twilight.sightings()]);
+    this.midnight = new MidnightChapter(this.u, MARIANA.kd);
+    this.scene.add(this.midnight.group);
+    this.mountDiscovery([...this.reef.sightings(), ...this.openBlue.sightings(), ...this.twilight.sightings(), ...this.midnight.sightings()]);
     await renderer.compileAsync(this.scene, this.camera);
     await renderer.compileAsync(this.particles.scene, this.camera);
   }
@@ -207,13 +219,14 @@ export class Experience {
     u.cameraDepth.value = camDepth;
     u.turbidity.value = this.state.turbidity;
     u.particleDensity.value = this.state.particleDensity;
-    const lampTarget = this.lampEnabled ? smoothstep(LAMP_ON_FROM, LAMP_ON_FULL, depth) : 0;
+    // The midnight zone's first scenes switch the lamp off to let bioluminescence own the dark.
+    const lampTarget = this.lampEnabled ? smoothstep(LAMP_ON_FROM, LAMP_ON_FULL, depth) * lampAllowance(depth) : 0;
     stepCriticalSpring(this.lamp, lampTarget, 5, dt);
     const lamp = this.lamp.value < 1e-4 ? 0 : Math.min(1, this.lamp.value);
     // Auto-exposure follows the brightest light actually present: a dimming lamp raises the
     // exposure only as fast as its own light falls, so it never blows out the frame.
     const lampEV = lamp > 0 ? LAMP_EV + Math.log2(1 / lamp) : Infinity;
-    const ev = Math.min(this.state.exposureEV, lampEV);
+    const ev = Math.min(this.state.exposureEV, lampEV, MAX_SENSOR_EV);
     u.exposure.value = BASE_EXPOSURE * Math.pow(2, ev);
     u.diveLight.value = lamp;
     u.sensorGain.value = ev / maxExposureEV(MARIANA.kd);
@@ -245,6 +258,7 @@ export class Experience {
     this.reef?.update(dt, this.time, cam, depth, QUALITY[this.tier].scenery);
     this.openBlue?.update(dt, this.time, cam, depth);
     this.twilight?.update(dt, this.time, cam, depth);
+    this.midnight?.update(dt, this.time, cam, depth, u);
 
     renderer.info.reset();
     this.pipeline.pipeline.render();
@@ -299,7 +313,11 @@ export class Experience {
             const reef = this.reef?.creatureCounts() ?? { total: 0, simulated: 0 };
             const blue = this.openBlue?.creatureCounts() ?? { total: 0, simulated: 0 };
             const twilight = this.twilight?.creatureCounts() ?? { total: 0, simulated: 0 };
-            return { total: reef.total + blue.total + twilight.total, simulated: reef.simulated + blue.simulated + twilight.simulated };
+            const midnight = this.midnight?.creatureCounts() ?? { total: 0, simulated: 0 };
+            return {
+              total: reef.total + blue.total + twilight.total + midnight.total,
+              simulated: reef.simulated + blue.simulated + twilight.simulated + midnight.simulated,
+            };
           },
           getCpuMs: () => this.cpuMs,
           jumpToDepth: (d) => this.scroll.jumpTo(progressForDepth(d)),

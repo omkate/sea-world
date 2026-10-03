@@ -63,10 +63,12 @@ const diaphus: FishSpeciesVisual = {
         { v: -0.88, sMin: 0.2, sMax: 0.68, count: 9, radius: 0.011 },
         { v: 0.45, sMin: 0.03, sMax: 0.09, count: 1, radius: 0.022 },
       ],
-      brightness: 1,
+      brightness: 1.8,
       flash: true,
+      flashWave: true,
       counterillumination: true,
     },
+    mirror: 0.5,
   },
 };
 
@@ -108,7 +110,7 @@ const argyropelecusHemigymnus: FishSpeciesVisual = {
   pattern: {
     // Bright mirror-silver, with a dark back (low diffuse albedo, high gloss: see Diaphus).
     back: rgb(0.08, 0.09, 0.12),
-    belly: rgb(0.25, 0.27, 0.3),
+    belly: rgb(0.18, 0.2, 0.22),
     bellyLine: 0.6,
     bellySoftness: 0.15,
     bands: [],
@@ -121,10 +123,12 @@ const argyropelecusHemigymnus: FishSpeciesVisual = {
       color: BLUE_LIGHT,
       // Large ventral photophores along the keel.
       rows: [{ v: -0.9, sMin: 0.12, sMax: 0.6, count: 12, radius: 0.016 }],
-      brightness: 0.8,
+      brightness: 1.4,
       flash: false,
       counterillumination: true,
     },
+    // Hatchetfish flanks are near-perfect mirrors: they vanish upright and flash when tilted.
+    mirror: 1,
   },
 };
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TWILIGHT_DENSITY } from '../../src/environments/twilight/density';
+import { SQUID_DENSITY, TWILIGHT_DENSITY, TWILIGHT_SCENES } from '../../src/environments/twilight/density';
 import { loadSpecies } from '../../src/data/species';
 
 const sample = (f: (d: number) => number, from: number, to: number, step = 5) => {
@@ -7,40 +7,48 @@ const sample = (f: (d: number) => number, from: number, to: number, step = 5) =>
   for (let d = from; d <= to; d += step) out.push(f(d));
   return out;
 };
+const mid = ([a, b]: readonly [number, number]) => (a + b) / 2;
 
-describe('twilight density curves', () => {
+describe('twilight scenes', () => {
+  it('run in order without overlapping', () => {
+    const bands = Object.values(TWILIGHT_SCENES);
+    bands.forEach(([a, b], i) => {
+      expect(b).toBeGreaterThan(a);
+      if (i > 0) expect(a).toBeGreaterThanOrEqual(bands[i - 1]![1]);
+    });
+  });
+
+  it('give each scene its own lead animal', () => {
+    const lead = (d: number) => {
+      let best = '';
+      let level = -1;
+      for (const [id, f] of Object.entries(TWILIGHT_DENSITY)) if (f(d) > level) [best, level] = [id, f(d)];
+      return best;
+    };
+    expect(lead(mid(TWILIGHT_SCENES.hatchetfish))).toBe('argyropelecus-hemigymnus');
+    expect(lead(mid(TWILIGHT_SCENES.lanternfishWall))).toBe('diaphus');
+    expect(lead(mid(TWILIGHT_SCENES.bristlemouths))).toBe('cyclothone');
+  });
+
+  it('keep the background faint outside each species scene', () => {
+    expect(TWILIGHT_DENSITY['diaphus']!(mid(TWILIGHT_SCENES.atolla))).toBeLessThan(0.1);
+    expect(TWILIGHT_DENSITY['argyropelecus-hemigymnus']!(mid(TWILIGHT_SCENES.lanternfishWall))).toBeLessThan(0.1);
+    expect(TWILIGHT_DENSITY['cyclothone']!(mid(TWILIGHT_SCENES.vampireSquid))).toBeLessThan(0.15);
+  });
+
   it('stay within 0..1 across the zone', () => {
-    for (const f of Object.values(TWILIGHT_DENSITY)) for (const v of sample(f, 200, 1100)) expect(v >= 0 && v <= 1).toBe(true);
+    for (const f of [...Object.values(TWILIGHT_DENSITY), SQUID_DENSITY]) for (const v of sample(f, 200, 1100)) expect(v >= 0 && v <= 1).toBe(true);
   });
 
-  it('put lanternfish in the daytime deep scattering layer', () => {
-    const f = TWILIGHT_DENSITY['diaphus']!;
-    expect(f(500)).toBeGreaterThan(0.95);
-    expect(f(280)).toBeLessThan(0.2);
-    expect(f(900)).toBeLessThan(0.2);
-    // Rises monotonically into the layer and falls monotonically below it.
-    const up = sample(f, 280, 400);
-    const down = sample(f, 680, 800);
-    up.slice(1).forEach((v, i) => expect(v).toBeGreaterThanOrEqual(up[i]!));
-    down.slice(1).forEach((v, i) => expect(v).toBeLessThanOrEqual(down[i]!));
+  it('show jewel squid only in their own scene', () => {
+    expect(SQUID_DENSITY(mid(TWILIGHT_SCENES.jewelSquid))).toBeCloseTo(0.8);
+    expect(SQUID_DENSITY(mid(TWILIGHT_SCENES.lanternfishWall))).toBe(0);
+    expect(SQUID_DENSITY(mid(TWILIGHT_SCENES.atolla))).toBe(0);
   });
 
-  it('keep hatchetfish in the upper twilight', () => {
-    const f = TWILIGHT_DENSITY['argyropelecus-hemigymnus']!;
-    expect(f(220)).toBe(0);
-    expect(f(400)).toBe(1);
-    expect(f(660)).toBe(0);
-  });
-
-  it('thicken bristlemouths monotonically with depth', () => {
-    const v = sample(TWILIGHT_DENSITY['cyclothone']!, 250, 1000);
-    v.slice(1).forEach((x, i) => expect(x).toBeGreaterThanOrEqual(v[i]!));
-    expect(v[v.length - 1]).toBe(1);
-  });
-
-  it('only covers species recorded in the twilight at the site', () => {
+  it('only cover species recorded in the twilight at the site', () => {
     const species = loadSpecies();
-    for (const id of Object.keys(TWILIGHT_DENSITY)) {
+    for (const id of [...Object.keys(TWILIGHT_DENSITY), 'histioteuthis']) {
       const s = species.find((x) => x.id === id);
       expect(s, id).toBeDefined();
       expect(s!.sites).toContain('mariana');
