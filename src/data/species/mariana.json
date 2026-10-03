@@ -2031,6 +2031,65 @@
     ]
   },
   {
+    "id": "decapterus-macarellus",
+    "commonName": "Mackerel scad",
+    "scientificName": "Decapterus macarellus",
+    "taxonRank": "species",
+    "category": "Fish",
+    "depthMin": 0,
+    "depthMax": 400,
+    "habitats": [
+      "epipelagic",
+      "reef-wall"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.3,
+    "sizeMax": 0.46,
+    "behavior": [
+      "School",
+      "Cruise",
+      "Flee"
+    ],
+    "locomotion": "carangiform",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Bluish green above and silvery below; small black blotch on the upper edge of the gill cover; yellow-green tail; pale anal and pelvic fins.",
+      "camouflage": [
+        "countershading"
+      ],
+      "photophores": false
+    },
+    "adaptation": "Fast, tightly packed schools along reef edges and open water; under attack they compress into a bait ball.",
+    "rarity": "common",
+    "representation": "instanced",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Usually caught between 40 and 200 m. NOAA PIFSC survey records (2014) in the Mariana box. Prey of tunas and jacks.",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Decapterus macarellus (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Decapterus%20macarellus&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "FishBase: Decapterus macarellus",
+        "url": "https://fishbase.se/summary/Decapterus-macarellus.html",
+        "field": "depthMax"
+      },
+      {
+        "label": "WoRMS: Decapterus macarellus",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=126807",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
     "id": "thunnus-albacares",
     "commonName": "Yellowfin tuna",
     "scientificName": "Thunnus albacares",

@@ -1,19 +1,23 @@
-import { DoubleSide, MeshBasicNodeMaterial, type InstancedBufferAttribute } from 'three/webgpu';
+import { DoubleSide, MeshBasicNodeMaterial, type InstancedBufferAttribute, type InstancedInterleavedBuffer } from 'three/webgpu';
 import {
   abs,
   attribute,
+  cameraPosition,
   cos,
   dot,
-  faceDirection,
   float,
   floor,
   fract,
   instancedBufferAttribute,
+  instancedDynamicBufferAttribute,
   length,
+  mat4,
   max,
   mix,
   normalWorld,
-  positionLocal,
+  normalize,
+  positionWorld,
+  vec4,
   sin,
   smoothstep,
   step,
@@ -25,13 +29,66 @@ import type { FrameUniforms } from '../../core/engine/uniforms';
 import { underwaterLit } from '../../shaders/tsl/underwaterLighting';
 import { catmullRom } from '../../core/math/noise';
 import { FISH_PART } from './fishGeometry';
-import type { FishMorph, FishPattern, Rgb } from './FishMorph';
+import type { FishMorph, FishPattern, FishPhotophores, Rgb } from './FishMorph';
 
 const col = (c: Rgb): ShaderNode => vec3(c.r, c.g, c.b);
+
+/** Photophore glow in camera-adapted units (the plankton flashes use 2.2 at their peak). */
+const PHOTOPHORE_ADAPTED = 2.6;
+
+/**
+ * Light organs on the flank: rows of dots that glow steadily (camera-adapted, from ~200 m where
+ * the eye can see them against the water), optional signalling flashes, and an optional ventral
+ * glow matched to the downwelling light (counterillumination).
+ */
+function photophoreGlow(
+  u: FrameUniforms,
+  kd: readonly [number, number, number],
+  p: FishPhotophores,
+  s: ShaderNode,
+  v: ShaderNode,
+  onBody: ShaderNode,
+  variation: ShaderNode,
+): ShaderNode {
+  let dots: ShaderNode = float(0);
+  for (const row of p.rows) {
+    const span = row.sMax - row.sMin;
+    // Organ centres sit evenly along the row; v is stretched ~4× relative to s on a fish flank.
+    const t: ShaderNode = s.sub(row.sMin).div(span).mul(row.count);
+    const inRow: ShaderNode = step(0, t).mul(step(t, row.count));
+    const d: ShaderNode = length(vec2(fract(t).sub(0.5).mul(span / row.count), v.sub(row.v).div(4)));
+    dots = max(dots, smoothstep(row.radius, row.radius * 0.45, d).mul(inRow));
+  }
+  // Organs are fractions of a millimetre: beyond a metre or two they are sub-pixel and would
+  // shimmer, so they blend into their average glow over the organ-bearing flank.
+  const lens: ShaderNode = length((cameraPosition as ShaderNode).sub(positionWorld));
+  const lowest = Math.min(...p.rows.map((r) => r.v));
+  const flank: ShaderNode = smoothstep(lowest + 0.5, lowest + 0.1, v);
+  dots = mix(dots, flank.mul(0.5), smoothstep(1.2, 4, lens));
+  const depth: ShaderNode = max((positionWorld as ShaderNode).y.negate(), 0);
+  const dark: ShaderNode = smoothstep(200, 400, depth);
+  let level: ShaderNode = float(p.brightness);
+  if (p.flash) {
+    // ~0.5 s flashes every 5–12 s, out of step between fish.
+    const period: ShaderNode = mix(float(5), float(12), variation);
+    const phase: ShaderNode = fract((u.time as ShaderNode).div(period).add(variation.mul(37)));
+    const window: ShaderNode = float(0.5).div(period);
+    level = level.add(smoothstep(0, window.mul(0.2), phase).mul(smoothstep(window, window.mul(0.4), phase)).mul(4));
+  }
+  let glow: ShaderNode = col(p.color).mul(dots).mul(level).mul(PHOTOPHORE_ADAPTED).div(u.exposure as ShaderNode).mul(dark);
+  // Counterillumination matches the brightness of the water seen looking up from below, so the
+  // belly vanishes against it from beneath (and reads as a faint glow from the side).
+  if (p.counterillumination) glow = glow.add((u.waterAboveColor as ShaderNode).mul(smoothstep(-0.35, -0.75, v)).mul(0.9));
+  return glow.mul(onBody);
+}
 
 /**
  * Per-instance swim state: x = tail-beat phase (rad), y = amplitude scale, z = turn bend,
  * w = individual variation 0..1. Written by the school simulation every frame.
+ *
+ * `matrices` is an interleaved view of the mesh's instance matrices. three applies the instance
+ * matrix before `positionNode`, so the body wave is computed on the raw body-space position and
+ * the matrix is applied here: the tail beats along each fish's own flank, scaled to its length.
  */
 export function createFishMaterial(
   u: FrameUniforms,
@@ -39,6 +96,7 @@ export function createFishMaterial(
   morph: FishMorph,
   pattern: FishPattern,
   swim: InstancedBufferAttribute,
+  matrices: InstancedInterleavedBuffer,
 ): MeshBasicNodeMaterial {
   const fish: ShaderNode = attribute('aFish', 'vec4');
   const s: ShaderNode = fish.x;
@@ -55,7 +113,9 @@ export function createFishMaterial(
   const isFin: ShaderNode = step(0.5, part);
 
   // --- Swimming: a travelling body wave whose amplitude grows toward the tail -------------
-  const tailward: ShaderNode = smoothstep(morph.swim.style === 'labriform' ? 0.35 : 0.15, 1, s);
+  // Where the body starts to bend: thunniform swimmers keep the body rigid and beat the tail.
+  const bendStart = morph.swim.style === 'labriform' ? 0.35 : morph.swim.style === 'thunniform' ? 0.6 : 0.15;
+  const tailward: ShaderNode = smoothstep(bendStart, 1, s);
   const amplitude: ShaderNode = float(morph.swim.bodyWave).mul(float(0.06).add(tailward.mul(tailward).mul(0.94))).mul(ampScale);
   const wave: ShaderNode = sin(phase.sub(s.mul(5.2)));
   const turn: ShaderNode = bend.mul(max(s.sub(0.25), 0).pow(2));
@@ -63,7 +123,7 @@ export function createFishMaterial(
   // Fin membranes ripple a little more than the body they are attached to.
   lateral = lateral.add(isPart(FISH_PART.dorsalAnal).mul(t).mul(0.012).mul(sin(phase.mul(0.7).add(s.mul(9)))));
   lateral = lateral.add(isPart(FISH_PART.caudal).mul(t).mul(0.02).mul(sin(phase.sub(1.2))));
-  const local: ShaderNode = positionLocal;
+  const local: ShaderNode = attribute('position', 'vec3');
   // Labriform swimmers row with their pectoral fins.
   const pectoralBeat: ShaderNode = isPart(FISH_PART.pectoral).mul(t).mul(0.05).mul(sin(phase.mul(1.4)));
   const deformed: ShaderNode = vec3(
@@ -137,7 +197,11 @@ export function createFishMaterial(
   const scales: ShaderNode = sin(s.mul(160)).mul(cos(v.mul(38).add(s.mul(40))));
   color = color.mul(float(1).add(scales.mul(0.04).mul(onBody))).mul(float(0.9).add(variation.mul(0.2)));
 
-  const normal: ShaderNode = (normalWorld as ShaderNode).mul(faceDirection);
+  // Light the side the camera sees. The body mesh is wound inward and this render path reports
+  // its outer side as front-facing, so faceDirection would leave the normals pointing inward;
+  // facing the normal toward the lens is right for a closed body and for both sides of a fin.
+  const n0: ShaderNode = normalize(normalWorld as ShaderNode);
+  const normal: ShaderNode = n0.mul(step(0, dot(n0, (cameraPosition as ShaderNode).sub(positionWorld))).mul(2).sub(1));
   const glint: ShaderNode = iris.mul(onBody);
   const lit: ShaderNode = underwaterLit(u, kd, {
     albedo: color,
@@ -147,10 +211,13 @@ export function createFishMaterial(
     specular: float(0.06).add(float(pattern.sheen).mul(0.18).mul(onBody)).add(glint.mul(0.6)),
     rim: float(0.25).add(isFin.mul(0.15)),
     subject: float(1),
+    emissive: pattern.photophores ? photophoreGlow(u, kd, pattern.photophores, s, v, onBody, variation) : undefined,
   });
 
   const m = new MeshBasicNodeMaterial({ side: DoubleSide });
-  m.positionNode = deformed;
+  const column = (offset: number): ShaderNode => instancedDynamicBufferAttribute(matrices, 'vec4', 16, offset);
+  const instance: ShaderNode = mat4(column(0), column(4), column(8), column(12));
+  m.positionNode = instance.mul(vec4(deformed, 1)).xyz;
   m.colorNode = lit;
   return m;
 }

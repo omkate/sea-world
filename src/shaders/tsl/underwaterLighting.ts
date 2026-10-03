@@ -1,6 +1,6 @@
 import { abs, cameraPosition, dot, exp, float, max, min, mix, normalize, positionWorld, pow, smoothstep, sqrt, vec3 } from 'three/tsl';
 import type { FrameUniforms } from '../../core/engine/uniforms';
-import { ABSORPTION, SCATTER } from '../../ocean/medium/optics';
+import { ABSORPTION, DIRECTIONAL_DEPTH_SCALE, SCATTER } from '../../ocean/medium/optics';
 import { CAUSTIC_SHAFT_MEAN, CAUSTIC_TILE, caustic } from './caustics';
 import type { ShaderNode } from './types';
 
@@ -59,7 +59,10 @@ export function underwaterLit(u: FrameUniforms, kd: readonly [number, number, nu
 
   const l: ShaderNode = (u.sunDirWater as ShaderNode).negate();
   const nl: ShaderNode = max(dot(n, l), 0);
-  let sun: ShaderNode = down.mul(SUN_UNDERWATER).mul(nl);
+  // Scattering turns the sun into a diffuse glow from above with depth (the medium pass fades
+  // its directional effects on the same scale): the hard sun term hands over to the sky term.
+  const directional: ShaderNode = exp(z.div(-DIRECTIONAL_DEPTH_SCALE));
+  let sun: ShaderNode = down.mul(SUN_UNDERWATER).mul(nl).mul(directional);
   if (s.caustics) {
     const toSun: ShaderNode = l;
     const entry: ShaderNode = p.xz.add(toSun.xz.mul(z.div(max(toSun.y, 0.2))));
@@ -69,15 +72,17 @@ export function underwaterLit(u: FrameUniforms, kd: readonly [number, number, nu
     sun = sun.mul(mix(float(1), c.mul(c).mul(0.55).add(0.45), exp(z.div(-10)).mul(0.85)));
   }
   const skyWeight: ShaderNode = mix(float(0.12), float(1), n.y.mul(0.5).add(0.5));
-  const sky: ShaderNode = down.mul(SKY_UNDERWATER).mul(skyWeight);
+  const sky: ShaderNode = down.mul(float(SKY_UNDERWATER).add(float(1).sub(directional).mul(SUN_UNDERWATER * 0.25))).mul(skyWeight);
 
   const sigma = vec3(ABSORPTION[0] + SCATTER[0], ABSORPTION[1] + SCATTER[1], ABSORPTION[2] + SCATTER[2]);
-  const fillStrength: ShaderNode = float(FILL_LIGHT).add((u.diveLight as ShaderNode).mul(LAMP_LIGHT));
-  const fill: ShaderNode = vec3(1, 0.96, 0.9)
-    .mul(fillStrength)
-    .mul(max(dot(n, v), 0))
-    .mul(exp(sigma.mul(dist).negate()))
-    .div(dist.mul(dist).add(0.6));
+  // The low-power fill is a shallow-water documentary light: it fades out through 60–200 m, where
+  // the camera's exposure climbs so high it would blow out anything nearby, and the twilight is
+  // seen by its own light until the dive lamp comes on.
+  const fillFade: ShaderNode = smoothstep(200, 60, u.cameraDepth as ShaderNode);
+  const fillStrength: ShaderNode = float(FILL_LIGHT).mul(fillFade).add((u.diveLight as ShaderNode).mul(LAMP_LIGHT));
+  // Camera-mounted light: it travels to the subject and back along (almost) the view ray.
+  const fillReach: ShaderNode = vec3(1, 0.96, 0.9).mul(fillStrength).mul(exp(sigma.mul(dist).negate())).div(dist.mul(dist).add(0.6));
+  const fill: ShaderNode = fillReach.mul(max(dot(n, v), 0));
 
   const diffuse: ShaderNode = s.albedo.mul(sun.add(sky).add(fill));
 
@@ -91,7 +96,15 @@ export function underwaterLit(u: FrameUniforms, kd: readonly [number, number, nu
     .mul(s.specular)
     .mul(fresnel.mul(2).add(0.4));
 
-  let color: ShaderNode = diffuse.add(specular);
+  // The lamp sits beside the lens, so its highlight is where the surface faces the camera:
+  // mirror-sided fish (hatchetfish, lanternfish) flash back at the lens, as in ROV footage.
+  const lampSpecular: ShaderNode = fillReach
+    .mul(pow(max(dot(n, v), 0), shininess))
+    .mul(s.specular)
+    .mul(fresnel.mul(2).add(0.4))
+    .mul(shininess.mul(0.05));
+
+  let color: ShaderNode = diffuse.add(specular).add(lampSpecular);
   if (s.rim) {
     const rimShape: ShaderNode = pow(float(1).sub(abs(dot(n, v))), 3).mul(max(n.y, 0).mul(0.7).add(0.3));
     color = color.add(down.mul(SKY_UNDERWATER).mul(rimShape).mul(s.rim));

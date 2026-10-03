@@ -74,6 +74,25 @@ export class JellyBloom {
     this.active = places.map(() => true);
   }
 
+  /** Jellies placed, and jellies simulated right now. */
+  counts(): { total: number; simulated: number } {
+    return { total: this.places.length, simulated: this.mesh.visible ? this.active.filter(Boolean).length : 0 };
+  }
+
+  /** The active jelly nearest `from` that passes `accept`, written to `out`; returns its distance. */
+  nearest(from: Vector3, out: Vector3, accept: (p: Vector3) => boolean): number {
+    let best = Infinity;
+    this.pos.forEach((p, i) => {
+      if (!this.active[i]) return;
+      const d = p.distanceTo(from);
+      if (d < best && accept(p)) {
+        best = d;
+        out.copy(p);
+      }
+    });
+    return best;
+  }
+
   update(dt: number, time: number, camera: Vector3): void {
     const { o } = this;
     let any = false;

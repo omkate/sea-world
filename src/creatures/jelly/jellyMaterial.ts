@@ -5,7 +5,6 @@ import {
   cameraPosition,
   cos,
   dot,
-  faceDirection,
   float,
   fract,
   instancedBufferAttribute,
@@ -88,7 +87,9 @@ export function createJellyMaterial(u: FrameUniforms, kd: readonly [number, numb
   const armColor: ShaderNode = mix(arm, arm.mul(0.75), frill);
   const color: ShaderNode = mix(mix(bell, armColor, isPart(JELLY_PART.arm)), vec3(0.9, 0.88, 0.95), isPart(JELLY_PART.filament));
 
-  const normal: ShaderNode = (normalWorld as ShaderNode).mul(faceDirection);
+  // Light the side the camera sees (see fishMaterial: faceDirection is unreliable on this path).
+  const n0: ShaderNode = normalize(normalWorld as ShaderNode);
+  const normal: ShaderNode = n0.mul(step(0, dot(n0, (cameraPosition as ShaderNode).sub(positionWorld))).mul(2).sub(1));
   const lit: ShaderNode = underwaterLit(u, kd, {
     albedo: color,
     normal,

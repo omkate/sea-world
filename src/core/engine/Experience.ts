@@ -15,12 +15,20 @@ import { createUnderwaterPipeline } from '../../ocean/medium/UnderwaterPipeline'
 import { inscatter, whiteBalance, WHITE_BALANCE_STRENGTH } from '../../ocean/medium/optics';
 import { SuspendedParticles } from '../../particles/suspended/SuspendedParticles';
 import { ReefChapter } from '../../environments/reef/ReefChapter';
+import { OpenBlueChapter } from '../../environments/openBlue/OpenBlueChapter';
+import { TwilightChapter } from '../../environments/twilight/TwilightChapter';
 import { AssetLibrary } from '../../assets/AssetLibrary';
 import { Hud } from '../../ui/hud/Hud';
 import type { DebugPanel } from '../../ui/debug/DebugPanel';
 import { maxExposureEV, type Rgb } from '../../data/zones/physics';
 import { smoothstep } from '../math/monotoneCubic';
 import { stepCriticalSpring } from '../../depth/spring';
+import { loadSpecies } from '../../data/species';
+import { Scanner, MAX_SIGHTINGS, type SightingSource } from '../../discovery/scanner/Scanner';
+import { DiscoveryStore } from '../../discovery/persistence/DiscoveryStore';
+import { DiscoveryLayer } from '../../ui/discovery/DiscoveryLayer';
+import { Codex } from '../../ui/codex/Codex';
+import { DISCOVERY_UI } from '../../discovery/flags';
 
 const BASE_EXPOSURE = 0.62;
 const PARTICLE_ALBEDO = 0.8;
@@ -60,6 +68,10 @@ export class Experience {
   private readonly surface: OceanSurface;
   private readonly particles: SuspendedParticles;
   private reef: ReefChapter | null = null;
+  private openBlue: OpenBlueChapter | null = null;
+  private twilight: TwilightChapter | null = null;
+  private scanner: Scanner | null = null;
+  private discovery: DiscoveryLayer | null = null;
   private readonly library = new AssetLibrary();
   private readonly pipeline: ReturnType<typeof createUnderwaterPipeline>;
   private readonly hud: Hud;
@@ -127,8 +139,25 @@ export class Experience {
     const { renderer } = this.o.info;
     this.reef = await ReefChapter.create(this.u, MARIANA.kd, this.library, (x, z) => waveHeight(this.surface.waves, x, z, this.time));
     this.scene.add(this.reef.group);
+    // The reef has loaded every model the open blue reuses (the whitetip scan).
+    this.openBlue = new OpenBlueChapter(this.u, MARIANA.kd, this.library);
+    this.scene.add(this.openBlue.group);
+    this.twilight = new TwilightChapter(this.u, MARIANA.kd);
+    this.scene.add(this.twilight.group);
+    this.mountDiscovery([...this.reef.sightings(), ...this.openBlue.sightings(), ...this.twilight.sightings()]);
     await renderer.compileAsync(this.scene, this.camera);
     await renderer.compileAsync(this.particles.scene, this.camera);
+  }
+
+  /** Scanner, glyphs, cards and codex over the species this build can show. */
+  private mountDiscovery(sources: SightingSource[]): void {
+    if (!DISCOVERY_UI) return;
+    const species = loadSpecies();
+    const byId = new Map(species.map((s) => [s.id, s]));
+    const store = new DiscoveryStore();
+    this.scanner = new Scanner(sources, (id) => byId.get(id)?.sizeTypical ?? 0.2, (id) => store.has(id));
+    const codex = new Codex(document.body, species, store, this.scanner.species);
+    this.discovery = new DiscoveryLayer(document.body, byId, store, (id) => codex.open(id), MAX_SIGHTINGS);
   }
 
   start(): void {
@@ -202,6 +231,8 @@ export class Experience {
     u.belowColor.value.set(below[0], below[1], below[2]);
     const water = inscatter(Math.max(depth, 0), 0, Infinity, u.turbidity.value, MARIANA.kd, this.scratch);
     u.waterColor.value.set(water[0], water[1], water[2]);
+    const above = inscatter(Math.max(depth, 0), 1, Infinity, u.turbidity.value, MARIANA.kd, this.scratch);
+    u.waterAboveColor.value.set(above[0], above[1], above[2]);
     const [lr, lg, lb] = this.state.light;
     const ambient = 0.32 * PARTICLE_ALBEDO;
     u.ambientWater.value.set(lr * ambient, lg * ambient, lb * ambient);
@@ -212,11 +243,16 @@ export class Experience {
     this.surface.top.visible = cam.position.y > -3;
     this.surface.under.visible = cam.position.y < 3;
     this.reef?.update(dt, this.time, cam, depth, QUALITY[this.tier].scenery);
+    this.openBlue?.update(dt, this.time, cam, depth);
+    this.twilight?.update(dt, this.time, cam, depth);
 
     renderer.info.reset();
     this.pipeline.pipeline.render();
 
     this.hud.update(this.state, dt);
+    // Discovery only underwater, at the scanner's 10 Hz; between ticks nothing touches the DOM.
+    const sightings = this.scanner?.update(dt, cam, innerWidth, innerHeight);
+    if (sightings) this.discovery?.update(depth > 0.5 ? sightings : []);
     if (progress > 0.004) this.o.dom.cue?.classList.add('gone');
     this.debug?.frame(dt * 1000, this.state);
 
@@ -259,6 +295,12 @@ export class Experience {
           getTier: () => this.tier,
           getRenderScale: () => this.drs.scale,
           getParticleCount: () => this.particles.sprite.count,
+          getCreatures: () => {
+            const reef = this.reef?.creatureCounts() ?? { total: 0, simulated: 0 };
+            const blue = this.openBlue?.creatureCounts() ?? { total: 0, simulated: 0 };
+            const twilight = this.twilight?.creatureCounts() ?? { total: 0, simulated: 0 };
+            return { total: reef.total + blue.total + twilight.total, simulated: reef.simulated + blue.simulated + twilight.simulated };
+          },
           getCpuMs: () => this.cpuMs,
           jumpToDepth: (d) => this.scroll.jumpTo(progressForDepth(d)),
           toggles: this.pipeline.toggles,

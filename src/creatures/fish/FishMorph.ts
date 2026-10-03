@@ -15,7 +15,7 @@ export interface FishMorph {
   pectoral: { s: number; length: number; width: number };
   pelvic: { s: number; length: number } | null;
   eye: { s: number; v: number; radius: number };
-  swim: { style: 'labriform' | 'carangiform' | 'subcarangiform'; bodyWave: number; cruiseBL: number };
+  swim: { style: 'labriform' | 'carangiform' | 'subcarangiform' | 'thunniform'; bodyWave: number; cruiseBL: number };
 }
 
 export interface Rgb {
@@ -72,6 +72,28 @@ export interface FishSpots {
   vMax: number;
 }
 
+export interface PhotophoreRow {
+  /** Normalised height of the row, its extent along the body, and how many organs it holds. */
+  v: number;
+  sMin: number;
+  sMax: number;
+  count: number;
+  /** Organ radius in units of body length. */
+  radius: number;
+}
+
+/** Light organs. They glow in camera-adapted units, like the plankton flashes. */
+export interface FishPhotophores {
+  color: Rgb;
+  rows: readonly PhotophoreRow[];
+  /** Steady glow relative to the adapted exposure (1 ≈ a faint point of light). */
+  brightness: number;
+  /** Occasional brighter flashes (signalling), every ~5–12 s per fish. */
+  flash: boolean;
+  /** A ventral glow matched to the downwelling light, hiding the silhouette from below. */
+  counterillumination: boolean;
+}
+
 export interface FishPattern {
   back: Rgb;
   belly: Rgb;
@@ -89,6 +111,7 @@ export interface FishPattern {
   /** 0..1 scale shimmer (guanine iridescence). */
   sheen: number;
   roughness: number;
+  photophores?: FishPhotophores;
 }
 
 export const rgb = (r: number, g: number, b: number): Rgb => ({ r, g, b });

@@ -58,6 +58,7 @@ Verification: **12 verified**, **62 uncertain**, 0 unverified. An entry is `unce
 
 | Common name | Scientific name | Depth (m) | Verification | Key note |
 |---|---|---|---|---|
+| Mackerel scad | *Decapterus macarellus* | 0–400 | verified | Usually 40–200 m (FishBase); NOAA PIFSC records in the Mariana box (2014). Bait-ball prey of tunas. |
 | Yellowfin tuna | *Thunnus albacares* | 1–1602 | uncertain (visual.coloration) | Usually 1-250 m; rarely below 250 m in the tropics due to oxygen sensitivity. |
 | Skipjack tuna | *Katsuwonus pelamis* | 0–260 | uncertain (visual.coloration) | Schools at the surface with birds, drifting objects, sharks and whales. |
 | Spinner dolphin | *Stenella longirostris* | 0–300 | uncertain (depthMax) | Most frequently encountered nearshore cetacean in the Pacific Islands region; NOAA photo-ID work around Guam/CNMI. |

@@ -7,6 +7,8 @@ export interface DebugHooks {
   getTier: () => string;
   getRenderScale: () => number;
   getParticleCount: () => number;
+  /** Animals placed in the dive, and those simulated near the camera right now. */
+  getCreatures: () => { total: number; simulated: number };
   getCpuMs: () => number;
   jumpToDepth: (depth: number) => void;
   toggles: Record<string, { value: number }>;
@@ -58,6 +60,11 @@ export class DebugPanel {
     this.gui?.show(this.visible);
   }
 
+  private creatures(): string {
+    const c = this.hooks.getCreatures();
+    return `${c.simulated.toLocaleString()} simulated / ${c.total.toLocaleString()} placed`;
+  }
+
   frame(dtMs: number, state: DepthState): void {
     if (!this.visible) return;
     this.frames++;
@@ -82,7 +89,7 @@ export class DebugPanel {
       `tier         ${this.hooks.getTier()}`,
       `render res   ${canvas.width}×${canvas.height} (scale ${this.hooks.getRenderScale().toFixed(2)})`,
       `particles    ${this.hooks.getParticleCount().toLocaleString()}`,
-      `creatures    0 (none implemented yet)`,
+      `creatures    ${this.creatures()}`,
       `depth        ${state.depth.toFixed(2)} m`,
       `zone         ${state.zoneName}`,
       `light        ${state.lightFraction.toExponential(2)}  ${state.lightLabel}`,

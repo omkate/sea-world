@@ -13,11 +13,12 @@ camera + DepthState ──► FrameUniforms (one write per frame) ──► ever
 RenderPipeline:  scene pass ─┐
                  particle pass┴► UnderwaterPipeline (waterline · medium · lens) ─► AgX ─► FXAA
 Hud (≤10 Hz, text only when changed) · DebugPanel (lazy) · DynamicResolution (frame interval)
+Scanner (10 Hz, no DOM) ──► DiscoveryLayer (glyphs) · DiscoveryStore (localStorage) ──► Codex
 ```
 
 Rules the code follows:
 
-- **No DOM work in the render loop.** The HUD samples at 10 Hz and only writes text that changed.
+- **No DOM work in the render loop.** The HUD samples at 10 Hz and only writes text that changed. Discovery glyphs move only on scanner ticks (10 Hz); a CSS transition carries them between ticks.
 - **Pure physics.** `src/data/zones/physics.ts`, `src/ocean/medium/optics.ts`, `src/depth/*` and `src/core/quality/*` have no side effects and are unit-tested.
 - **One source of GPU truth.** `src/core/engine/uniforms.ts` holds every frame uniform. Systems never own duplicate copies.
 - **CPU mirrors of GPU math.** `waveHeight()` (CPU) and `gerstnerHeight()` (TSL) share one wave set, so the camera, the waterline test and the surface always agree.
@@ -38,7 +39,13 @@ Rules the code follows:
 | `src/particles/suspended` | Camera-relative suspended particulates |
 | `src/camera` | Depth-driven documentary rig |
 | `src/ecosystem/spawning` | Depth and site eligibility rules for species |
-| `src/ui` | HUD, debug panel, fallback |
+| `src/ecosystem/schooling` | CPU boids (`School`, several groups per instanced mesh; only in-range fish are packed into instance slots and drawn) and `SchoolSet` (one school per species per chapter, range culling, size-based mesh detail) |
+| `src/ecosystem/predation` | `PredatorBeat`: when a rare strike happens (only while the camera is near) |
+| `src/environments/reef` | Reef terrain, corals, reef fish, jellies, hero animals (live above 130 m) |
+| `src/environments/twilight` | The twilight zone (240–1,050 m): lanternfish, hatchetfish and bristlemouths with photophores, living in a camera-relative box whose population follows per-species density curves by depth |
+| `src/environments/openBlue` | The open blue (90–265 m): no geometry; tuna, skipjack and scad schools spaced so one is always in frame, a scad bait ball, oceanic whitetips |
+| `src/discovery` | Scanner (nearest on-screen member of each species, size-scaled range, marks only animals ≥16 px long; known species only up close) and `DiscoveryStore` (guarded `localStorage`). **Switched off** (`DISCOVERY_UI` in `flags.ts`) until the end of the build |
+| `src/ui` | HUD, debug panel, fallback, discovery glyphs and species card, codex |
 
 ## Asset pipeline
 
@@ -78,8 +85,18 @@ At runtime `AssetLibrary` expands quantized attributes to float, bakes each mode
 | Dive lamp | Inverse-square cone with reduced backscatter (lamps assumed offset from the port) | The ROV convention; not a specific vehicle |
 | Bioluminescent flashes | 0.15% of particles pulse blue-green (~480 nm) from 350 m, in camera-adapted units, visible only with the lamp off | Generic, unidentified plankton; species-specific displays arrive in Phase 6 |
 | Sensor grain, vignette, grade | Camera conventions, not physics | Chosen to match documentary footage |
+| Fish and jelly colour | A "subject light" (`underwaterLit`, `subject`) adds light pre-divided by view-path transmittance and white balance, so animals within ~7 m read in true colour; off below 60 m | Art direction, like a documentary crew's video lights and grade. Real water at 10–20 m strips most red from unlit subjects |
+| Tuna strike | Scheduled by `PredatorBeat` (first ~6 s after the camera arrives, then every 60–120 s) and steered as chase, flight and a packed school; no capture or feeding | Plan §6.4 asks for a rare documentary beat, not a simulation of predation |
+| Twilight fauna | 3–5 cm fish live in a box that travels with the camera (like the suspended particles); how many are present follows a smoothstep density curve per species, zero outside its recorded depth range | Real fish don't follow the camera; at their size they only read within a few metres, so a fixed placement would be empty almost everywhere |
+| Diel vertical migration | Migrators are shown at their daytime depths only (lanternfish in the deep scattering layer, ~350–700 m) | The dive happens in daylight; the night-time rise needs a day/night cycle |
+| Photophores | Glow in camera-adapted units (like the plankton flashes); dots blend into their average glow beyond ~2 m; lanternfish flash every 5–12 s | Real organs are fractions of a millimetre and far dimmer in absolute terms |
+| Counterillumination | Bellies glow at the radiance of open water seen looking up at the camera depth (`waterAboveColor`) | Matches the purpose: the silhouette vanishes from below |
+| Mirror-sided fish | Hatchetfish and lanternfish silver is a low diffuse albedo with high gloss | Mirror sides reflect the surrounding water rather than scattering light; they flash under the lamp |
+| Sunlight on surfaces | The hard sun term fades with depth on the medium's directional scale (80 m) and hands its light to the diffuse light from above | Below ~100 m the light field is almost entirely diffuse |
+| Camera lights | A low-power fill fades out through 60–200 m; the dive lamp (with a specular highlight beside the lens) takes over where it switches on | Under the twilight's raised exposure a constant fill would blow out everything nearby |
+| Jelly translucency | Opaque jellies blend toward the open water's horizontal radiance where thin (exact over open water, approximate over the reef) | True transparency would skip the medium pass (transparent objects are drawn after it) |
 | Scale | 1 unit = 1 m. The camera is at true depth (float precision is fine to 11 km for Phase 1) | Chapter sets will use a floating origin (plan §4.1) |
 
 ## Not built yet (no UI exists for these)
 
-Creatures, reef, seafloor caustics (there is no floor yet), audio, species bioluminescence, the discovery codex, Cinema Mode, streaming. The HUD and debug panel only show systems that exist; the debug panel reports "creatures 0 (none implemented yet)".
+Audio, Cinema Mode, streaming, the sperm whale pass (no model yet), the rest of the twilight fauna (siphonophores, the strawberry squid, krill), night-time vertical migration, and life below 1,050 m (the midnight zone, Phase 6). Discovery covers animals only: coral colonies and the giant clam are rendered but not scanned, so the codex lists them as "Not yet discoverable". The HUD and debug panel only show systems that exist; the debug panel reports "creatures 0 (none implemented yet)".

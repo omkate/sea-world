@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { DISCOVERY_UI } from '../../src/discovery/flags';
 
 const hud = (page: Page, field: string) => page.locator(`[data-hud="${field}"]`);
 const depthMetres = async (page: Page) => page.evaluate(() => window.__abyss!.state.depth);
@@ -95,4 +96,32 @@ test('fallback page explains hardware acceleration is required', async ({ page }
   await expect(page.locator('#fallback')).toBeVisible();
   await expect(page.locator('#fallback h1')).toContainText('hardware-accelerated');
   await expect(page.locator('#ocean')).toHaveCount(0);
+});
+
+// The discovery UI is switched off until the end of the build (src/discovery/flags.ts).
+test('nearby species get a glyph, are logged, and open in the codex', async ({ page }) => {
+  test.skip(!DISCOVERY_UI, 'discovery UI switched off (src/discovery/flags.ts)');
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/?depth=17');
+  await ready(page);
+  await expect(page.locator('.glyph:not([hidden])').first()).toBeAttached({ timeout: 15_000 });
+  await expect(page.locator('.codex-toggle')).not.toHaveText(/^Codex 0\//);
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('abyss.discovered.v1') ?? '[]') as string[]);
+  expect(stored.length).toBeGreaterThan(0);
+
+  // The glyph follows a moving animal, so dispatch the click rather than wait for it to settle.
+  await page.locator('.glyph:not([hidden])').first().dispatchEvent('click');
+  await expect(page.locator('.species-card')).toBeVisible();
+  await page.locator('.card-explore').click();
+  await expect(page.locator('.codex')).toBeVisible();
+  await expect(page.locator('.codex-detail h3')).not.toBeEmpty();
+  await expect(page.locator('.codex-detail .badge')).toHaveText(/verified/i);
+
+  // Locked entries never match a search.
+  await page.locator('.codex-search').fill('anglerfish');
+  await expect(page.locator('.codex-empty')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.codex')).toBeHidden();
+  expect(errors).toEqual([]);
 });
