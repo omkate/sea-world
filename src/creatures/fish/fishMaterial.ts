@@ -3,8 +3,10 @@ import {
   abs,
   attribute,
   cos,
+  dot,
   faceDirection,
   float,
+  floor,
   fract,
   instancedBufferAttribute,
   length,
@@ -90,6 +92,25 @@ export function createFishMaterial(
       .mul(smoothstep(st.vMax + 0.1, st.vMax - 0.1, v));
     color = mix(color, col(st.color), smoothstep(st.width, st.width * 0.4, band).mul(region));
   }
+  for (const ln of pattern.lines ?? []) {
+    const along: ShaderNode = smoothstep(ln.sMin, ln.sMax, s);
+    const half: ShaderNode = mix(float(ln.halfHeight), float(ln.halfHeightTail), along);
+    const region: ShaderNode = smoothstep(ln.sMin - 0.02, ln.sMin + 0.02, s).mul(smoothstep(ln.sMax + 0.02, ln.sMax - 0.02, s));
+    color = mix(color, col(ln.color), smoothstep(half, half.mul(0.75), abs(v.sub(ln.v))).mul(region));
+  }
+  for (const sp of pattern.spots ?? []) {
+    const p: ShaderNode = vec2(s, v.mul(sp.aspect)).div(sp.cell);
+    const cell: ShaderNode = floor(p);
+    // Per-cell jitter so the spots read as organic rather than a grid.
+    const h: ShaderNode = fract(sin(dot(cell, vec2(127.1, 311.7))).mul(43758.5));
+    const centre: ShaderNode = vec2(h, fract(h.mul(7.13))).sub(0.5).mul(0.45).add(0.5);
+    const d: ShaderNode = length(fract(p).sub(centre));
+    const region: ShaderNode = smoothstep(sp.sMin - 0.02, sp.sMin + 0.02, s)
+      .mul(smoothstep(sp.sMax + 0.02, sp.sMax - 0.02, s))
+      .mul(smoothstep(sp.vMin - 0.06, sp.vMin + 0.06, v))
+      .mul(smoothstep(sp.vMax + 0.06, sp.vMax - 0.06, v));
+    color = mix(color, col(sp.color), smoothstep(sp.radius, sp.radius * 0.7, d).mul(region));
+  }
 
   // Fins: species colours, thinning toward translucent edges.
   const finColor: ShaderNode = mix(
@@ -125,6 +146,7 @@ export function createFishMaterial(
     // Wet scales are glossy but not mirrors: modest specular, a small iridescent boost, eye glint.
     specular: float(0.06).add(float(pattern.sheen).mul(0.18).mul(onBody)).add(glint.mul(0.6)),
     rim: float(0.25).add(isFin.mul(0.15)),
+    subject: float(1),
   });
 
   const m = new MeshBasicNodeMaterial({ side: DoubleSide });

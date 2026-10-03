@@ -43,6 +43,7 @@ Verification: **12 verified**, **62 uncertain**, 0 unverified. An entry is `unce
 | Bird's-nest coral | *Seriatopora hystrix* | 0–40 | uncertain (depthMax, sizeTypical) | Listed for the Marianas (Randall 2003); SeaLifeBase 0-183 m judged implausible, capped at documented ~40 m mesophotic colonies. |
 | Lace hydrocoral (stylasterid) | *Stylaster sanguineus* | 30–128 | uncertain (regions, depthMin, sizeTypical, sizeMax, visual.coloration) | Mariana occurrence NOT confirmed: Randall 2003 lists Marianas Stylaster only to letter-group level; no OBIS/GBIF records in the box. Hydrozoan filed under Corals. |
 | Fluted giant clam | *Tridacna squamosa* | 0–42 | verified | Guam voucher in Paulay 2003 + OBIS Guam records since 1963; SeaLifeBase/NMFS call it introduced at Guam, so native status is disputed. |
+| Crown jellyfish | *Cephea cephea* | 0–30 | uncertain (depthMax, sizeTypical, visual.coloration) | Florida Museum records from Merizo and Orote Peninsula (near Blue Hole), 1997–98. |
 
 ## Reef micro
 

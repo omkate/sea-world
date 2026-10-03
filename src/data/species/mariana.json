@@ -1974,6 +1974,63 @@
     ]
   },
   {
+    "id": "cephea-cephea",
+    "commonName": "Crown jellyfish",
+    "scientificName": "Cephea cephea",
+    "taxonRank": "species",
+    "category": "Cnidarians",
+    "depthMin": 0,
+    "depthMax": 30,
+    "habitats": [
+      "coral-reef",
+      "epipelagic"
+    ],
+    "regions": [
+      "Guam",
+      "Mariana Islands"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 0.25,
+    "sizeMax": 0.5,
+    "diet": "Zooplankton captured on the oral arms; also nourished by symbiotic algae",
+    "behavior": [
+      "Pulse",
+      "Drift",
+      "FollowCurrent"
+    ],
+    "locomotion": "pulse",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Violet-brown to blue-purple bell with a raised central crown of wart-like knobs and pale spots; frilly oral arms trailing long whitish filaments.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "A rhizostome: no marginal tentacles; it feeds through many small mouths on its frilled oral arms and pulses its bell to stay in the water column.",
+    "rarity": "uncommon",
+    "representation": "mid",
+    "verification": "uncertain",
+    "uncertainFields": [
+      "depthMax",
+      "sizeTypical",
+      "visual.coloration"
+    ],
+    "notes": "Guam museum records (Florida Museum, 1997-1998) from Merizo and the Orote Peninsula near Blue Hole, a fore-reef dive site. Depth range and size are general literature values, not Guam measurements.",
+    "sources": [
+      {
+        "label": "OBIS occurrences: Cephea cephea (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Cephea%20cephea&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
+        "field": "regions"
+      },
+      {
+        "label": "WoRMS: Cephea cephea",
+        "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=213582",
+        "field": "scientificName"
+      }
+    ]
+  },
+  {
     "id": "thunnus-albacares",
     "commonName": "Yellowfin tuna",
     "scientificName": "Thunnus albacares",

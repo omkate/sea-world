@@ -27,6 +27,8 @@ export function createFrameUniforms() {
     gridOrigin: uniform(new Vector3()) as Uniform<Vector3>,
     /** Linear-light radiance of the water column looking down from the camera. */
     belowColor: uniform(new Vector3()) as Uniform<Vector3>,
+    /** Radiance of open water looking horizontally at the camera depth (seen through jellies). */
+    waterColor: uniform(new Vector3()) as Uniform<Vector3>,
     /** Horizontal in-scatter radiance at the camera depth (for particles). */
     ambientWater: uniform(new Vector3()) as Uniform<Vector3>,
     /** Screen pixels per metre at 1 m distance; keeps particles from vanishing below a pixel. */

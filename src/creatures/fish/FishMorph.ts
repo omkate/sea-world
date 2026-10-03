@@ -49,6 +49,29 @@ export interface FishStripes {
   vMax: number;
 }
 
+export interface FishLine {
+  /** Normalised height of the line's centre, and its half height at the snout and tail ends. */
+  v: number;
+  halfHeight: number;
+  halfHeightTail: number;
+  color: Rgb;
+  sMin: number;
+  sMax: number;
+}
+
+export interface FishSpots {
+  /** Grid cell size in s; cells are stretched in v by `aspect` so spots stay round on the flank. */
+  cell: number;
+  aspect: number;
+  /** Spot radius as a fraction of the cell. */
+  radius: number;
+  color: Rgb;
+  sMin: number;
+  sMax: number;
+  vMin: number;
+  vMax: number;
+}
+
 export interface FishPattern {
   back: Rgb;
   belly: Rgb;
@@ -57,6 +80,10 @@ export interface FishPattern {
   bellySoftness: number;
   bands: readonly FishBand[];
   stripes: readonly FishStripes[];
+  /** Lengthwise lines (e.g. a cleaner wrasse's lateral stripe). */
+  lines?: readonly FishLine[];
+  /** Jittered round spots (e.g. a triggerfish's belly spots). */
+  spots?: readonly FishSpots[];
   fins: { dorsal: Rgb; anal: Rgb; caudal: Rgb; pectoral: Rgb };
   iris: Rgb;
   /** 0..1 scale shimmer (guanine iridescence). */

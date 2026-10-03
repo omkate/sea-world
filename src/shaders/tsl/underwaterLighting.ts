@@ -1,4 +1,4 @@
-import { abs, cameraPosition, dot, exp, float, max, mix, normalize, positionWorld, pow, sqrt, vec3 } from 'three/tsl';
+import { abs, cameraPosition, dot, exp, float, max, min, mix, normalize, positionWorld, pow, smoothstep, sqrt, vec3 } from 'three/tsl';
 import type { FrameUniforms } from '../../core/engine/uniforms';
 import { ABSORPTION, SCATTER } from '../../ocean/medium/optics';
 import { CAUSTIC_SHAFT_MEAN, CAUSTIC_TILE, caustic } from './caustics';
@@ -27,7 +27,19 @@ export interface SurfaceInputs {
   rim?: ShaderNode;
   /** Receive surface caustics (seafloor, coral). */
   caustics?: boolean;
+  /** Strength (0..1) of the documentary subject light, which shows a subject's true colours. */
+  subject?: ShaderNode;
 }
+
+/**
+ * Documentary subject light: crews light hero animals with strong video lights and grade them
+ * back to true colour. Art-directed, not physical: the light is pre-divided by the view-path
+ * transmittance and the camera white balance, so the subject reads in its own colours at
+ * SUBJECT_LIGHT, fading into the blue beyond SUBJECT_REACH. Only above SUBJECT_MAX_DEPTH.
+ */
+export const SUBJECT_LIGHT = 0.9;
+export const SUBJECT_REACH = 7;
+export const SUBJECT_MAX_DEPTH = 60;
 
 /**
  * Lighting for anything below the surface. Sunlight and skylight are attenuated per band by
@@ -83,6 +95,14 @@ export function underwaterLit(u: FrameUniforms, kd: readonly [number, number, nu
   if (s.rim) {
     const rimShape: ShaderNode = pow(float(1).sub(abs(dot(n, v))), 3).mul(max(n.y, 0).mul(0.7).add(0.3));
     color = color.add(down.mul(SKY_UNDERWATER).mul(rimShape).mul(s.rim));
+  }
+  if (s.subject) {
+    const d: ShaderNode = min(dist, 14);
+    const falloff: ShaderNode = float(1).div(d.div(SUBJECT_REACH).pow(2).add(1));
+    const shape: ShaderNode = max(dot(n, v), 0).mul(0.5).add(0.5);
+    const shallow: ShaderNode = smoothstep(SUBJECT_MAX_DEPTH, SUBJECT_MAX_DEPTH * 0.5, z);
+    const restore: ShaderNode = exp(sigma.mul(d)).div(max(u.whiteBalance as ShaderNode, vec3(0.05)));
+    color = color.add(s.albedo.mul(restore).mul(falloff.mul(shape).mul(shallow).mul(s.subject).mul(SUBJECT_LIGHT)));
   }
   if (s.emissive) color = color.add(s.emissive);
   return color;

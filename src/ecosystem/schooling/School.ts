@@ -33,9 +33,13 @@ const TABLE = 4096;
 const UP = new Vector3(0, 1, 0);
 
 /**
- * CPU boids for one species school. Separation, alignment and cohesion within a neighbour
- * radius (spatial hash), a soft home range and depth band, seafloor avoidance and a flight
- * response to the camera. Turn rate and acceleration are limited, so nothing snaps around.
+ * CPU boids for one species. Separation, alignment and cohesion within a neighbour radius
+ * (spatial hash), a soft home range and depth band, seafloor avoidance and a flight response
+ * to the camera. Turn rate and acceleration are limited, so nothing snaps around.
+ *
+ * Every group of the species (each with its own home, band and behaviour) shares one
+ * instanced mesh, so a species costs one draw call however many groups it has. Groups beyond
+ * the cull range are collapsed and not simulated.
  */
 export class School {
   readonly mesh: InstancedMesh;
@@ -47,6 +51,10 @@ export class School {
   private readonly cellOf: Int32Array;
   private readonly cellStart = new Int32Array(TABLE + 1);
   private readonly sorted: Int32Array;
+  private readonly groupOf: Uint16Array;
+  private readonly active: boolean[];
+  private readonly count: number;
+  private readonly cell: number;
   private readonly m = new Matrix4();
   private readonly q = new Quaternion();
   private readonly basis = new Matrix4();
@@ -56,9 +64,11 @@ export class School {
     geometry: BufferGeometry,
     material: Material,
     swim: InstancedBufferAttribute,
-    private readonly o: SchoolOptions,
+    private readonly groups: readonly SchoolOptions[],
   ) {
-    const n = o.count;
+    const n = groups.reduce((sum, g) => sum + g.count, 0);
+    this.count = n;
+    this.cell = Math.max(...groups.map((g) => g.neighbourBL * g.length));
     this.swim = swim;
     this.swim.setUsage(DynamicDrawUsage);
     this.mesh = new InstancedMesh(geometry, material, n);
@@ -70,36 +80,56 @@ export class School {
     this.personality = new Float32Array(n);
     this.cellOf = new Int32Array(n);
     this.sorted = new Int32Array(n);
+    this.groupOf = new Uint16Array(n);
+    this.active = groups.map(() => true);
 
-    const rng = createRng(o.seed);
-    const heading = rng() * Math.PI * 2;
-    for (let i = 0; i < n; i++) {
-      const r = Math.sqrt(rng()) * o.homeRadius * 0.6;
-      const a = rng() * Math.PI * 2;
-      this.pos[i * 3] = o.home.x + Math.cos(a) * r;
-      this.pos[i * 3 + 1] = o.yMin + (o.yMax - o.yMin) * (0.3 + 0.4 * rng());
-      this.pos[i * 3 + 2] = o.home.z + Math.sin(a) * r;
-      this.size[i] = o.length * (1 + (rng() * 2 - 1) * o.lengthVariation);
-      const sp = o.cruiseBL * this.size[i]!;
-      const h = heading + (rng() - 0.5) * (1.6 - o.cohesion);
-      this.vel[i * 3] = Math.cos(h) * sp;
-      this.vel[i * 3 + 2] = Math.sin(h) * sp;
-      this.personality[i] = rng();
-      swim.setXYZW(i, rng() * Math.PI * 2, 1, 0, rng());
-    }
+    let i = 0;
+    groups.forEach((o, g) => {
+      const rng = createRng(o.seed);
+      const heading = rng() * Math.PI * 2;
+      for (let k = 0; k < o.count; k++, i++) {
+        this.groupOf[i] = g;
+        const r = Math.sqrt(rng()) * o.homeRadius * 0.6;
+        const a = rng() * Math.PI * 2;
+        this.pos[i * 3] = o.home.x + Math.cos(a) * r;
+        this.pos[i * 3 + 1] = o.yMin + (o.yMax - o.yMin) * (0.3 + 0.4 * rng());
+        this.pos[i * 3 + 2] = o.home.z + Math.sin(a) * r;
+        this.size[i] = o.length * (1 + (rng() * 2 - 1) * o.lengthVariation);
+        const sp = o.cruiseBL * this.size[i]!;
+        const h = heading + (rng() - 0.5) * (1.6 - o.cohesion);
+        this.vel[i * 3] = Math.cos(h) * sp;
+        this.vel[i * 3 + 2] = Math.sin(h) * sp;
+        this.personality[i] = rng();
+        swim.setXYZW(i, rng() * Math.PI * 2, 1, 0, rng());
+      }
+    });
   }
 
-  /** Centre of the school (for LOD / culling decisions). */
-  get centre(): Vector3 {
-    return this.o.home;
+  /**
+   * Activates the groups within `range` of the camera and collapses the rest (zero scale, so
+   * they cost no fragments). Returns whether any group is active; cheap enough for every frame.
+   */
+  cull(camera: Vector3, range: number): boolean {
+    let any = false;
+    let changed = false;
+    this.groups.forEach((o, g) => {
+      const on = o.home.distanceTo(camera) <= range;
+      any ||= on;
+      if (on === this.active[g]) return;
+      this.active[g] = on;
+      if (on) return;
+      changed = true;
+      this.m.makeScale(0, 0, 0);
+      for (let i = 0; i < this.count; i++) if (this.groupOf[i] === g) this.mesh.setMatrixAt(i, this.m);
+    });
+    if (changed) this.mesh.instanceMatrix.needsUpdate = true;
+    return any;
   }
 
   update(dt: number, time: number, camera: Vector3): void {
-    const o = this.o;
-    const n = o.count;
+    const n = this.count;
     const { pos, vel } = this;
-    const cell = o.neighbourBL * o.length;
-    const inv = 1 / cell;
+    const inv = 1 / this.cell;
 
     // Spatial hash (counting sort into TABLE buckets).
     this.cellStart.fill(0);
@@ -114,6 +144,9 @@ export class School {
 
     const { f, r, u: up, p, s } = this.tmp;
     for (let i = 0; i < n; i++) {
+      const g = this.groupOf[i]!;
+      if (!this.active[g]) continue;
+      const o = this.groups[g]!;
       const ix = i * 3;
       const px = pos[ix]!;
       const py = pos[ix + 1]!;

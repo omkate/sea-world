@@ -20,6 +20,7 @@ import { HeroTurtle } from '../../creatures/hero/HeroTurtle';
 import { HeroSwimmer } from '../../creatures/hero/HeroSwimmer';
 import type { Wanderer } from '../../creatures/hero/Wanderer';
 import { Spotter } from '../../ecosystem/spotter/Spotter';
+import { JellyBloom, type JellyPlacement } from '../../creatures/jelly/JellyBloom';
 
 type Rgb3 = readonly [number, number, number];
 
@@ -150,6 +151,10 @@ function aheadOfCamera(depth: number, ahead: number, toReef: number): Vector3 {
 export class ReefChapter {
   readonly group = new Group();
   private readonly schools: School[] = [];
+  /** Per-school distance (m) beyond which a group is hidden and not simulated. */
+  private readonly schoolRange: number[] = [];
+  /** Groups gathered per species before each species' school is built. */
+  private readonly schoolGroups = new Map<string, SchoolOptions[]>();
   private readonly culled: CulledInstances[] = [];
   private frame = 0;
 
@@ -163,6 +168,7 @@ export class ReefChapter {
   /** Every large animal, for mutual spacing. */
   private readonly bigAnimals: Wanderer[] = [];
   private spotter: Spotter | null = null;
+  private jellies: JellyBloom | null = null;
   private readonly swimmers: HeroSwimmer[] = [];
   private readonly pods: { members: HeroSwimmer[]; offsets: Vector3[] }[] = [];
   private readonly slot = new Vector3();
@@ -195,7 +201,7 @@ export class ReefChapter {
     for (const [i, d] of [11, 15, 19, 27, 32].entries()) {
       const home = aheadOfCamera(d, 7 + i, 3 + i);
       this.addThicket(u, kd, home, 5 + i);
-      this.addSchool(u, kd, 'chromis-viridis', allowed, d, {
+      this.addSchool('chromis-viridis', allowed, d, {
         count: 140, length: 0.075, lengthVariation: 0.15, home, homeRadius: 2.2,
         yMin: home.y + 0.35, yMax: home.y + 2.2, cruiseBL: 1.4, maxTurn: 5, neighbourBL: 4, separationBL: 1.4,
         cohesion: 0.75, fleeRadius: 1.8, floorClearance: 0.3, seed: 100 + i,
@@ -204,18 +210,18 @@ export class ReefChapter {
     // Convict surgeonfish graze the slope in loose aggregations.
     for (const [i, d] of [14, 24, 31, 37].entries()) {
       const home = aheadOfCamera(d, 9, 1);
-      this.addSchool(u, kd, 'acanthurus-triostegus', allowed, d, {
+      this.addSchool('acanthurus-triostegus', allowed, d, {
         count: 55, length: 0.17, lengthVariation: 0.15, home, homeRadius: 9,
         yMin: home.y + 0.3, yMax: home.y + 2.5, cruiseBL: 1.0, maxTurn: 3.2, neighbourBL: 5, separationBL: 1.5,
         cohesion: 0.45, fleeRadius: 3, floorClearance: 0.4, seed: 200 + i,
       });
     }
     // Raccoon butterflyfish in pairs.
-    for (const [i, d] of [12, 17, 22, 28, 33, 40].entries()) {
-      const home = aheadOfCamera(d, 6 + i, (i % 2) * 3);
-      this.addSchool(u, kd, 'chaetodon-lunula', allowed, d, {
+    for (const [i, d] of [10, 12, 15, 17, 20, 22, 25, 28, 33, 40].entries()) {
+      const home = aheadOfCamera(d, 4 + (i % 4), (i % 2) * 3 - 1);
+      this.addSchool('chaetodon-lunula', allowed, d, {
         count: 2, length: 0.17, lengthVariation: 0.08, home, homeRadius: 4,
-        yMin: home.y + 0.4, yMax: home.y + 2.4, cruiseBL: 0.8, maxTurn: 2.8, neighbourBL: 8, separationBL: 1.5,
+        yMin: home.y + 0.4, yMax: Math.max(home.y + 2.4, -d - 0.6), cruiseBL: 0.8, maxTurn: 2.8, neighbourBL: 8, separationBL: 1.5,
         cohesion: 0.9, fleeRadius: 2.2, floorClearance: 0.5, seed: 300 + i,
       });
     }
@@ -223,22 +229,91 @@ export class ReefChapter {
     {
       const d = 26;
       const home = aheadOfCamera(d, 10, -2);
-      this.addSchool(u, kd, 'naso-lituratus', allowed, d, {
+      this.addSchool('naso-lituratus', allowed, d, {
         count: 12, length: 0.36, lengthVariation: 0.15, home, homeRadius: 14,
         yMin: home.y + 1, yMax: home.y + 5, cruiseBL: 0.9, maxTurn: 1.8, neighbourBL: 6, separationBL: 1.8,
         cohesion: 0.6, fleeRadius: 3.5, floorClearance: 1, seed: 400,
       });
     }
-    // An anemone with a pair of orange-fin anemonefish that never leave it.
-    {
-      const d = 13;
-      const spot = aheadOfCamera(d, 5.5, 1);
-      this.addAnemone(u, kd, spot);
-      this.addSchool(u, kd, 'amphiprion-chrysopterus', allowed, d, {
-        count: 2, length: 0.12, lengthVariation: 0.1, home: spot.clone(), homeRadius: 0.35,
+    // Anemones, each with a pair or trio of anemonefish that never leave it.
+    const anemones: Vector3[] = [];
+    for (const [i, [d, ahead, side, id]] of ([
+      [10, 3.5, 0.5, 'amphiprion-melanopus'],
+      [13, 4, 1, 'amphiprion-chrysopterus'],
+      [15, 3, -1.5, 'amphiprion-melanopus'],
+      [19, 4.5, 1.5, 'amphiprion-chrysopterus'],
+      [24, 3.5, -0.5, 'amphiprion-chrysopterus'],
+    ] as const).entries()) {
+      if (!allowed(id, d)) continue;
+      const spot = aheadOfCamera(d, ahead, side);
+      anemones.push(spot);
+      this.addSchool(id, allowed, d, {
+        count: 2 + (i % 2), length: 0.11, lengthVariation: 0.15, home: spot.clone(), homeRadius: 0.35,
         yMin: spot.y + 0.2, yMax: spot.y + 0.55, cruiseBL: 0.9, maxTurn: 6, neighbourBL: 6, separationBL: 1.5,
-        cohesion: 0.2, fleeRadius: 0.4, floorClearance: 0.18, seed: 500,
+        cohesion: 0.2, fleeRadius: 0.4, floorClearance: 0.18, seed: 500 + i,
       });
+    }
+    this.addAnemones(u, kd, anemones);
+    // Humbug damselfish share the chromis' branching coral heads and duck into them when chased.
+    for (const [i, d] of [11, 15, 19].entries()) {
+      const home = aheadOfCamera(d, 7 + i, 3 + i);
+      this.addSchool('dascyllus-aruanus', allowed, d, {
+        count: 16, length: 0.06, lengthVariation: 0.15, home, homeRadius: 0.9,
+        yMin: home.y + 0.25, yMax: home.y + 1.1, cruiseBL: 1.2, maxTurn: 6, neighbourBL: 4, separationBL: 1.5,
+        cohesion: 0.5, fleeRadius: 1.2, floorClearance: 0.2, seed: 600 + i,
+      });
+    }
+    // Royal angelfish, alone or in pairs, close to coral heads.
+    for (const [i, d] of [11, 16, 21, 29, 36].entries()) {
+      const home = aheadOfCamera(d, 3.5 + (i % 3), i % 2 === 0 ? 1.5 : -2);
+      this.addSchool('pygoplites-diacanthus', allowed, d, {
+        count: 1 + (i % 2), length: 0.2, lengthVariation: 0.1, home, homeRadius: 3,
+        yMin: home.y + 0.3, yMax: Math.max(home.y + 1.6, -d - 0.8), cruiseBL: 0.7, maxTurn: 2.6, neighbourBL: 8, separationBL: 1.5,
+        cohesion: 0.7, fleeRadius: 2, floorClearance: 0.4, seed: 700 + i,
+      });
+    }
+    // A cleaner wrasse pair at each cleaning station, never far from its coral head.
+    for (const [i, d] of [12, 19, 27].entries()) {
+      const home = aheadOfCamera(d, 3.5 + i, 0.5);
+      this.addSchool('labroides-dimidiatus', allowed, d, {
+        count: 2, length: 0.09, lengthVariation: 0.1, home, homeRadius: 0.8,
+        yMin: home.y + 0.2, yMax: home.y + 0.9, cruiseBL: 1.4, maxTurn: 6, neighbourBL: 6, separationBL: 1.5,
+        cohesion: 0.5, fleeRadius: 0.8, floorClearance: 0.2, seed: 800 + i,
+      });
+    }
+    // Clown triggerfish patrol a territory on their own.
+    for (const [i, d] of [17, 30].entries()) {
+      const home = aheadOfCamera(d, 5 + i, 2);
+      this.addSchool('balistoides-conspicillum', allowed, d, {
+        count: 1, length: 0.33, lengthVariation: 0.05, home, homeRadius: 5,
+        yMin: home.y + 0.4, yMax: home.y + 2, cruiseBL: 0.6, maxTurn: 1.8, neighbourBL: 6, separationBL: 2,
+        cohesion: 0, fleeRadius: 2.5, floorClearance: 0.5, seed: 900 + i,
+      });
+    }
+    // Bullethead parrotfish graze the reef in small roving groups.
+    for (const [i, d] of [13, 23, 34].entries()) {
+      const home = aheadOfCamera(d, 3.5 + i, -1);
+      this.addSchool('chlorurus-spilurus', allowed, d, {
+        count: 6, length: 0.3, lengthVariation: 0.15, home, homeRadius: 7,
+        yMin: home.y + 0.3, yMax: Math.max(home.y + 2, -d - 1), cruiseBL: 0.9, maxTurn: 2.2, neighbourBL: 6, separationBL: 1.8,
+        cohesion: 0.5, fleeRadius: 3, floorClearance: 0.4, seed: 1000 + i,
+      });
+    }
+    this.buildSchools(u, kd);
+
+    // Crown jellyfish drift through the water column above the reef, pulsing gently.
+    const jellies: JellyPlacement[] = [];
+    for (const [i, d] of [6, 8, 10, 12, 13, 15, 17, 18, 20, 22, 23, 25, 27, 28].entries()) {
+      if (!allowed('cephea-cephea', d)) continue;
+      const home = aheadOfCamera(d, 4 + (i % 5), (i % 3) * 2.5 - 2.5);
+      // Mid-water around the camera's height, never closer than 1.5 m to the reef.
+      const yMax = -d + 1.2;
+      const yMin = Math.min(yMax - 0.5, Math.max(home.y + 1.5, -d - 2));
+      jellies.push({ home: home.setY(-d), radius: 2.5, yMin, yMax });
+    }
+    if (jellies.length > 0) {
+      this.jellies = new JellyBloom(u, kd, jellies, { size: 0.28, sizeVariation: 0.25, current: new Vector3(0.03, 0, -0.015), range: 35, seed: 77 });
+      this.group.add(this.jellies.mesh);
     }
 
     // A green turtle glides along the slope below the camera's path.
@@ -369,6 +444,7 @@ export class ReefChapter {
     // Beyond this range the medium has absorbed nearly everything; nothing further is drawn.
     for (const c of this.culled) c.update(camera, sceneryRange);
     this.spotter?.update(dt, camera);
+    this.jellies?.update(dt, time, camera.position);
     for (const t of this.turtles) t.update(dt, time);
     camera.getWorldDirection(this.camForward);
     for (const h of this.swimmers) h.update(dt, camera.position, this.camForward);
@@ -377,19 +453,17 @@ export class ReefChapter {
       leader!.update(dt, camera.position, this.camForward);
       rest.forEach((m, k) => m.update(dt, camera.position, this.camForward, this.formationSlot(leader!, pod.offsets[k + 1]!)));
     }
-    // Fish beyond ~40 m are lost in the blue: hide them and skip their simulation. Nearby
-    // schools step at 30 Hz, half of them on alternate frames, so the CPU cost stays flat.
+    // Fish are lost in the blue beyond ~40 m, and small ones shrink below a few pixels well
+    // before that: hide them and skip their simulation. Nearby schools step at 30 Hz, half of
+    // them on alternate frames, so the CPU cost stays flat.
     this.frame++;
     this.schools.forEach((s, i) => {
-      const far = s.centre.distanceTo(camera.position) > 40;
-      s.mesh.visible = !far;
-      if (!far && (this.frame + i) % 2 === 0) s.update(Math.min(dt * 2, 1 / 15), time, camera.position);
+      s.mesh.visible = s.cull(camera.position, this.schoolRange[i]!);
+      if (s.mesh.visible && (this.frame + i) % 2 === 0) s.update(Math.min(dt * 2, 1 / 15), time, camera.position);
     });
   }
 
   private addSchool(
-    u: FrameUniforms,
-    kd: readonly [number, number, number],
     speciesId: string,
     allowed: (id: string, depth: number) => boolean,
     depth: number,
@@ -397,15 +471,29 @@ export class ReefChapter {
   ): void {
     // Only verified or uncertain species whose recorded depth range includes this spot.
     if (!allowed(speciesId, depth)) return;
-    const visual = reefFish(speciesId);
-    // Mesh density follows body size: a 7 cm chromis never fills more than a few pixels' worth.
-    const geometry = opts.length < 0.1 ? createFishGeometry(visual.morph, 22, 12) : opts.length < 0.2 ? createFishGeometry(visual.morph, 30, 16) : createFishGeometry(visual.morph);
-    const swim = new InstancedBufferAttribute(new Float32Array(opts.count * 4), 4);
-    const material = createFishMaterial(u, kd, visual.morph, visual.pattern, swim);
-    const school = new School(geometry, material, swim, { ...opts, floor: reefFloorY });
-    school.mesh.name = speciesId;
-    this.schools.push(school);
-    this.group.add(school.mesh);
+    const groups = this.schoolGroups.get(speciesId) ?? [];
+    groups.push({ ...opts, floor: reefFloorY });
+    this.schoolGroups.set(speciesId, groups);
+  }
+
+  /** One instanced school per species, holding all of that species' groups (one draw call). */
+  private buildSchools(u: FrameUniforms, kd: readonly [number, number, number]): void {
+    for (const [speciesId, groups] of this.schoolGroups) {
+      const visual = reefFish(speciesId);
+      const length = Math.max(...groups.map((g) => g.length));
+      const count = groups.reduce((sum, g) => sum + g.count, 0);
+      // Mesh density follows body size: a 7 cm chromis never fills more than a few pixels' worth.
+      const geometry = length < 0.1 ? createFishGeometry(visual.morph, 22, 12) : length < 0.2 ? createFishGeometry(visual.morph, 30, 16) : createFishGeometry(visual.morph);
+      const swim = new InstancedBufferAttribute(new Float32Array(count * 4), 4);
+      const material = createFishMaterial(u, kd, visual.morph, visual.pattern, swim);
+      const school = new School(geometry, material, swim, groups);
+      school.mesh.name = speciesId;
+      this.schools.push(school);
+      // Roughly where a fish of this length falls under ~6 px at 1080p, plus the home range.
+      this.schoolRange.push(Math.min(40, length * 150 + Math.max(...groups.map((g) => g.homeRadius))));
+      this.group.add(school.mesh);
+    }
+    this.schoolGroups.clear();
   }
 
   private readonly coralMaterials = new Map<string, MeshBasicNodeMaterial>();
@@ -578,10 +666,16 @@ export class ReefChapter {
     this.placeInstances(u, kd, type, list, seed);
   }
 
-  private addAnemone(u: FrameUniforms, kd: readonly [number, number, number], spot: Vector3): void {
-    const { mesh, colors } = this.instanced(createAnemone(3), this.coralMaterial(u, kd, { name: 'radianthus-magnifica', tip: [0.72, 0.62, 0.36], material: 'procedural' }, 0.018), 1);
-    colors.setXYZW(0, 0.62, 0.52, 0.3, 0);
-    mesh.setMatrixAt(0, new Matrix4().compose(spot.clone().setY(spot.y - 0.02), new Quaternion(), new Vector3(1, 1, 1)));
+  /** Every anemone in one instanced mesh, each turned differently so they don't read as copies. */
+  private addAnemones(u: FrameUniforms, kd: readonly [number, number, number], spots: readonly Vector3[]): void {
+    if (spots.length === 0) return;
+    const { mesh, colors } = this.instanced(createAnemone(3), this.coralMaterial(u, kd, { name: 'radianthus-magnifica', tip: [0.72, 0.62, 0.36], material: 'procedural' }, 0.018), spots.length);
+    const yaw = new Quaternion();
+    spots.forEach((spot, i) => {
+      colors.setXYZW(i, 0.62, 0.52, 0.3, 0);
+      yaw.setFromAxisAngle(new Vector3(0, 1, 0), i * 2.4);
+      mesh.setMatrixAt(i, new Matrix4().compose(spot.clone().setY(spot.y - 0.02), yaw, new Vector3(1, 1, 1)));
+    });
     mesh.name = 'radianthus-magnifica';
     mesh.frustumCulled = false;
     this.group.add(mesh);

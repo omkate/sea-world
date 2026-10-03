@@ -200,6 +200,8 @@ export class Experience {
 
     const below = inscatter(0, -1, Infinity, 0, MARIANA.kd, this.scratch);
     u.belowColor.value.set(below[0], below[1], below[2]);
+    const water = inscatter(Math.max(depth, 0), 0, Infinity, u.turbidity.value, MARIANA.kd, this.scratch);
+    u.waterColor.value.set(water[0], water[1], water[2]);
     const [lr, lg, lb] = this.state.light;
     const ambient = 0.32 * PARTICLE_ALBEDO;
     u.ambientWater.value.set(lr * ambient, lg * ambient, lb * ambient);
