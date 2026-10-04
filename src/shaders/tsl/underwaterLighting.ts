@@ -1,4 +1,4 @@
-import { abs, cameraPosition, dot, exp, float, max, min, mix, normalize, positionWorld, pow, smoothstep, sqrt, vec3 } from 'three/tsl';
+import { abs, cameraPosition, cross, dot, exp, float, max, min, mix, normalize, positionWorld, pow, smoothstep, sqrt, vec3 } from 'three/tsl';
 import type { FrameUniforms } from '../../core/engine/uniforms';
 import { ABSORPTION, DIRECTIONAL_DEPTH_SCALE, SCATTER } from '../../ocean/medium/optics';
 import { CAUSTIC_SHAFT_MEAN, CAUSTIC_TILE, caustic } from './caustics';
@@ -29,7 +29,24 @@ export interface SurfaceInputs {
   caustics?: boolean;
   /** Strength (0..1) of the documentary subject light, which shows a subject's true colours. */
   subject?: ShaderNode;
+  /** Strength (0..1) of the deep-sea hero rig: ROV key light plus a back rim (see HERO_KEY). */
+  hero?: ShaderNode;
 }
+
+/**
+ * Deep-sea hero rig, as on an ROV filming a single animal: a key light above and to one side
+ * of the lens, and a cool back light that rims the silhouette against the black water. In
+ * camera-adapted units (divided by exposure), pre-divided by the white balance so the animal
+ * keeps its own colours; the path to the subject is under a metre, so its extinction is ignored.
+ * Art-directed, not physical (docs/architecture.md).
+ */
+export const HERO_KEY = 1.6;
+export const HERO_RIM = 0.9;
+export const HERO_SPEC = 1.2;
+/** Distance (m) over which the rig undoes the water's extinction; farther, the animal fades into the blue. */
+const HERO_RESTORE_REACH = 6;
+/** Saturation the medium pass leaves in deep water (UnderwaterPipeline: mix(luma, graded, 0.72)). */
+const HERO_DESATURATION = 0.72;
 
 /**
  * Documentary subject light: crews light hero animals with strong video lights and grade them
@@ -116,6 +133,25 @@ export function underwaterLit(u: FrameUniforms, kd: readonly [number, number, nu
     const shallow: ShaderNode = smoothstep(SUBJECT_MAX_DEPTH, SUBJECT_MAX_DEPTH * 0.5, z);
     const restore: ShaderNode = exp(sigma.mul(d)).div(max(u.whiteBalance as ShaderNode, vec3(0.05)));
     color = color.add(s.albedo.mul(restore).mul(falloff.mul(shape).mul(shallow).mul(s.subject).mul(SUBJECT_LIGHT)));
+  }
+  if (s.hero) {
+    const up = vec3(0, 1, 0);
+    const side: ShaderNode = normalize(cross(up, v));
+    const keyDir: ShaderNode = normalize(v.add(up.mul(0.8)).add(side.mul(0.6)));
+    const backDir: ShaderNode = normalize(v.negate().add(up.mul(0.9)).sub(side.mul(0.4)));
+    // Undo the view path's extinction and the white balance, as the subject light does.
+    const restore: ShaderNode = exp(sigma.mul(min(dist, HERO_RESTORE_REACH))).div(max(u.whiteBalance as ShaderNode, vec3(0.05)));
+    const adapt: ShaderNode = (s.hero as ShaderNode).div(u.exposure as ShaderNode);
+    const key: ShaderNode = max(dot(n, keyDir), 0).mul(0.85).add(0.15);
+    const keySpec: ShaderNode = pow(max(dot(n, normalize(keyDir.add(v))), 0), shininess).mul(s.specular).mul(fresnel.mul(2).add(0.5));
+    const edge: ShaderNode = pow(float(1).sub(abs(dot(n, v))), 2.5);
+    const rimLight: ShaderNode = edge.mul(max(dot(n, backDir), 0).mul(0.75).add(0.25));
+    const lit: ShaderNode = s.albedo.mul(key).mul(HERO_KEY).add(keySpec.mul(HERO_SPEC))
+      .add(vec3(0.75, 0.88, 1).mul(rimLight).mul(s.albedo.mul(0.6).add(0.15)).mul(HERO_RIM));
+    // The medium pass grades deep water to HERO_DESATURATION of full saturation; pre-saturate the
+    // subject by the inverse so the animal keeps its own colours.
+    const luma: ShaderNode = dot(lit, vec3(0.2126, 0.7152, 0.0722));
+    color = color.add(mix(vec3(luma), lit, 1 / HERO_DESATURATION).max(0).mul(restore).mul(adapt));
   }
   if (s.emissive) color = color.add(s.emissive);
   return color;

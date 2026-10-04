@@ -16,6 +16,11 @@ export interface FishMorph {
   pelvic: { s: number; length: number } | null;
   eye: { s: number; v: number; radius: number };
   swim: { style: 'labriform' | 'carangiform' | 'subcarangiform' | 'thunniform'; bodyWave: number; cruiseBL: number };
+  /**
+   * Fangs (deep-sea predators): `upper` and `lower` counts per side along the front of the jaws,
+   * their length (body lengths), and how far the longest lower fangs rise past the snout.
+   */
+  teeth?: { upper: number; lower: number; length: number };
 }
 
 export interface Rgb {
@@ -80,6 +85,8 @@ export interface PhotophoreRow {
   count: number;
   /** Organ radius in units of body length. */
   radius: number;
+  /** Colour of this row's organs, if not the default (e.g. the loosejaw's far-red searchlight). */
+  color?: Rgb;
 }
 
 /** Light organs. They glow in camera-adapted units, like the plankton flashes. */

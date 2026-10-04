@@ -52,7 +52,7 @@
     "uid": "c92be549c8194136914883309a13a6b5",
     "role": "hero",
     "species": "Chelonia mydas",
-    "size": 1.0,
+    "size": 1,
     "triangles": 16218,
     "textures": true,
     "note": "Sea turtle model (green turtle appearance)."
@@ -92,14 +92,45 @@
     "uid": "3076676b30294c119ec2065c3bf3dc47",
     "role": "hero",
     "species": "Physeter macrocephalus",
-    "size": 12.0,
+    "size": 12,
     "triangles": 16000,
     "textures": true,
-    "note": "Sperm whale model, stored upright in its file (head +y) and reoriented to lie level with the head toward +z; shown at the female length recorded around the Marianas (~12 m, NOAA).",
-    "rotate": [
-      90,
-      0,
-      0
-    ]
+    "note": "Animated sperm whale model; its rig's rest pose is baked in (level, head toward +z). Shown at the female length recorded around the Marianas (~12 m, NOAA).",
+    "textureSize": 2048
+  },
+  {
+    "id": "yellowfin-tuna",
+    "uid": "d4eeea976932414d91fc786ce6cec547",
+    "role": "hero",
+    "species": "Thunnus albacares",
+    "size": 1.5,
+    "triangles": 60000,
+    "textures": true,
+    "textureSize": 2048,
+    "note": "Photogrammetry scan of a real yellowfin tuna (CC0, ffishAsia).",
+    "dropIslands": 0.02
+  },
+  {
+    "id": "cuviers-beaked-whale",
+    "uid": "a463879e47d24df795ebaecb460c28a2",
+    "role": "hero",
+    "species": "Ziphius cavirostris",
+    "size": 5.5,
+    "triangles": 30000,
+    "textures": true,
+    "textureSize": 2048,
+    "note": "Cuvier's beaked whale model."
+  },
+  {
+    "id": "grenadier",
+    "uid": "4e41af54d0194bf2ad5c4f6ab3a9cbd7",
+    "role": "hero",
+    "species": "Coryphaenoides yaquinae",
+    "size": 0.45,
+    "triangles": 60000,
+    "textures": true,
+    "textureSize": 2048,
+    "dropIslands": 0.02,
+    "note": "Photogrammetry scan of a real Sagami grenadier (Ventrifossa garmani, CC0, ffishAsia), standing in for the abyssal grenadier: same family (Macrouridae) and rattail body plan."
   }
 ]

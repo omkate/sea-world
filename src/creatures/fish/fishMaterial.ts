@@ -50,21 +50,32 @@ function photophoreGlow(
   onBody: ShaderNode,
   variation: ShaderNode,
 ): ShaderNode {
-  let dots: ShaderNode = float(0);
+  let colored: ShaderNode = vec3(0);
   for (const row of p.rows) {
     const span = row.sMax - row.sMin;
     // Organ centres sit evenly along the row; v is stretched ~4× relative to s on a fish flank.
     const t: ShaderNode = s.sub(row.sMin).div(span).mul(row.count);
     const inRow: ShaderNode = step(0, t).mul(step(t, row.count));
     const d: ShaderNode = length(vec2(fract(t).sub(0.5).mul(span / row.count), v.sub(row.v).div(4)));
-    dots = max(dots, smoothstep(row.radius, row.radius * 0.45, d).mul(inRow));
+    const dot: ShaderNode = smoothstep(row.radius, row.radius * 0.45, d).mul(inRow);
+    colored = max(colored, col(row.color ?? p.color).mul(dot));
   }
   // Organs are fractions of a millimetre: beyond a metre or two they are sub-pixel and would
   // shimmer, so they blend into their average glow over the organ-bearing flank.
   const lens: ShaderNode = length((cameraPosition as ShaderNode).sub(positionWorld));
   const lowest = Math.min(...p.rows.map((r) => r.v));
   const flank: ShaderNode = smoothstep(lowest + 0.5, lowest + 0.1, v);
-  dots = mix(dots, flank.mul(0.5), smoothstep(1.2, 4, lens));
+  const far: ShaderNode = smoothstep(1.2, 4, lens);
+  // The far glow takes the organs' colours weighted by their area, so a large red organ (the
+  // loosejaw's searchlight) colours it rather than the default blue.
+  const area = (r: (typeof p.rows)[number]) => r.count * r.radius * r.radius;
+  const total = p.rows.reduce((sum, r) => sum + area(r), 0);
+  const avg = p.rows.reduce((acc, r) => {
+    const c = r.color ?? p.color;
+    const w = area(r) / total;
+    return { r: acc.r + c.r * w, g: acc.g + c.g * w, b: acc.b + c.b * w };
+  }, { r: 0, g: 0, b: 0 });
+  colored = mix(colored, col(avg).mul(flank.mul(0.5)), far);
   const depth: ShaderNode = max((positionWorld as ShaderNode).y.negate(), 0);
   const dark: ShaderNode = smoothstep(200, 400, depth);
   let level: ShaderNode = float(p.brightness);
@@ -79,7 +90,7 @@ function photophoreGlow(
     const window: ShaderNode = float(p.flashWave ? 1 : 0.5).div(period);
     level = level.add(smoothstep(0, window.mul(0.2), phase).mul(smoothstep(window, window.mul(0.4), phase)).mul(p.flashWave ? 6 : 4));
   }
-  let glow: ShaderNode = col(p.color).mul(dots).mul(level).mul(PHOTOPHORE_ADAPTED).div(u.exposure as ShaderNode).mul(dark);
+  let glow: ShaderNode = colored.mul(level).mul(PHOTOPHORE_ADAPTED).div(u.exposure as ShaderNode).mul(dark);
   // Counterillumination matches the brightness of the water seen looking up from below, so the
   // belly vanishes against it from beneath (and reads as a faint glow from the side).
   if (p.counterillumination) glow = glow.add((u.waterAboveColor as ShaderNode).mul(smoothstep(-0.35, -0.75, v)).mul(0.9));
@@ -87,17 +98,17 @@ function photophoreGlow(
 }
 
 /**
- * Mirror flanks: the reflection of the water seen along the mirrored view ray, approximated by
- * blending horizontal and overhead water radiance by how far the reflection points upward.
- * Upright, a mirror shows the horizontal water (it vanishes); tilted, it catches the bright
- * water overhead and flashes.
- */
-/**
  * The single-scattering water model understates the radiance overhead (in clear ocean water it
  * is roughly ten times the horizontal; the model gives ~2×), so the overhead term is scaled up.
  */
 const OVERHEAD_GAIN = 5;
 
+/**
+ * Mirror flanks: the reflection of the water seen along the mirrored view ray, approximated by
+ * blending horizontal and overhead water radiance by how far the reflection points upward.
+ * Upright, a mirror shows the horizontal water (it vanishes); tilted, it catches the bright
+ * water overhead and flashes.
+ */
 function mirrorReflection(u: FrameUniforms, normal: ShaderNode): ShaderNode {
   const view: ShaderNode = normalize((positionWorld as ShaderNode).sub(cameraPosition));
   const r: ShaderNode = view.sub(normal.mul(dot(view, normal).mul(2)));
@@ -154,7 +165,8 @@ export function createFishMaterial(
   const variation: ShaderNode = inst.w;
 
   const isPart = (id: number): ShaderNode => step(id - 0.5, part).mul(step(part, id + 0.5));
-  const isFin: ShaderNode = step(0.5, part);
+  const isTooth: ShaderNode = isPart(FISH_PART.tooth);
+  const isFin: ShaderNode = step(0.5, part).mul(float(1).sub(isTooth));
 
   // --- Swimming: a travelling body wave whose amplitude grows toward the tail -------------
   // Where the body starts to bend: thunniform swimmers keep the body rigid and beat the tail.
@@ -225,11 +237,13 @@ export function createFishMaterial(
   // Radiating fin rays.
   const rays: ShaderNode = smoothstep(0.35, 0.5, abs(fract(s.mul(90).add(v.mul(6))).sub(0.5))).mul(0.12);
   color = mix(color, finColor.mul(float(1).sub(rays)), isFin);
+  // Fangs: translucent ivory.
+  color = mix(color, vec3(0.82, 0.8, 0.72), isTooth);
 
   // Eye: pupil, iris ring, dark rim; on both flanks at (s, v) = eye position.
   const eyeH = catmullRom(morph.profile.map((p) => [p[0], p[1]] as const), morph.eye.s);
   const eyeD: ShaderNode = length(vec2(s.sub(morph.eye.s), v.sub(morph.eye.v).mul(eyeH))).div(morph.eye.radius);
-  const onBody: ShaderNode = float(1).sub(isFin);
+  const onBody: ShaderNode = float(1).sub(isFin).sub(isTooth);
   const pupil: ShaderNode = smoothstep(0.56, 0.5, eyeD);
   const iris: ShaderNode = smoothstep(1.02, 0.96, eyeD);
   const rimEye: ShaderNode = smoothstep(1.15, 1.05, eyeD);

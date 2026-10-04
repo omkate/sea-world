@@ -49,14 +49,16 @@ for (const backend of ['webgpu', 'webgl2'] as const) {
       await page.goto(`/?debug&depth=1500${q}`);
       await ready(page);
       await expect(hud(page, 'zone')).toHaveText('MIDNIGHT ZONE');
-      await expect(hud(page, 'light')).toHaveText('NONE · LAMP');
+      // No sunlight; the midnight scenes keep the wide lamp off (the hero rig lights the animal).
+      await expect(hud(page, 'light')).toHaveText('NONE');
     });
   });
 }
 
 test('underwater frames darken continuously with depth', async ({ page }) => {
   const luminance: number[] = [];
-  for (const d of [5, 100, 300, 600, 1500]) {
+  // The deepest sample is the open water between the midnight scenes (no hero animal in frame).
+  for (const d of [5, 100, 300, 600, 3300]) {
     await page.goto(`/?depth=${d}`);
     await ready(page);
     // From ~450 m the camera lamp switches on; measure natural light only.
@@ -83,11 +85,19 @@ test('underwater frames darken continuously with depth', async ({ page }) => {
 });
 
 test('the lamp comes on where sunlight ends and lights marine snow', async ({ page }) => {
-  await page.goto('/?debug&depth=3000');
+  // 3,950 m: no sunlight, below the midnight scenes (which keep the wide lamp off).
+  await page.goto('/?debug&depth=3950');
   await ready(page);
   await expect(hud(page, 'light')).toHaveText('NONE · LAMP');
   expect(await page.evaluate(() => window.__abyss!.state.lightLabel)).toBe('NONE');
   await page.keyboard.press('l');
+  await expect(hud(page, 'light')).toHaveText('NONE');
+});
+
+test('the wide lamp stays off in the midnight scenes, where the hero rig lights the animal', async ({ page }) => {
+  await page.goto('/?debug&depth=2600');
+  await ready(page);
+  await page.waitForTimeout(1500);
   await expect(hud(page, 'light')).toHaveText('NONE');
 });
 

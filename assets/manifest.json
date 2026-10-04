@@ -140,7 +140,55 @@
     "species": "Physeter macrocephalus",
     "size": 12,
     "triangles": 16000,
-    "modifications": "reoriented, decimated 83,986 → 16,000 triangles, centred on base, textures resized to 1024 px WebP, meshopt-compressed.",
-    "note": "Sperm whale model, stored upright in its file (head +y) and reoriented to lie level with the head toward +z; shown at the female length recorded around the Marianas (~12 m, NOAA)."
+    "modifications": "decimated 83,986 → 16,000 triangles, centred on base, textures resized to 2048 px WebP, meshopt-compressed.",
+    "note": "Animated sperm whale model; its rig's rest pose is baked in (level, head toward +z). Shown at the female length recorded around the Marianas (~12 m, NOAA)."
+  },
+  {
+    "id": "yellowfin-tuna",
+    "file": "assets/models/yellowfin-tuna.glb",
+    "title": "CC0 キハダ 🐟 Yellowfin Tuna, Thunnus albacares",
+    "author": "ffish.asia / floraZia.com",
+    "authorUrl": "https://sketchfab.com/ffishAsia-and-floraZia",
+    "license": "CC0 Public Domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "https://sketchfab.com/3d-models/cc0-yellowfin-tuna-thunnus-albacares-d4eeea976932414d91fc786ce6cec547",
+    "role": "hero",
+    "species": "Thunnus albacares",
+    "size": 1.5,
+    "triangles": 96746,
+    "modifications": "removed the scale card, decimated 1,387,218 → 96,746 triangles, centred on base, textures resized to 2048 px WebP, meshopt-compressed.",
+    "note": "Photogrammetry scan of a real yellowfin tuna (CC0, ffishAsia)."
+  },
+  {
+    "id": "cuviers-beaked-whale",
+    "file": "assets/models/cuviers-beaked-whale.glb",
+    "title": "Cuvier's Beaked Whale",
+    "author": "allthingsaurus",
+    "authorUrl": "https://sketchfab.com/allthingsaurus",
+    "license": "CC Attribution",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://sketchfab.com/3d-models/cuviers-beaked-whale-a463879e47d24df795ebaecb460c28a2",
+    "role": "hero",
+    "species": "Ziphius cavirostris",
+    "size": 5.5,
+    "triangles": 19480,
+    "modifications": "decimated 19,480 → 19,480 triangles, centred on base, textures resized to 2048 px WebP, meshopt-compressed.",
+    "note": "Cuvier's beaked whale model."
+  },
+  {
+    "id": "grenadier",
+    "file": "assets/models/grenadier.glb",
+    "title": "CC0 サガミソコダラ 🐟 Sagami Grenadier, V. garmani",
+    "author": "ffish.asia / floraZia.com",
+    "authorUrl": "https://sketchfab.com/ffishAsia-and-floraZia",
+    "license": "CC0 Public Domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "https://sketchfab.com/3d-models/cc0-sagami-grenadier-v-garmani-4e41af54d0194bf2ad5c4f6ab3a9cbd7",
+    "role": "hero",
+    "species": "Coryphaenoides yaquinae",
+    "size": 0.45,
+    "triangles": 59709,
+    "modifications": "removed the scale card, decimated 227,037 → 59,709 triangles, centred on base, textures resized to 2048 px WebP, meshopt-compressed.",
+    "note": "Photogrammetry scan of a real Sagami grenadier (Ventrifossa garmani, CC0, ffishAsia), standing in for the abyssal grenadier: same family (Macrouridae) and rattail body plan."
   }
 ]

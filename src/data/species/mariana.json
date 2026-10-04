@@ -194,7 +194,7 @@
     "sites": [
       "mariana"
     ],
-    "sizeTypical": 1.0,
+    "sizeTypical": 1,
     "sizeMax": 2.1,
     "diet": "Almost all forms of fish and zooplankton; also crustaceans and squid",
     "behavior": [
@@ -1584,7 +1584,7 @@
     "sites": [
       "mariana"
     ],
-    "sizeTypical": 1.0,
+    "sizeTypical": 1,
     "sizeMax": 1.2,
     "diet": "Seagrasses and algae (herbivorous as adults)",
     "behavior": [
@@ -2424,6 +2424,64 @@
       {
         "label": "NOAA: Cetacean and Seabird Data Collected During the Mariana Archipelago Cetacean Survey",
         "url": "https://repository.library.noaa.gov/view/noaa/41728/noaa_41728_DS1.pdf",
+        "field": "regions"
+      }
+    ]
+  },
+  {
+    "id": "ziphius-cavirostris",
+    "commonName": "Cuvier's beaked whale",
+    "scientificName": "Ziphius cavirostris",
+    "taxonRank": "species",
+    "category": "Mammals",
+    "depthMin": 0,
+    "depthMax": 2992,
+    "habitats": [
+      "epipelagic",
+      "mesopelagic",
+      "bathypelagic"
+    ],
+    "regions": [
+      "Mariana Islands",
+      "Philippine Sea"
+    ],
+    "sites": [
+      "mariana"
+    ],
+    "sizeTypical": 5.5,
+    "sizeMax": 7,
+    "diet": "Deep-water squid and fish",
+    "behavior": [
+      "Dive",
+      "Surface",
+      "SearchFood"
+    ],
+    "locomotion": "fluke",
+    "bioluminescent": false,
+    "visual": {
+      "coloration": "Grey to rusty brown, paler head in older animals; body covered in pale linear scars from males' teeth and oval cookie-cutter shark bites; short beak, small dorsal fin set far back.",
+      "camouflage": [],
+      "photophores": false
+    },
+    "adaptation": "The deepest-diving mammal known: foraging dives regularly pass 1,000 m, and a tagged whale reached 2,992 m.",
+    "rarity": "rare",
+    "representation": "hero",
+    "verification": "verified",
+    "uncertainFields": [],
+    "notes": "Recorded around the Mariana Islands (OBIS, 7 occurrences in 10–24°N, 140–150°E). Maximum dive depth from satellite tags (Schorr et al. 2014).",
+    "sources": [
+      {
+        "label": "NOAA Fisheries: Cuvier's Beaked Whale",
+        "url": "https://www.fisheries.noaa.gov/species/cuviers-beaked-whale"
+      },
+      {
+        "label": "Schorr et al. 2014: Record-breaking dives of Cuvier's beaked whales (PLOS ONE)",
+        "url": "https://doi.org/10.1371/journal.pone.0092633",
+        "field": "depthMax"
+      },
+      {
+        "label": "OBIS occurrences: Ziphius cavirostris (Mariana box 10-24N 140-150E)",
+        "url": "https://api.obis.org/v3/occurrence?scientificname=Ziphius%20cavirostris&geometry=POLYGON%28%28140%2010%2C150%2010%2C150%2024%2C140%2024%2C140%2010%29%29",
         "field": "regions"
       }
     ]

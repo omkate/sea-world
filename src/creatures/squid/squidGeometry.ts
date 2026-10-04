@@ -43,6 +43,15 @@ export const VAMPIRE_SQUID: SquidShape = {
   armLength: 0.42, armRadius: 0.02, web: 0.85, tentacleLength: 0, club: 0,
 };
 
+/**
+ * Dumbo octopus (Grimpoteuthis): a short, rounded mantle with two large ear-like fins high on it,
+ * and eight arms joined by a web almost to their tips (an umbrella); no tentacles.
+ */
+export const DUMBO_OCTOPUS: SquidShape = {
+  mantleLength: 0.3, mantleRadius: 0.17, headRadius: 0.15, finRadius: 0.13, finPosition: 0.55,
+  armLength: 0.4, armRadius: 0.022, web: 0.95, tentacleLength: 0, club: 0,
+};
+
 /** Where the head sphere's centre sits (y) for a shape. */
 export const headCentre = (s: SquidShape): number => -s.headRadius * 0.7;
 

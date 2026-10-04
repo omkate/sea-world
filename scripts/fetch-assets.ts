@@ -13,7 +13,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { NodeIO, type Document } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, EXTMeshoptCompression } from '@gltf-transform/extensions';
-import { center, compactPrimitive, dedup, flatten, join, prune, quantize, reorder, simplify, textureCompress, transformMesh, transformPrimitive, weld } from '@gltf-transform/functions';
+import { center, compactPrimitive, dedup, flatten, join, metalRough, prune, quantize, reorder, simplify, textureCompress, transformMesh, transformPrimitive, weld } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 
 export const ALLOWED_LICENSES: Record<string, string> = {
@@ -33,11 +33,73 @@ interface Source {
   /** Remove geometry in the lowest fraction of the height: museum stands, cut seabed blocks. */
   cropBelow?: number;
   /** meshopt simplification error bound (default 0.01; larger decimates harder). */
+  /** Keep texture-seam borders fixed while decimating (photogrammetry atlases with many small charts). */
+  lockBorder?: boolean;
   simplifyError?: number;
   /** Keep only triangles within this fraction of the half-width around the centre (drops cut seabed around a colony). */
   cropRadius?: number;
   /** Euler rotation in degrees (x, y, z) to stand the specimen the way it grows. */
   rotate?: [number, number, number];
+  /** Drop loose pieces (scale cards, colour checkers) with fewer than this share of the main body's triangles. */
+  dropIslands?: number;
+  /** Longest texture edge in px (default 1024; close-up heroes use 2048 for 4K). */
+  textureSize?: number;
+}
+
+/**
+ * Skinned meshes store vertices in bind space and ignore their node transform; bake the rest
+ * pose (Σ weight · jointWorld · inverseBind · v) into plain positions and normals, then drop the skin.
+ */
+function bakeSkins(doc: Document): void {
+  const mul = (m: number[], v: number[], w: number): number[] => [0, 1, 2].map((r) => m[r]! * v[0]! + m[4 + r]! * v[1]! + m[8 + r]! * v[2]! + m[12 + r]! * w);
+  const mat = (a: number[], b: number[]): number[] => {
+    const o = new Array(16).fill(0);
+    for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) o[c * 4 + r] += a[k * 4 + r]! * b[c * 4 + k]!;
+    return o;
+  };
+  for (const node of doc.getRoot().listNodes()) {
+    const skin = node.getSkin();
+    const mesh = node.getMesh();
+    if (!skin || !mesh) continue;
+    const ibm = skin.getInverseBindMatrices();
+    const joints = skin.listJoints().map((j, i) => mat(j.getWorldMatrix() as unknown as number[], ibm ? (ibm.getElement(i, []) as number[]) : [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]));
+    for (const prim of mesh.listPrimitives()) {
+      const pos = prim.getAttribute('POSITION')!;
+      const nor = prim.getAttribute('NORMAL');
+      const J = prim.getAttribute('JOINTS_0');
+      const W = prim.getAttribute('WEIGHTS_0');
+      if (!J || !W) continue;
+      // Detach the accessors (they can be shared between primitives).
+      const P = pos.clone();
+      const N = nor?.clone();
+      const j: number[] = [], w: number[] = [], v: number[] = [];
+      for (let i = 0; i < pos.getCount(); i++) {
+        J.getElement(i, j);
+        W.getElement(i, w);
+        const acc = [0, 0, 0], accN = [0, 0, 0];
+        pos.getElement(i, v);
+        const vn = N ? nor!.getElement(i, []) : null;
+        for (let k = 0; k < 4; k++) {
+          if (!w[k]) continue;
+          const m = joints[j[k]!]!;
+          const p = mul(m, v, 1);
+          for (let c = 0; c < 3; c++) acc[c] = acc[c]! + p[c]! * w[k]!;
+          if (vn) { const q = mul(m, vn, 0); for (let c = 0; c < 3; c++) accN[c] = accN[c]! + q[c]! * w[k]!; }
+        }
+        P.setElement(i, acc);
+        if (N) { const l = Math.hypot(...accN) || 1; N.setElement(i, accN.map((c) => c / l)); }
+      }
+      prim.setAttribute('POSITION', P);
+      if (N) prim.setAttribute('NORMAL', N);
+      prim.setAttribute('JOINTS_0', null).setAttribute('WEIGHTS_0', null);
+    }
+    node.setSkin(null);
+    // Skinned vertices are now in world space: detach the node from any transformed parent.
+    const parent = node.getParentNode();
+    if (parent) parent.removeChild(node);
+    for (const scene of doc.getRoot().listScenes()) scene.addChild(node);
+    node.setTranslation([0, 0, 0]).setRotation([0, 0, 0, 1]).setScale([1, 1, 1]);
+  }
 }
 
 /** Bakes every node's world transform into its mesh so crops and bounds work in world space. */
@@ -76,6 +138,78 @@ function cropRadius(doc: Document, fraction: number): void {
       compactPrimitive(prim);
     }
   }
+}
+
+/**
+ * Removes loose pieces (scale cards, colour checkers beside a scan): vertices are joined by
+ * position across texture seams and across primitives (a scan's atlas can span several
+ * materials), and every connected piece with fewer than `share` of the largest piece's
+ * triangles is dropped. The animal itself is one piece, so its thin parts stay.
+ */
+function dropIslands(doc: Document, share: number): void {
+  const prims = doc.getRoot().listMeshes().flatMap((m) => m.listPrimitives()).filter((p) => p.getIndices());
+  // Primitives can share vertex accessors; give each its own copy so compacting one leaves the others intact.
+  for (const prim of prims) {
+    for (const sem of prim.listSemantics()) prim.setAttribute(sem, prim.getAttribute(sem)!.clone());
+    prim.setIndices(prim.getIndices()!.clone());
+  }
+  // One union-find over every primitive's vertices (global ids = offset + local index).
+  const offsets: number[] = [];
+  let total = 0;
+  for (const prim of prims) {
+    offsets.push(total);
+    total += prim.getAttribute('POSITION')!.getCount();
+  }
+  const parent = Int32Array.from({ length: total }, (_, i) => i);
+  const find = (a: number): number => {
+    while (parent[a] !== a) a = parent[a] = parent[parent[a]!]!;
+    return a;
+  };
+  const unite = (a: number, b: number) => {
+    parent[find(a)] = find(b);
+  };
+  const gmn = [Infinity, Infinity, Infinity], gmx = [-Infinity, -Infinity, -Infinity];
+  for (const prim of prims) {
+    const a = prim.getAttribute('POSITION')!;
+    const mn = a.getMin([]), mx = a.getMax([]);
+    for (let k = 0; k < 3; k++) { gmn[k] = Math.min(gmn[k]!, mn[k]!); gmx[k] = Math.max(gmx[k]!, mx[k]!); }
+  }
+  const q = Math.hypot(gmx[0]! - gmn[0]!, gmx[1]! - gmn[1]!, gmx[2]! - gmn[2]!) * 1e-5;
+  const seen = new Map<string, number>();
+  const v: number[] = [];
+  prims.forEach((prim, n) => {
+    const pos = prim.getAttribute('POSITION')!;
+    const src = prim.getIndices()!.getArray()!;
+    const o = offsets[n]!;
+    for (let t = 0; t < src.length; t += 3) {
+      unite(o + src[t]!, o + src[t + 1]!);
+      unite(o + src[t]!, o + src[t + 2]!);
+    }
+    for (let i = 0; i < pos.getCount(); i++) {
+      pos.getElement(i, v);
+      const key = `${Math.round(v[0]! / q)},${Math.round(v[1]! / q)},${Math.round(v[2]! / q)}`;
+      const other = seen.get(key);
+      if (other === undefined) seen.set(key, o + i);
+      else unite(o + i, other);
+    }
+  });
+  const tris = new Map<number, number>();
+  prims.forEach((prim, n) => {
+    const src = prim.getIndices()!.getArray()!;
+    for (let t = 0; t < src.length; t += 3) {
+      const r = find(offsets[n]! + src[t]!);
+      tris.set(r, (tris.get(r) ?? 0) + 1);
+    }
+  });
+  const most = Math.max(...tris.values());
+  prims.forEach((prim, n) => {
+    const idx = prim.getIndices()!;
+    const src = idx.getArray()!;
+    const kept: number[] = [];
+    for (let t = 0; t < src.length; t += 3) if (tris.get(find(offsets[n]! + src[t]!))! >= most * share) kept.push(src[t]!, src[t + 1]!, src[t + 2]!);
+    idx.setArray(new Uint32Array(kept));
+    compactPrimitive(prim);
+  });
 }
 
 /** Drops triangles lying entirely below `fraction` of the primitive's height, then compacts. */
@@ -186,15 +320,19 @@ async function main(): Promise<void> {
     const doc = await io.read(rawPath);
     const before = countTriangles(doc);
     const ratio = Math.min(1, src.triangles / Math.max(1, before));
+    // Spec-gloss materials (no longer read by three's GLTFLoader) become metal-rough.
+    await doc.transform(metalRough());
+    bakeSkins(doc);
     await doc.transform(dedup(), flatten());
     bakeTransforms(doc);
     await doc.transform(join(), weld());
     if (src.rotate) rotate(doc, src.rotate);
+    if (src.dropIslands) dropIslands(doc, src.dropIslands);
     if (src.cropRadius) cropRadius(doc, src.cropRadius);
     if (src.cropBelow) cropBelow(doc, src.cropBelow);
-    await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio, error: src.simplifyError ?? 0.01 }), center({ pivot: 'below' }));
+    await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio, error: src.simplifyError ?? 0.01, lockBorder: src.lockBorder ?? false }), center({ pivot: 'below' }));
     if (src.textures) {
-      await doc.transform(textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [1024, 1024] }));
+      await doc.transform(textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [src.textureSize ?? 1024, src.textureSize ?? 1024] }));
     } else {
       for (const m of doc.getRoot().listMaterials()) {
         m.setBaseColorTexture(null).setNormalTexture(null).setMetallicRoughnessTexture(null).setOcclusionTexture(null).setEmissiveTexture(null);
@@ -220,7 +358,7 @@ async function main(): Promise<void> {
       species: src.species,
       size: src.size,
       triangles: after,
-      modifications: `${src.cropRadius ? 'Trimmed surrounding seabed, ' : ''}${src.cropBelow ? `Removed the lowest ${Math.round(src.cropBelow * 100)}% (stand or cut seabed), ` : ''}${src.rotate ? 'reoriented, ' : ''}decimated ${before.toLocaleString()} → ${after.toLocaleString()} triangles, centred on base${src.textures ? ', textures resized to 1024 px WebP' : ', textures removed (colour added procedurally)'}, meshopt-compressed.`,
+      modifications: `${src.cropRadius ? 'Trimmed surrounding seabed, ' : ''}${src.cropBelow ? `Removed the lowest ${Math.round(src.cropBelow * 100)}% (stand or cut seabed), ` : ''}${src.dropIslands ? 'removed the scale card, ' : ''}${src.rotate ? 'reoriented, ' : ''}decimated ${before.toLocaleString()} → ${after.toLocaleString()} triangles, centred on base${src.textures ? `, textures resized to ${src.textureSize ?? 1024} px WebP` : ', textures removed (colour added procedurally)'}, meshopt-compressed.`,
       note: src.note,
     };
     const i = manifest.findIndex((m) => m.id === src.id);

@@ -3,7 +3,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { catmullRom } from '../../core/math/noise';
 import type { FishMorph } from './FishMorph';
 
-export const FISH_PART = { body: 0, dorsalAnal: 1, caudal: 2, pectoral: 3, pelvic: 4 } as const;
+export const FISH_PART = { body: 0, dorsalAnal: 1, caudal: 2, pectoral: 3, pelvic: 4, tooth: 5 } as const;
 
 interface Builder {
   pos: number[];
@@ -186,6 +186,41 @@ export function createFishGeometry(m: FishMorph, rings = 44, segments = 22): Buf
   for (const side of [1, -1] as const) {
     parts.push(pairedFin(m.pectoral.s, m.pectoral.length, m.pectoral.width, 0.2, FISH_PART.pectoral, side));
     if (m.pelvic) parts.push(pairedFin(m.pelvic.s, m.pelvic.length, m.pelvic.length * 0.35, 0.92, FISH_PART.pelvic, side));
+  }
+
+  // Fangs: thin cones along the front of the jaws, uppers pointing down, lowers rising up in
+  // front of the snout (a viperfish's lower fangs are too long to fit inside its closed mouth).
+  if (m.teeth) {
+    const f = newBuilder();
+    const cone = (base: Vector3, dir: Vector3, length: number, radius: number, s: number) => {
+      const start = f.pos.length / 3;
+      const side = new Vector3(1, 0, 0).cross(dir).normalize();
+      const up = new Vector3().crossVectors(dir, side).normalize();
+      for (let k = 0; k < 4; k++) {
+        const a = (k / 4) * Math.PI * 2;
+        const p = base.clone().addScaledVector(side, Math.cos(a) * radius).addScaledVector(up, Math.sin(a) * radius);
+        f.pos.push(p.x, p.y, p.z);
+        f.nrm.push(0, 0, 0);
+        f.fish.push(s, 0, FISH_PART.tooth, 0);
+      }
+      const tip = base.clone().addScaledVector(dir, length);
+      f.pos.push(tip.x, tip.y, tip.z);
+      f.nrm.push(0, 0, 0);
+      f.fish.push(s, 0, FISH_PART.tooth, 1);
+      for (let k = 0; k < 4; k++) f.idx.push(start + k, start + ((k + 1) % 4), start + 4);
+    };
+    const { upper, lower, length } = m.teeth;
+    for (const side of [1, -1]) {
+      for (let i = 0; i < upper; i++) {
+        const s = 0.015 + (i / Math.max(1, upper)) * 0.06;
+        cone(new Vector3(side * w(s) * 0.7, cy(s) - h(s) * 0.15, zAt(s)), new Vector3(0, -1, 0.35).normalize(), length * (0.6 + 0.4 * (1 - i / upper)), 0.004, s);
+      }
+      for (let i = 0; i < lower; i++) {
+        const s = 0.02 + (i / Math.max(1, lower)) * 0.06;
+        cone(new Vector3(side * w(s) * 0.75, cy(s) - h(s) * 0.85, zAt(s) + 0.01), new Vector3(0, 1, 0.45).normalize(), length * (i === 0 ? 1.5 : 0.7), 0.005, s);
+      }
+    }
+    parts.push(finish(f, true));
   }
 
   const merged = mergeGeometries(parts, false);

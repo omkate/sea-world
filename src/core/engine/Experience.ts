@@ -154,7 +154,7 @@ export class Experience {
     this.scene.add(this.openBlue.group);
     this.twilight = new TwilightChapter(this.u, MARIANA.kd);
     this.scene.add(this.twilight.group);
-    this.midnight = new MidnightChapter(this.u, MARIANA.kd);
+    this.midnight = await MidnightChapter.create(this.u, MARIANA.kd, this.library);
     this.scene.add(this.midnight.group);
     this.mountDiscovery([...this.reef.sightings(), ...this.openBlue.sightings(), ...this.twilight.sightings(), ...this.midnight.sightings()]);
     await renderer.compileAsync(this.scene, this.camera);

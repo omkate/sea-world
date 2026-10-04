@@ -7,7 +7,8 @@ import { TWILIGHT_FISH } from '../../creatures/fish/twilightFish';
 import type { SightingSource } from '../../discovery/scanner/Scanner';
 import { SQUID_DENSITY, TWILIGHT_DENSITY, TWILIGHT_SCENES } from './density';
 import { AtollaEncounter } from '../../creatures/jelly/AtollaEncounter';
-import { VampireEncounter } from '../../creatures/squid/VampireEncounter';
+import { SquidEncounter } from '../../creatures/squid/SquidEncounter';
+import { VAMPIRE_LOOK } from '../../creatures/squid/squidSpecies';
 import { SquidPatrol } from '../../creatures/squid/SquidPatrol';
 import { GiantSquid } from '../../creatures/squid/GiantSquid';
 import { inOpenWater } from '../openWater';
@@ -46,7 +47,7 @@ export class TwilightChapter {
   private readonly squid: SquidPatrol | null;
   private readonly giant: GiantSquid | null;
   private readonly atolla: AtollaEncounter | null;
-  private readonly vampire: VampireEncounter | null;
+  private readonly vampire: SquidEncounter | null;
 
   constructor(u: FrameUniforms, kd: readonly [number, number, number]) {
     this.group.name = 'twilight-chapter';
@@ -95,7 +96,11 @@ export class TwilightChapter {
     // The vampire squid scene: cloaked, glowing arm tips, the pineapple display when approached.
     const [vampFrom, vampTo] = TWILIGHT_SCENES.vampireSquid;
     this.vampire = this.allowed('vampyroteuthis-infernalis', (vampFrom + vampTo) / 2)
-      ? new VampireEncounter(u, kd, { home: inOpenWater((vampFrom + vampTo) / 2, 1.6, 0), count: 2, size: 0.28, encounter: [vampFrom - 10, vampTo + 10], seed: 2300 })
+      ? new SquidEncounter(u, kd, {
+          look: VAMPIRE_LOOK, species: 'vampyroteuthis-infernalis', home: inOpenWater((vampFrom + vampTo) / 2, 1.6, 0), count: 2, size: 0.28,
+          // Vampire squid drift tilted, arms trailing down and slightly forward.
+          tilt: 0.5, display: true, encounter: [vampFrom - 10, vampTo + 10], seed: 2300,
+        })
       : null;
     if (this.vampire) this.group.add(this.vampire.mesh);
   }

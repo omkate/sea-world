@@ -1,6 +1,6 @@
 import { rgb } from '../fish/FishMorph';
 import type { SquidLook } from './squidMaterial';
-import { GIANT_SQUID, JEWEL_SQUID, VAMPIRE_SQUID } from './squidGeometry';
+import { DUMBO_OCTOPUS, GIANT_SQUID, JEWEL_SQUID, VAMPIRE_SQUID } from './squidGeometry';
 
 /** Cock-eyed (jewel) squid: pink-red, seed-like photophores, one large and one small eye. */
 export const JEWEL_LOOK: SquidLook = {
@@ -42,4 +42,16 @@ export const VAMPIRE_LOOK: SquidLook = {
   leftEye: 0.5,
   rightEye: 0.5,
   tipGlow: 1.2,
+};
+
+/** Dumbo octopus: pale, semi-translucent pinkish-white, big eyes, no light organs. */
+export const DUMBO_LOOK: SquidLook = {
+  shape: DUMBO_OCTOPUS,
+  body: rgb(0.85, 0.6, 0.58),
+  arms: rgb(0.8, 0.52, 0.5),
+  seeds: 0,
+  glow: 0,
+  leftEye: 0.4,
+  rightEye: 0.4,
+  sheen: 0.4,
 };

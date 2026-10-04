@@ -1,8 +1,8 @@
 # ABYSS species catalogue (Mariana)
 
-Source of truth: `src/data/species/mariana.json` (74 entries; validates against `SpeciesManifestSchema`). Depth in metres, size in metres.
+Source of truth: `src/data/species/mariana.json` (75 entries; validates against `SpeciesManifestSchema`). Depth in metres, size in metres.
 
-Verification: **12 verified**, **62 uncertain**, 0 unverified. An entry is `uncertain` if *any* field could not be confirmed from a fetched source; those fields are listed in `uncertainFields` (most are only `visual.coloration` / `sizeTypical`). Entries flagged on depth/region are called out in the key note.
+Verification: **13 verified**, **62 uncertain**, 0 unverified. An entry is `uncertain` if *any* field could not be confirmed from a fetched source; those fields are listed in `uncertainFields` (most are only `visual.coloration` / `sizeTypical`). Entries flagged on depth/region are called out in the key note.
 
 ## Surface
 
@@ -65,6 +65,7 @@ Verification: **12 verified**, **62 uncertain**, 0 unverified. An entry is `unce
 | Oceanic whitetip shark | *Carcharhinus longimanus* | 0–1082 | verified | Usually 0-152 m. |
 | Reef manta ray | *Mobula alfredi* | 0–120 | uncertain (sizeTypical, visual.coloration) | Documented in Tumon Bay, Guam. |
 | Sperm whale | *Physeter macrocephalus* | 0–3200 | verified | Most frequently sighted cetacean (18 sightings) on NOAA's Mariana Archipelago Cetacean Survey. |
+| Cuvier's beaked whale | *Ziphius cavirostris* | 0–2992 | verified | Deepest-diving mammal known (2,992 m, Schorr et al. 2014); 7 OBIS records in the Mariana box. |
 
 ## Twilight
 
