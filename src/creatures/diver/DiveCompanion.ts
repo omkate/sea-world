@@ -30,7 +30,6 @@ import { School } from '../../ecosystem/schooling/School';
 import { forEachBigAnimal } from '../bigAnimals';
 import { divePathX, divePathZ, reefFloorY } from '../../environments/reef/ReefSite';
 import { DIVE_START_DEPTH } from '../../depth/diveCurve';
-import { createRng } from '../../core/math/rng';
 import { stepCriticalSpring, type Spring } from '../../depth/spring';
 import { DIVER_RANGE, Embers, KING_RANGE, burnAway, formIn, kingMaterial, type KingUniforms } from './seaKing';
 
@@ -187,7 +186,7 @@ const KNEEL: Pose = body({ thigh: 100, knee: -120, arm: 20, elbow: 30 });
 
 /**
  * The rest of the dive group, seated on the tubes (boat-local position, facing in), hands resting
- * toward their knees (each a touch differently), chatting (BoatTalk).
+ * toward their knees (each a touch differently), breathing quietly (BoatTalk).
  * The lead diver's seat is the port tube amidships (−0.8, 0.95, 0.35).
  */
 const CREW: readonly { at: readonly [number, number, number]; yaw: number; pose: Pose }[] = [
@@ -198,64 +197,25 @@ const CREW: readonly { at: readonly [number, number, number]; yaw: number; pose:
 
 /** Where the lead diver sits on the boat (boat-local) and which way he faces. */
 const LEAD_SEAT = { at: [-0.8, 0.95, 0.35] as const, yaw: Math.PI / 2 };
-/** The furthest a seated diver turns his head while talking (degrees): the rest would be shoulders. */
-const MAX_LOOK = 35;
 /** Bones the conversation moves, on top of each diver's seated pose. */
-const TALK_BONES = ['neck_015', 'spine1_013'] as const;
+const TALK_BONES = ['spine1_013'] as const;
 type TalkOffsets = Record<(typeof TALK_BONES)[number], [number, number, number]>;
 
 /**
- * The group on the boat, chatting while they wait, kept quiet and natural: one speaks at a time
- * and looks at one listener (holding that gaze), the others turn their heads a little toward him,
- * slowly, and nod now and then; hands stay where they rest; everyone breathes and sways with the
- * boat. Offsets are Euler degrees on the rig's own axes (measured): neck z+ turns the head to his
- * left, neck y− nods it down, spine x+ twists the torso to his left, spine z+ leans it to his right.
+ * The group on the boat at rest while they wait: heads stay in their seated pose (any head motion
+ * read as unnatural), and the torso only breathes, very slightly, each diver at his own rhythm; the
+ * boat's own rocking on the swell does the rest. Offsets are Euler degrees on the rig's own axes
+ * (spine y is a slight forward lean).
  */
 class BoatTalk {
-  private speaker = 1;
-  private listener = 0;
-  private nextSwitch = 3;
-  private readonly look: number[];
-  private readonly rng = createRng(4711);
-
-  constructor(private readonly seats: readonly { at: readonly [number, number, number]; yaw: number }[]) {
-    this.look = seats.map(() => 0);
-  }
-
-  /** Head angle (degrees, + = his left) for `from` to look toward `to`, limited to what a neck turns comfortably. */
-  private toward(from: number, to: number): number {
-    const a = this.seats[from]!, b = this.seats[to]!;
-    const dx = b.at[0] - a.at[0], dz = b.at[2] - a.at[2];
-    const fwd = dx * Math.sin(a.yaw) + dz * Math.cos(a.yaw);
-    const left = dx * Math.cos(a.yaw) - dz * Math.sin(a.yaw);
-    return Math.max(-MAX_LOOK, Math.min(MAX_LOOK, ((Math.atan2(left, fwd) * 180) / Math.PI) * 0.6));
-  }
+  constructor(private readonly seats: readonly { at: readonly [number, number, number]; yaw: number }[]) {}
 
   /** Offsets for every diver at time `t` (s). */
-  update(t: number, dt: number, out: TalkOffsets[]): void {
-    if (t >= this.nextSwitch) {
-      // Someone else picks up the conversation, talking to one of the others.
-      let next = Math.floor(this.rng() * (this.seats.length - 1));
-      if (next >= this.speaker) next++;
-      this.speaker = next;
-      let l = Math.floor(this.rng() * (this.seats.length - 1));
-      if (l >= this.speaker) l++;
-      this.listener = l;
-      this.nextSwitch = t + 4.5 + this.rng() * 3;
-    }
+  update(t: number, _dt: number, out: TalkOffsets[]): void {
     this.seats.forEach((_, i) => {
       const o = out[i]!;
       for (const b of TALK_BONES) o[b] = [0, 0, 0];
-      const goal = i === this.speaker ? this.toward(i, this.listener) : this.toward(i, this.speaker);
-      // Heads turn slowly, as people's do when the talk moves round the group.
-      this.look[i]! += (goal - this.look[i]!) * Math.min(1, dt * 0.9);
-      const look = this.look[i]!;
-      const breathe = Math.sin(t * 1.2 + i * 1.7);
-      const sway = Math.sin(t * 0.5 + i * 2.1);
-      // An occasional small nod (listeners agreeing; the speaker as he talks).
-      const nod = -2.5 * Math.max(0, Math.sin(t * (i === this.speaker ? 1.6 : 0.7) + i * 2.3)) ** 4;
-      o.neck_015 = [0, nod, look];
-      o.spine1_013 = [look * 0.15, breathe * 1.2, sway * 1.5];
+      o.spine1_013 = [0, Math.sin(t * (1.1 + i * 0.07) + i * 1.7) * 0.8, 0];
     });
   }
 }
