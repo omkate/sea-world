@@ -18,3 +18,13 @@ URL flags: `?debug` (dev panel, also toggled by the backtick key), `?depth=127` 
 Docs: [architecture](docs/architecture.md) · [ocean zones](docs/ocean-zones.md) · [species catalogue](docs/species-catalogue.md) · [performance](docs/performance.md) · [references](docs/references.md)
 
 **Status:** surface, boat entry, reef, wall and open blue to 130 m are built and frozen. Below 130 m the dive ends in a letterboxed film sequence on the sand at ~150 m: through a rusted wreck, across the sand under a sperm whale, into a sunken castle by three doors, and to a chest at its carved portal holding a gold crown, then the end card ([architecture](docs/architecture.md#finale)). The deep-ocean chapters (twilight to hadal) were removed when the scope changed.
+
+## Deployment
+
+Live at https://omkate.github.io/sea-world/. Production builds use the base path `/sea-world/` (set in `vite.config.ts`, build only; `pnpm dev` stays at `/`).
+
+- **Automatic:** every push to `main` runs [.github/workflows/deploy.yml](.github/workflows/deploy.yml): checkout, `pnpm install --frozen-lockfile`, `pnpm build` (typecheck + Vite), upload `dist/`, deploy to Pages. If the build fails, nothing is deployed and the live site stays on the last good version.
+- **Manual:** GitHub → Actions → *Deploy to GitHub Pages* → *Run workflow* (branch `main`), or `gh workflow run deploy.yml --ref main`.
+- **Logs:** GitHub → Actions → the run → `build` / `deploy` jobs. The deployed URL is shown on the `deploy` job and under Settings → Environments → `github-pages`.
+- **One-time setup:** Settings → Pages → Build and deployment → Source: **GitHub Actions**. (Deploy from a branch serves the unbuilt source and shows a blank page.)
+- **Local check:** `pnpm build && pnpm preview`, then open http://localhost:4173/sea-world/.
