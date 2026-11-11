@@ -42,8 +42,22 @@ interface Source {
   rotate?: [number, number, number];
   /** Drop loose pieces (scale cards, colour checkers) with fewer than this share of the main body's triangles. */
   dropIslands?: number;
+  /**
+   * Keep the skeleton and animations (a character such as the diver): no skin baking, flattening,
+   * joining or decimation, and no quantization (skinned vertices live in bind space).
+   */
+  rig?: boolean;
+  /** Remove mesh nodes whose names contain any of these strings (a ground plane under a character). */
+  dropNodes?: string[];
   /** Longest texture edge in px (default 1024; close-up heroes use 2048 for 4K). */
   textureSize?: number;
+  /**
+   * Remove sand baked into a scan (a wreck photographed on a beach): triangles in the lowest
+   * `below` fraction of the height that are pale (sunlit sand) or face up more than `maxUp`
+   * (normal y; the seabed itself, including the shaded sand under the frames). The site's own
+   * seabed takes its place.
+   */
+  dropSand?: { below: number; minLuminance: number; maxUp: number };
 }
 
 /**
@@ -212,6 +226,57 @@ function dropIslands(doc: Document, share: number): void {
   });
 }
 
+/**
+ * Drops sand triangles (see `Source.dropSand`). Colour alone cannot tell shaded sand from rust
+ * (both are dark brown), so a triangle in the low band goes when it faces up (the seabed; frames
+ * and stringers are thin and steep) or when two of its corners sample pale texels (sunlit sand).
+ */
+async function dropSand(doc: Document, o: NonNullable<Source['dropSand']>): Promise<number> {
+  let dropped = 0;
+  for (const mesh of doc.getRoot().listMeshes()) {
+    for (const prim of mesh.listPrimitives()) {
+      const tex = prim.getMaterial()?.getBaseColorTexture();
+      const uvs = prim.getAttribute('TEXCOORD_0');
+      const idx = prim.getIndices();
+      if (!tex || !uvs || !idx) continue;
+      const { data, info } = await sharp(Buffer.from(tex.getImage()!)).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      const pos = prim.getAttribute('POSITION')!;
+      const minY = pos.getMin([])[1]!;
+      const cut = minY + (pos.getMax([])[1]! - minY) * o.below;
+      const t: number[] = [];
+      const pale = (i: number): boolean => {
+        uvs.getElement(i, t);
+        const x = Math.min(info.width - 1, Math.max(0, Math.floor((t[0]! - Math.floor(t[0]!)) * info.width)));
+        const y = Math.min(info.height - 1, Math.max(0, Math.floor((t[1]! - Math.floor(t[1]!)) * info.height)));
+        const k = (y * info.width + x) * info.channels;
+        const r = data[k]!, g = data[k + 1]!, b = data[k + 2]!;
+        return 0.3 * r + 0.59 * g + 0.11 * b >= o.minLuminance;
+      };
+      const pa: number[] = [], pb: number[] = [], pc: number[] = [];
+      const src = idx.getArray()!;
+      const kept: number[] = [];
+      for (let n = 0; n < src.length; n += 3) {
+        const a = src[n]!, b = src[n + 1]!, c = src[n + 2]!;
+        pos.getElement(a, pa); pos.getElement(b, pb); pos.getElement(c, pc);
+        let sand = false;
+        if (Math.max(pa[1]!, pb[1]!, pc[1]!) <= cut) {
+          // Face normal y: (b − a) × (c − a), normalised.
+          const ux = pb[0]! - pa[0]!, uy = pb[1]! - pa[1]!, uz = pb[2]! - pa[2]!;
+          const wx = pc[0]! - pa[0]!, wy = pc[1]! - pa[1]!, wz = pc[2]! - pa[2]!;
+          const nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx;
+          const up = ny / (Math.hypot(nx, ny, nz) || 1);
+          sand = up > o.maxUp || Number(pale(a)) + Number(pale(b)) + Number(pale(c)) >= 2;
+        }
+        if (sand) dropped++;
+        else kept.push(a, b, c);
+      }
+      idx.setArray(new Uint32Array(kept));
+      compactPrimitive(prim);
+    }
+  }
+  return dropped;
+}
+
 /** Drops triangles lying entirely below `fraction` of the primitive's height, then compacts. */
 function cropBelow(doc: Document, fraction: number): void {
   for (const mesh of doc.getRoot().listMeshes()) {
@@ -322,15 +387,21 @@ async function main(): Promise<void> {
     const ratio = Math.min(1, src.triangles / Math.max(1, before));
     // Spec-gloss materials (no longer read by three's GLTFLoader) become metal-rough.
     await doc.transform(metalRough());
-    bakeSkins(doc);
-    await doc.transform(dedup(), flatten());
-    bakeTransforms(doc);
-    await doc.transform(join(), weld());
-    if (src.rotate) rotate(doc, src.rotate);
-    if (src.dropIslands) dropIslands(doc, src.dropIslands);
-    if (src.cropRadius) cropRadius(doc, src.cropRadius);
-    if (src.cropBelow) cropBelow(doc, src.cropBelow);
-    await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio, error: src.simplifyError ?? 0.01, lockBorder: src.lockBorder ?? false }), center({ pivot: 'below' }));
+    for (const node of doc.getRoot().listNodes()) if (src.dropNodes?.some((n) => node.getName().includes(n))) node.dispose();
+    if (src.rig) {
+      await doc.transform(dedup(), weld());
+    } else {
+      bakeSkins(doc);
+      await doc.transform(dedup(), flatten());
+      bakeTransforms(doc);
+      await doc.transform(join(), weld());
+      if (src.rotate) rotate(doc, src.rotate);
+      if (src.dropSand) console.log(`  ${src.id}: ${(await dropSand(doc, src.dropSand)).toLocaleString()} sand triangles removed`);
+      if (src.dropIslands) dropIslands(doc, src.dropIslands);
+      if (src.cropRadius) cropRadius(doc, src.cropRadius);
+      if (src.cropBelow) cropBelow(doc, src.cropBelow);
+      await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio, error: src.simplifyError ?? 0.01, lockBorder: src.lockBorder ?? false }), center({ pivot: 'below' }));
+    }
     if (src.textures) {
       await doc.transform(textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [src.textureSize ?? 1024, src.textureSize ?? 1024] }));
     } else {
@@ -338,8 +409,12 @@ async function main(): Promise<void> {
         m.setBaseColorTexture(null).setNormalTexture(null).setMetallicRoughnessTexture(null).setOcclusionTexture(null).setEmissiveTexture(null);
       }
     }
-    await doc.transform(prune(), reorder({ encoder: MeshoptEncoder }), quantize());
-    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+    if (src.rig) {
+      await doc.transform(prune());
+    } else {
+      await doc.transform(prune(), reorder({ encoder: MeshoptEncoder }), quantize());
+      doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+    }
     const file = `assets/models/${src.id}.glb`;
     await io.write(path.join(root, 'public', file), doc);
     const after = countTriangles(doc);
@@ -358,7 +433,9 @@ async function main(): Promise<void> {
       species: src.species,
       size: src.size,
       triangles: after,
-      modifications: `${src.cropRadius ? 'Trimmed surrounding seabed, ' : ''}${src.cropBelow ? `Removed the lowest ${Math.round(src.cropBelow * 100)}% (stand or cut seabed), ` : ''}${src.dropIslands ? 'removed the scale card, ' : ''}${src.rotate ? 'reoriented, ' : ''}decimated ${before.toLocaleString()} → ${after.toLocaleString()} triangles, centred on base${src.textures ? `, textures resized to ${src.textureSize ?? 1024} px WebP` : ', textures removed (colour added procedurally)'}, meshopt-compressed.`,
+      modifications: src.rig
+        ? `Rig and animation kept${src.dropNodes ? ', display plane removed' : ''}, materials converted to metal-rough${src.textures ? `, textures resized to ${src.textureSize ?? 1024} px WebP` : ''}.`
+        : `${src.cropRadius ? 'Trimmed surrounding seabed, ' : ''}${src.cropBelow ? `Removed the lowest ${Math.round(src.cropBelow * 100)}% (stand or cut seabed), ` : ''}${src.dropSand ? 'removed the beach sand baked into the scan, ' : ''}${src.dropIslands ? (src.dropSand ? 'dropped loose fragments, ' : 'removed the scale card, ') : ''}${src.rotate ? 'reoriented, ' : ''}decimated ${before.toLocaleString()} → ${after.toLocaleString()} triangles, centred on base${src.textures ? `, textures resized to ${src.textureSize ?? 1024} px WebP` : ', textures removed (colour added procedurally)'}, meshopt-compressed.`,
       note: src.note,
     };
     const i = manifest.findIndex((m) => m.id === src.id);

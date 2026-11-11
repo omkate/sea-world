@@ -6,6 +6,7 @@ import type { ShaderNode, Uniform } from '../../shaders/tsl/types';
 import type { FrameUniforms } from '../../core/engine/uniforms';
 import type { ScanAsset } from '../../assets/AssetLibrary';
 import { underwaterLit } from '../../shaders/tsl/underwaterLighting';
+import { registerBigAnimal } from '../bigAnimals';
 
 export type SwimStyle =
   /** Sharks and bony fish: a travelling wave bends the body side to side, strongest at the tail. */
@@ -41,6 +42,8 @@ export interface SwimmerOptions {
   scale?: number;
   /** Individual size multiplier (mesh scale; the shared geometry is untouched). */
   size?: number;
+  /** Strength of the hero rig (key light and back rim, see underwaterLit) for an animal filmed as a set piece. */
+  hero?: number;
   /**
    * Breaching (dolphins): live sea-surface height, and how often to leap. Outside a leap the
    * animal is always kept below the surface, so it can never appear to fly.
@@ -119,12 +122,13 @@ export class HeroSwimmer {
     const m = new MeshBasicNodeMaterial({ side: DoubleSide });
     m.positionNode = deformed;
     const albedo: ShaderNode = asset.map ? (texture(asset.map, uv()) as ShaderNode).rgb : vec3(0.4, 0.42, 0.44);
-    m.colorNode = underwaterLit(u, kd, { albedo, normal: normalWorld, roughness: float(0.45), specular: float(0.2), rim: float(0.35) });
+    m.colorNode = underwaterLit(u, kd, { albedo, normal: normalWorld, roughness: float(0.45), specular: float(0.2), rim: float(0.35), hero: o.hero ? float(o.hero) : undefined });
     this.mesh = new Mesh(g, m);
     this.mesh.name = o.name ?? asset.entry.id;
     this.mesh.frustumCulled = false;
     if (o.size) this.mesh.scale.setScalar(o.size);
     if (o.leap) this.nextLeap = this.pickLeapDelay() * 0.5;
+    registerBigAnimal(this.mesh, length * 0.5);
     this.sync();
   }
 
@@ -263,6 +267,18 @@ export class HeroSwimmer {
     }
     // Beat frequency tracks swimming speed, as tail-beat frequency does in real animals.
     this.beat += dt * this.o.beatHz * (this.motion.speed / this.o.wander.cruise) * Math.PI * 2;
+    (this.phase as { value: number }).value = this.beat;
+    this.sync();
+  }
+
+  /**
+   * Scripted motion for a set piece (the whale over the wreck): place the animal on its path,
+   * face it along `direction` and keep its stroke going at the cruise beat.
+   */
+  pose(dt: number, position: Vector3, direction: Vector3): void {
+    this.motion.place(position, direction);
+    this.motion.update(0, null, 1, true);
+    this.beat += dt * this.o.beatHz * Math.PI * 2;
     (this.phase as { value: number }).value = this.beat;
     this.sync();
   }

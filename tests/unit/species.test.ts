@@ -67,13 +67,13 @@ describe('ecological placement', () => {
   });
 
   it('has life in every zone of the dive', () => {
-    for (const depth of [10, 500, 2000, 5000, 8000]) {
+    for (const depth of [10, 60, 100, 140]) {
       expect(eligibleSpecies(species, depth, 'mariana').length, `${depth} m`).toBeGreaterThan(0);
     }
   });
 
   it('thins out with depth', () => {
-    expect(eligibleSpecies(species, 10, 'mariana').length).toBeGreaterThan(eligibleSpecies(species, 8000, 'mariana').length);
+    expect(eligibleSpecies(species, 10, 'mariana').length).toBeGreaterThan(eligibleSpecies(species, 140, 'mariana').length);
   });
 
   it('rejects unverified species', () => {

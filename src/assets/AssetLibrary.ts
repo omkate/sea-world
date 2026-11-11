@@ -1,4 +1,4 @@
-import { Box3, BufferGeometry, Color, Float32BufferAttribute, Mesh, SRGBColorSpace, Vector3, type BufferAttribute, type InterleavedBufferAttribute, type Texture } from 'three/webgpu';
+import { Box3, BufferGeometry, Color, Float32BufferAttribute, Group, Mesh, SRGBColorSpace, Vector3, type AnimationClip, type BufferAttribute, type InterleavedBufferAttribute, type Texture } from 'three/webgpu';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -48,6 +48,14 @@ export interface ScanAsset {
   materials: AssetMaterial[];
   /** The model carries painted vertex colours (geometry attribute `color`). */
   vertexColors: boolean;
+}
+
+/** A rigged, animated model (a character): its scene graph is kept, not merged. */
+export interface RigAsset {
+  entry: ManifestEntry;
+  /** Wrapper group: the model is centred on its bounds and scaled so its longest extent = entry.size. */
+  root: Group;
+  animations: AnimationClip[];
 }
 
 type Slots = { color?: Color; map?: Texture | null; emissive?: Color; emissiveMap?: Texture | null; normalMap?: Texture | null };
@@ -136,5 +144,27 @@ export class AssetLibrary {
     for (const m of materials) for (const t of [m.map, m.emissiveMap]) if (t) t.colorSpace = SRGBColorSpace;
     if (parts.length === 1) merged.addGroup(0, merged.index ? merged.index.count : merged.getAttribute('position').count, 0);
     this.assets.set(id, { entry, geometry: merged, map, materials, vertexColors });
+  }
+
+  /** Loads a rigged model with its skeleton and animations intact (assets/sources.json `rig`). */
+  async loadRig(id: string): Promise<RigAsset> {
+    const entry = MANIFEST.find((m) => m.id === id);
+    if (!entry) throw new Error(`asset ${id} missing from manifest`);
+    const gltf = await this.loader.loadAsync(`${import.meta.env.BASE_URL}${entry.file}`);
+    gltf.scene.updateMatrixWorld(true);
+    const box = new Box3().setFromObject(gltf.scene, true);
+    const size = box.getSize(new Vector3());
+    const scale = entry.size / Math.max(size.x, size.y, size.z, 1e-6);
+    const centre = box.getCenter(new Vector3());
+    gltf.scene.scale.multiplyScalar(scale);
+    gltf.scene.position.copy(centre).multiplyScalar(-scale);
+    const root = new Group();
+    root.name = id;
+    root.add(gltf.scene);
+    gltf.scene.traverse((o) => {
+      const m = (o as Mesh).material as Slots | undefined;
+      for (const t of [m?.map, m?.emissiveMap]) if (t) t.colorSpace = SRGBColorSpace;
+    });
+    return { entry, root, animations: gltf.animations };
   }
 }

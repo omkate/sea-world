@@ -77,6 +77,11 @@ export class School {
   private readonly count: number;
   private readonly cell: number;
   /** Predators the fish flee from, and how close they must be to cause flight (m). */
+  /**
+   * The dive companion (scuba diver or submersible): every school gives it room, as fish part
+   * around a diver. Shared by all schools; set each frame by the companion.
+   */
+  static readonly companion = { position: new Vector3(0, 1e6, 0), radius: 0 };
   private threats: readonly Vector3[] = [];
   private threatRadius = 0;
   /** Per group, 0 calm … 1 under attack: the group packs tight (a bait ball). */
@@ -332,6 +337,20 @@ export class School {
         fx += (ex / ed) * push;
         fy += (ey / ed) * push * 0.4;
         fz += (ez / ed) * push;
+      }
+      // The diver (or submersible): fish part around it, as they do around a real diver.
+      {
+        const c = School.companion;
+        const qx = px - c.position.x, qy = py - c.position.y, qz = pz - c.position.z;
+        const qd = Math.hypot(qx, qy, qz);
+        if (qd < c.radius && qd > 1e-3) {
+          const fear = 1 - qd / c.radius;
+          startle = Math.max(startle, fear * 0.7);
+          const push = fear * cruise * 7;
+          fx += (qx / qd) * push;
+          fy += (qy / qd) * push * 0.5;
+          fz += (qz / qd) * push;
+        }
       }
       // Predators: flee harder than from the camera, and keep some depth discipline.
       for (const t of this.threats) {

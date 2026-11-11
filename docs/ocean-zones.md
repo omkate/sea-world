@@ -1,6 +1,6 @@
 # Ocean zones and the physics of the descent
 
-Site: **Mariana Islands (Guam) → Philippine Sea → Mariana Trench (Challenger Deep, ~10,935 m).**
+Site: **Guam fore-reef → the wall → a wreck on a sand terrace at ~150 m.** The dive ends there; the physics functions remain valid for any depth (to the Challenger Deep, ~10,935 m), but only the sunlight zone is visited.
 All functions live in `src/data/zones/physics.ts` and `src/data/sites/mariana.ts` and are covered by `tests/unit/physics.test.ts`.
 
 ## Zones (NOAA)
@@ -13,7 +13,7 @@ All functions live in `src/data/zones/physics.ts` and `src/data/sites/mariana.ts
 | Abyssal (abyssopelagic) | 4,000 m | ABYSSAL ZONE | Black, empty, slow |
 | Hadal (hadalpelagic) | 6,000 m | HADAL ZONE | Trench scale |
 
-Zone switching uses ±2 m hysteresis so the HUD never flickers at a boundary.
+Zone switching uses ±2 m hysteresis so the HUD never flickers at a boundary. The dive (≤145 m camera depth) stays in the sunlight zone; the deeper zones are kept in the physics model only.
 
 ## Quantities
 
@@ -29,7 +29,11 @@ Zone switching uses ±2 m hysteresis so the HUD never flickers at a boundary.
 
 ## Dive curve
 
-Scroll progress → depth through a monotone cubic spline. Keyframes (progress, depth):
-`(0, −3.5) (0.035, −1.4) (0.055, 0) (0.075, 3) (0.14, 10) (0.24, 25) (0.33, 50) (0.42, 100) (0.5, 200) (0.58, 500) (0.66, 1000) (0.74, 2000) (0.83, 4000) (0.91, 6000) (1, 10935)`.
+Scroll progress → depth in two parts (`src/depth/diveCurve.ts`).
 
-Half of the scroll is spent in the sunlit 200 m, where there is the most to watch. The curve is strictly monotonic (tested), so scrolling down always descends.
+**Approach (surface → 130 m).** A monotone cubic spline through the original keyframes (progress over 41 scrollable screens, depth):
+`(0, −3.5) (0.035, −1.4) (0.055, 0) (0.075, 3) (0.14, 10) (0.24, 25) (0.33, 50) (0.42, 100)`, plus `(0.5, 200) (0.58, 500) (0.66, 1000)`, which only shape the tangents near 130 m. The approach covers the same scroll distance as before (~18.7 screens), so every metre above 130 m is reached at the same scroll position as in the full-ocean build.
+
+**Finale (130 → 145 m).** 18 more scrollable screens (the wreck, the swim across the sand, the castle). Depth eases out exponentially from 130 m to 145 m, starting at the approach's own descent rate (no jump in speed): about 144 m after the first 10% of the finale, then a slow settle. The finale's scenes are driven by `finaleProgress(progress)` (0..1), not by depth.
+
+The whole curve is strictly monotonic (tested), so scrolling down always descends. The spacer is ~37.7 screens tall (was 42 for the full-ocean descent).

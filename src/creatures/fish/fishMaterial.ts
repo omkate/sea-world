@@ -269,6 +269,8 @@ export function createFishMaterial(
     specular: float(0.06).add(float(pattern.sheen).mul(0.18).mul(onBody)).add(glint.mul(0.6)),
     rim: float(0.25).add(isFin.mul(0.15)),
     subject: float(1),
+    // Only below 130 m (the finale): the diver's torch and the crown's glow.
+    torch: true,
     emissive: emission(u, kd, pattern, s, v, onBody, variation, normal),
   });
 

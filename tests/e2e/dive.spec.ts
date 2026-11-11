@@ -12,13 +12,17 @@ for (const backend of ['webgpu', 'webgl2'] as const) {
   test.describe(backend, () => {
     const q = backend === 'webgl2' ? '&webgl' : '';
 
-    test('boots, renders and shows the HUD at the surface', async ({ page }) => {
+    test('boots, renders and shows the HUD and the episode title at the surface', async ({ page }) => {
       const errors: string[] = [];
       page.on('pageerror', (e) => errors.push(e.message));
       await page.goto(`/?debug${q}`);
       await ready(page);
       await expect(hud(page, 'zone')).toHaveText('SURFACE');
       await expect(hud(page, 'pressure')).toHaveText('1.0 atm');
+      await expect(page).toHaveTitle(/Episode 1/);
+      await expect(page.locator('.opening-card h1')).toHaveText('The Sunken Crown');
+      // The depth readout is for development only.
+      await expect(page.locator('#hud')).toBeVisible();
       expect(await page.evaluate(() => document.body.dataset.backend)).toBe(backend);
       expect(errors).toEqual([]);
     });
@@ -46,23 +50,23 @@ for (const backend of ['webgpu', 'webgl2'] as const) {
       await expect(hud(page, 'depth')).toHaveText('127 m');
       await expect(hud(page, 'pressure')).toHaveText('13.6 atm');
       await expect(hud(page, 'zone')).toHaveText('SUNLIGHT ZONE');
+      // The dive ends at the wreck terrace: deeper links clamp to the end of the finale.
       await page.goto(`/?debug&depth=1500${q}`);
       await ready(page);
-      await expect(hud(page, 'zone')).toHaveText('MIDNIGHT ZONE');
-      // No sunlight; the midnight scenes keep the wide lamp off (the hero rig lights the animal).
-      await expect(hud(page, 'light')).toHaveText('NONE');
+      await expect(hud(page, 'depth')).toHaveText('145 m');
+      await expect(hud(page, 'zone')).toHaveText('SUNLIGHT ZONE');
     });
   });
 }
 
 test('underwater frames darken continuously with depth', async ({ page }) => {
   const luminance: number[] = [];
-  // The deepest sample is the open water between the midnight scenes (no hero animal in frame).
-  for (const d of [5, 100, 300, 600, 3300]) {
-    await page.goto(`/?depth=${d}`);
+  // Depths far enough apart that wave-driven flicker near the surface cannot reorder them; the
+  // last is just above the finale (below 130 m the shot list takes the camera).
+  for (const d of [5, 60, 128]) {
+    // Without the dive companion: this measures the water's own light.
+    await page.goto(`/?depth=${d}&companion=0`);
     await ready(page);
-    // From ~450 m the camera lamp switches on; measure natural light only.
-    if (d >= 450) await page.keyboard.press('l');
     await page.waitForTimeout(3000);
     const png = await page.screenshot({ clip: { x: 540, y: 420, width: 200, height: 120 } });
     luminance.push(await page.evaluate(async (b64) => {
@@ -78,27 +82,29 @@ test('underwater frames darken continuously with depth', async ({ page }) => {
       return sum / (data.length / 4);
     }, png.toString('base64')));
   }
-  // Natural light falls monotonically through the sunlit and twilight zones…
-  for (let i = 1; i < luminance.length - 1; i++) expect(luminance[i]!).toBeLessThan(luminance[i - 1]!);
-  // …and below 1,000 m only the camera's sensor-noise floor remains.
-  expect(luminance.at(-1)!).toBeLessThan(3);
+  // Natural light falls monotonically with depth.
+  for (let i = 1; i < luminance.length; i++) expect(luminance[i]!).toBeLessThan(luminance[i - 1]!);
 });
 
-test('the lamp comes on where sunlight ends and lights marine snow', async ({ page }) => {
-  // 3,950 m: no sunlight, below the midnight scenes (which keep the wide lamp off).
-  await page.goto('/?debug&depth=3950');
+test('the episode ends as a film, with an end card and a way back to the surface', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/?debug');
   await ready(page);
-  await expect(hud(page, 'light')).toHaveText('NONE · LAMP');
-  expect(await page.evaluate(() => window.__abyss!.state.lightLabel)).toBe('NONE');
-  await page.keyboard.press('l');
-  await expect(hud(page, 'light')).toHaveText('NONE');
-});
-
-test('the wide lamp stays off in the midnight scenes, where the hero rig lights the animal', async ({ page }) => {
-  await page.goto('/?debug&depth=2600');
-  await ready(page);
-  await page.waitForTimeout(1500);
-  await expect(hud(page, 'light')).toHaveText('NONE');
+  await expect(page.locator('body')).not.toHaveClass(/cinema-mode/);
+  await page.evaluate(() => scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+  await page.waitForFunction(() => window.__abyss!.state.depth > 144.5, null, { timeout: 15_000 });
+  expect(await depthMetres(page)).toBeLessThanOrEqual(145 + 1e-6);
+  await expect(hud(page, 'zone')).toHaveText('SUNLIGHT ZONE');
+  await expect(page.locator('body')).toHaveClass(/cinema-mode/);
+  await expect.poll(() => page.locator('.end-card').evaluate((e) => Number(getComputedStyle(e).opacity))).toBeGreaterThan(0.9);
+  await expect(page.locator('.end-card h2')).toHaveText('ABYSS');
+  await expect(page.locator('.end-card')).toContainText('End of Episode 1');
+  // "Back to the surface" runs the film back to the boat: the letterbox lifts on the way up.
+  await page.locator('.end-replay').click();
+  await expect(page.locator('body')).not.toHaveClass(/cinema-mode/, { timeout: 30_000 });
+  await page.waitForFunction(() => scrollY < 5, null, { timeout: 30_000 });
+  expect(errors).toEqual([]);
 });
 
 test('fallback page explains hardware acceleration is required', async ({ page }) => {

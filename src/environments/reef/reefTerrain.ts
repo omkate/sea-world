@@ -4,8 +4,10 @@ import type { ShaderNode } from '../../shaders/tsl/types';
 import type { FrameUniforms } from '../../core/engine/uniforms';
 import { underwaterLit } from '../../shaders/tsl/underwaterLighting';
 import { reefFloorY, reefSand } from './ReefSite';
+import { smoothstep as smoothstepCpu } from '../../core/math/monotoneCubic';
 
-export const TERRAIN_BOUNDS = { xMin: -150, xMax: 130, zMin: -330, zMax: 90 };
+/** Offshore the mesh runs past the wreck and the castle (x ≈ 92–205) so the terrace has no visible edge. */
+export const TERRAIN_BOUNDS = { xMin: -150, xMax: 240, zMin: -330, zMax: 90 };
 
 export function createReefTerrain(u: FrameUniforms, kd: readonly [number, number, number], spacing = 1.25): Mesh {
   const { xMin, xMax, zMin, zMax } = TERRAIN_BOUNDS;
@@ -14,7 +16,7 @@ export function createReefTerrain(u: FrameUniforms, kd: readonly [number, number
   const xs: number[] = [];
   for (let x = xMin; x < xMax; ) {
     xs.push(x);
-    x += x > 52 && x < 115 ? spacing * 0.32 : spacing;
+    x += x > 52 && x < 115 ? spacing * 0.32 : x > 135 ? spacing * 2 : spacing;
   }
   xs.push(xMax);
   const nx = xs.length - 1;
@@ -29,7 +31,8 @@ export function createReefTerrain(u: FrameUniforms, kd: readonly [number, number
       positions[k++] = x;
       positions[k++] = reefFloorY(x, z);
       positions[k++] = z;
-      sandAttr[q++] = reefSand(x, z);
+      // The terrace at the wall's foot is open sand.
+      sandAttr[q++] = Math.max(reefSand(x, z), smoothstepCpu(140, 146, -positions[k - 2]!));
     }
   }
   const index: number[] = [];
@@ -77,6 +80,7 @@ export function createReefTerrain(u: FrameUniforms, kd: readonly [number, number
     roughness: float(0.85),
     specular: float(0.05),
     caustics: true,
+    torch: true,
   });
 
   const mesh = new Mesh(g, m);

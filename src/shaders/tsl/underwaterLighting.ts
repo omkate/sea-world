@@ -31,7 +31,24 @@ export interface SurfaceInputs {
   subject?: ShaderNode;
   /** Strength (0..1) of the deep-sea hero rig: ROV key light plus a back rim (see HERO_KEY). */
   hero?: ShaderNode;
+  /** Lit by the diver's head torch (the wreck finale; nothing above 130 m receives it). */
+  torch?: boolean;
 }
+
+/**
+ * The diver's head torch, in camera-adapted units like the hero rig: a cone (inner ~8°, outer
+ * ~30° half-angle) with inverse-square falloff and the water's extinction along the beam. Within
+ * TORCH_RESTORE of the lens the view path's extinction is undone, as a film crew grades torch-lit
+ * subjects back to their colours; farther, the lit rust fades into the blue. Surfaces that take
+ * the torch also take the crown's glow in the castle's last room (`u.relic`, `u.relicPos`).
+ */
+export const TORCH_LIGHT = 3;
+/** The crown's glow (camera-adapted), and the distance (m) over which it halves. */
+export const RELIC_LIGHT = 1.3;
+const RELIC_REACH = 2;
+const TORCH_RESTORE = 5;
+/** The torch only lights surfaces once the camera is below this depth (the finale). */
+const TORCH_FROM = 130;
 
 /**
  * Deep-sea hero rig, as on an ROV filming a single animal: a key light above and to one side
@@ -152,6 +169,27 @@ export function underwaterLit(u: FrameUniforms, kd: readonly [number, number, nu
     // subject by the inverse so the animal keeps its own colours.
     const luma: ShaderNode = dot(lit, vec3(0.2126, 0.7152, 0.0722));
     color = color.add(mix(vec3(luma), lit, 1 / HERO_DESATURATION).max(0).mul(restore).mul(adapt));
+  }
+  if (s.torch) {
+    const toP: ShaderNode = p.sub(u.torchPos as ShaderNode);
+    const d: ShaderNode = max(toP.length(), 0.05);
+    const ldir: ShaderNode = toP.div(d);
+    const cone: ShaderNode = smoothstep(0.87, 0.99, dot(ldir, u.torchDir as ShaderNode));
+    const facing: ShaderNode = max(dot(n, ldir.negate()), 0);
+    const reach: ShaderNode = exp(sigma.mul(d).negate()).div(d.mul(d).mul(0.15).add(1));
+    const restore: ShaderNode = exp(sigma.mul(min(dist, TORCH_RESTORE)));
+    const gate: ShaderNode = smoothstep(TORCH_FROM, TORCH_FROM + 4, u.cameraDepth as ShaderNode);
+    const level: ShaderNode = (u.torch as ShaderNode).mul(gate).mul(TORCH_LIGHT).div(u.exposure as ShaderNode);
+    const beam: ShaderNode = vec3(1, 0.92, 0.8).mul(cone).mul(reach).mul(level);
+    const glint: ShaderNode = pow(max(dot(n, normalize(ldir.negate().add(v))), 0), shininess).mul(s.specular).mul(fresnel.mul(2).add(0.4));
+    color = color.add(s.albedo.mul(facing).add(glint).mul(beam).mul(restore));
+    // The crown in the open chest: gold light spilling over the room and the diver's face.
+    const toR: ShaderNode = (u.relicPos as ShaderNode).sub(p);
+    const dr: ShaderNode = max(toR.length(), 0.05);
+    const lr: ShaderNode = toR.div(dr);
+    const relicFall: ShaderNode = float(1).div(dr.div(RELIC_REACH).pow(2).add(1));
+    const relic: ShaderNode = vec3(1, 0.72, 0.32).mul((u.relic as ShaderNode).mul(gate).mul(RELIC_LIGHT).div(u.exposure as ShaderNode)).mul(relicFall);
+    color = color.add(s.albedo.mul(max(dot(n, lr), 0).mul(0.85).add(0.15)).mul(relic).mul(restore));
   }
   if (s.emissive) color = color.add(s.emissive);
   return color;

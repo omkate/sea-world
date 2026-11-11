@@ -1,11 +1,11 @@
-import { PerspectiveCamera, Scene, Timer } from 'three/webgpu';
+import { PerspectiveCamera, Scene, Timer, Vector3 } from 'three/webgpu';
 import type { RendererInfo } from '../renderer/createRenderer';
 import { createFrameUniforms } from './uniforms';
 import { QUALITY, effectivePixelRatio, stepDown, type QualityTier } from '../quality/tiers';
 import { DynamicResolution } from '../quality/DynamicResolution';
 import { MARIANA } from '../../data/sites/mariana';
 import { createDepthState, updateDepthState, type DepthState } from '../../depth/DepthState';
-import { diveCurve, progressForDepth } from '../../depth/diveCurve';
+import { diveCurve, finaleProgress, progressForDepth } from '../../depth/diveCurve';
 import { ScrollInput } from '../../depth/ScrollInput';
 import { CameraRig } from '../../camera/CameraRig';
 import { OceanSky, refractedSunDirection } from '../../ocean/surface/Sky';
@@ -16,9 +16,12 @@ import { inscatter, whiteBalance, WHITE_BALANCE_STRENGTH } from '../../ocean/med
 import { SuspendedParticles } from '../../particles/suspended/SuspendedParticles';
 import { ReefChapter } from '../../environments/reef/ReefChapter';
 import { OpenBlueChapter } from '../../environments/openBlue/OpenBlueChapter';
-import { TwilightChapter } from '../../environments/twilight/TwilightChapter';
-import { MidnightChapter } from '../../environments/midnight/MidnightChapter';
-import { lampAllowance } from '../../environments/midnight/scenes';
+import { WreckChapter } from '../../environments/wreck/WreckChapter';
+import { CastleChapter } from '../../environments/castle/CastleChapter';
+import { FinaleDirector } from '../../environments/finale/FinaleDirector';
+import { finaleWeights } from '../../environments/finale/finalePath';
+import { Cinema } from '../../ui/cinema/Cinema';
+import { DiveCompanion } from '../../creatures/diver/DiveCompanion';
 import { AssetLibrary } from '../../assets/AssetLibrary';
 import { Hud } from '../../ui/hud/Hud';
 import type { DebugPanel } from '../../ui/debug/DebugPanel';
@@ -62,6 +65,8 @@ export interface ExperienceOptions {
   dom: { spacer: HTMLElement; hud: HTMLElement; debugRoot: HTMLElement; cue: HTMLElement | null };
   startDepth: number | null;
   debug: boolean;
+  /** The scuba diver / submersible companion (off only for measurements of the water itself). */
+  companion: boolean;
 }
 
 export class Experience {
@@ -77,8 +82,14 @@ export class Experience {
   private readonly particles: SuspendedParticles;
   private reef: ReefChapter | null = null;
   private openBlue: OpenBlueChapter | null = null;
-  private twilight: TwilightChapter | null = null;
-  private midnight: MidnightChapter | null = null;
+  private wreck: WreckChapter | null = null;
+  private castle: CastleChapter | null = null;
+  private director: FinaleDirector | null = null;
+  private readonly cinema = new Cinema(document.body);
+  private readonly finalePos = new Vector3();
+  private readonly finaleDir = new Vector3();
+  private readonly head = { pos: new Vector3(), up: new Vector3(0, 1, 0) };
+  private companion: DiveCompanion | null = null;
   private scanner: Scanner | null = null;
   private discovery: DiscoveryLayer | null = null;
   private readonly library = new AssetLibrary();
@@ -118,6 +129,8 @@ export class Experience {
     this.scroll = new ScrollInput(o.dom.spacer);
     this.rig = new CameraRig(this.camera);
     this.hud = new Hud(o.dom.hud);
+    // Depth, temperature and the rest are instruments for development (?debug), not part of the film.
+    if (!o.debug) o.dom.hud.style.display = 'none';
     this.drs = new DynamicResolution({ targetMs: 1000 / 60, minScale: q.minRenderScale, maxScale: q.maxRenderScale, window: 0.75, step: 0.08 });
 
     if (o.startDepth !== null) this.scroll.jumpTo(progressForDepth(o.startDepth));
@@ -147,16 +160,21 @@ export class Experience {
   async prepare(): Promise<void> {
     const { renderer } = this.o.info;
     this.reef = await ReefChapter.create(this.u, MARIANA.kd, this.library, (x, z) => waveHeight(this.surface.waves, x, z, this.time));
-    this.scene.add(this.reef.group);
-    // The reef has loaded every model the open blue reuses (the whitetip scan); add the whale.
-    await this.library.load(['sperm-whale']);
-    this.openBlue = new OpenBlueChapter(this.u, MARIANA.kd, this.library);
+    this.scene.add(this.reef.group, this.reef.seabed);
+    this.openBlue = new OpenBlueChapter(this.u, MARIANA.kd);
     this.scene.add(this.openBlue.group);
-    this.twilight = new TwilightChapter(this.u, MARIANA.kd);
-    this.scene.add(this.twilight.group);
-    this.midnight = await MidnightChapter.create(this.u, MARIANA.kd, this.library);
-    this.scene.add(this.midnight.group);
-    this.mountDiscovery([...this.reef.sightings(), ...this.openBlue.sightings(), ...this.twilight.sightings(), ...this.midnight.sightings()]);
+    // The finale: the wreck, the castle and the shot list that runs them (below 130 m only).
+    [this.wreck, this.castle, this.director] = await Promise.all([
+      WreckChapter.create(this.u, MARIANA.kd, this.library),
+      CastleChapter.create(this.u, MARIANA.kd, this.library),
+      FinaleDirector.create(this.u, MARIANA.kd, this.library),
+    ]);
+    this.scene.add(this.wreck.group, this.castle.group, this.director.group);
+    if (this.o.companion) {
+      this.companion = await DiveCompanion.create(this.u, MARIANA.kd, this.library, this.particles.scene, (x, z) => waveHeight(this.surface.waves, x, z, this.time));
+      this.scene.add(this.companion.group);
+    }
+    this.mountDiscovery([...this.reef.sightings(), ...this.openBlue.sightings(), ...this.director.sightings()]);
     await renderer.compileAsync(this.scene, this.camera);
     await renderer.compileAsync(this.particles.scene, this.camera);
   }
@@ -202,6 +220,9 @@ export class Experience {
       surfaceHeightAtCamera: surfaceH,
       submersion: this.state.submersion,
     });
+    // Below 130 m the finale's shot list takes the camera over (no effect above).
+    const finale = finaleProgress(progress);
+    this.director?.direct(finale, cam, this.time);
     cam.updateMatrixWorld();
 
     const camDepth = -cam.position.y;
@@ -219,8 +240,7 @@ export class Experience {
     u.cameraDepth.value = camDepth;
     u.turbidity.value = this.state.turbidity;
     u.particleDensity.value = this.state.particleDensity;
-    // The midnight zone's first scenes switch the lamp off to let bioluminescence own the dark.
-    const lampTarget = this.lampEnabled ? smoothstep(LAMP_ON_FROM, LAMP_ON_FULL, depth) * lampAllowance(depth) : 0;
+    const lampTarget = this.lampEnabled ? smoothstep(LAMP_ON_FROM, LAMP_ON_FULL, depth) : 0;
     stepCriticalSpring(this.lamp, lampTarget, 5, dt);
     const lamp = this.lamp.value < 1e-4 ? 0 : Math.min(1, this.lamp.value);
     // Auto-exposure follows the brightest light actually present: a dimming lamp raises the
@@ -257,8 +277,21 @@ export class Experience {
     this.surface.under.visible = cam.position.y < 3;
     this.reef?.update(dt, this.time, cam, depth, QUALITY[this.tier].scenery);
     this.openBlue?.update(dt, this.time, cam, depth);
-    this.twilight?.update(dt, this.time, cam, depth);
-    this.midnight?.update(dt, this.time, cam, depth, u);
+    this.wreck?.update(depth);
+    this.director?.update(dt, finale, this.time, cam, depth);
+    const fw = finaleWeights(finale);
+    if (this.companion && this.director) {
+      const owned = this.director.diver(finale, this.finalePos, this.finaleDir);
+      this.companion.setFinale(owned, this.finalePos, this.finaleDir, fw);
+      this.companion.update(dt, cam, depth);
+      this.director.stirSilt(dt, this.companion.finPosition(this.finalePos), owned);
+      // After the diver has moved: once he has the crown, it travels in his hand.
+      this.companion.crownMount(this.head.pos, this.head.up);
+      this.castle?.update(finale, depth, this.time, this.head);
+    } else {
+      this.companion?.update(dt, cam, depth);
+      this.castle?.update(finale, depth, this.time, null);
+    }
 
     renderer.info.reset();
     this.pipeline.pipeline.render();
@@ -268,6 +301,7 @@ export class Experience {
     const sightings = this.scanner?.update(dt, cam, innerWidth, innerHeight);
     if (sightings) this.discovery?.update(depth > 0.5 ? sightings : []);
     if (progress > 0.004) this.o.dom.cue?.classList.add('gone');
+    this.cinema.update(dt, fw.letterbox, fw.endCard, fw.fade, progress);
     this.debug?.frame(dt * 1000, this.state);
 
     this.adaptQuality(this.drs.sample(dt * 1000, dt));
@@ -312,12 +346,8 @@ export class Experience {
           getCreatures: () => {
             const reef = this.reef?.creatureCounts() ?? { total: 0, simulated: 0 };
             const blue = this.openBlue?.creatureCounts() ?? { total: 0, simulated: 0 };
-            const twilight = this.twilight?.creatureCounts() ?? { total: 0, simulated: 0 };
-            const midnight = this.midnight?.creatureCounts() ?? { total: 0, simulated: 0 };
-            return {
-              total: reef.total + blue.total + twilight.total + midnight.total,
-              simulated: reef.simulated + blue.simulated + twilight.simulated + midnight.simulated,
-            };
+            const wreck = this.director?.creatureCounts() ?? { total: 0, simulated: 0 };
+            return { total: reef.total + blue.total + wreck.total, simulated: reef.simulated + blue.simulated + wreck.simulated };
           },
           getCpuMs: () => this.cpuMs,
           jumpToDepth: (d) => this.scroll.jumpTo(progressForDepth(d)),

@@ -43,7 +43,7 @@ export function createFrameUniforms() {
     bioluminescence: uniform(0) as Uniform<number>,
     /**
      * A bioluminescence constellation (0..1): extra plankton emitters flashing in fronts that
-     * ripple out from `constellationOrigin`, set by the midnight zone's first scene.
+     * ripple out from `constellationOrigin` (the diver's kicks, below 400 m: unused at the current dive depth).
      */
     constellation: uniform(0) as Uniform<number>,
     constellationOrigin: uniform(new Vector3()) as Uniform<Vector3>,
@@ -51,6 +51,13 @@ export function createFrameUniforms() {
     whiteBalance: uniform(new Vector3(1, 1, 1)) as Uniform<Vector3>,
     /** Ray-march samples for light shafts (0 disables). */
     shaftSamples: uniform(12) as Uniform<number>,
+    /** The diver's head torch (0..1), where it is and where it points (unit), set by the companion. */
+    torch: uniform(0) as Uniform<number>,
+    torchPos: uniform(new Vector3()) as Uniform<Vector3>,
+    torchDir: uniform(new Vector3(0, 0, -1)) as Uniform<Vector3>,
+    /** The crown's glow in the castle's last room (0..1) and where it is: a warm omni light. */
+    relic: uniform(0) as Uniform<number>,
+    relicPos: uniform(new Vector3()) as Uniform<Vector3>,
   };
 }
 

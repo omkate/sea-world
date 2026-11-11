@@ -99,38 +99,99 @@
     "textureSize": 2048
   },
   {
-    "id": "yellowfin-tuna",
-    "uid": "d4eeea976932414d91fc786ce6cec547",
-    "role": "hero",
-    "species": "Thunnus albacares",
-    "size": 1.5,
-    "triangles": 60000,
+    "id": "scuba-diver",
+    "uid": "9a415258dec4449c9faf28f11a5b6831",
+    "role": "character",
+    "species": null,
+    "size": 2,
+    "triangles": 16000,
     "textures": true,
     "textureSize": 2048,
-    "note": "Photogrammetry scan of a real yellowfin tuna (CC0, ffishAsia).",
-    "dropIslands": 0.02
+    "rig": true,
+    "dropNodes": [
+      "pPlane1"
+    ],
+    "note": "Rigged scuba diver (BCD, tank, regulator, fins) with its swim-cycle animation; the dive companion down to the scuba depth record."
   },
   {
-    "id": "cuviers-beaked-whale",
-    "uid": "a463879e47d24df795ebaecb460c28a2",
-    "role": "hero",
-    "species": "Ziphius cavirostris",
-    "size": 5.5,
-    "triangles": 30000,
+    "id": "dive-boat",
+    "uid": "04f24d42e8ad4446aac46af980568e85",
+    "role": "vehicle",
+    "species": null,
+    "size": 4.7,
+    "triangles": 40000,
     "textures": true,
     "textureSize": 2048,
-    "note": "Cuvier's beaked whale model."
+    "note": "Rigid-floored inflatable with an outboard, the kind dive crews launch from; the diver back-rolls off its side tube."
   },
   {
-    "id": "grenadier",
-    "uid": "4e41af54d0194bf2ad5c4f6ab3a9cbd7",
-    "role": "hero",
-    "species": "Coryphaenoides yaquinae",
-    "size": 0.45,
-    "triangles": 60000,
+    "id": "wreck",
+    "uid": "1bedc7892b9e4666b89c0d25cf2a6d1e",
+    "role": "wreck",
+    "species": null,
+    "size": 28,
+    "triangles": 160000,
+    "textures": true,
+    "textureSize": 1024,
+    "dropSand": {
+      "below": 0.45,
+      "minLuminance": 150,
+      "maxUp": 0.7
+    },
+    "dropIslands": 0.002,
+    "note": "Photogrammetry of an iron hull broken down to its ribs, captured on a beach; the baked sand is removed and the ribs are bedded into the wreck terrace at ~150 m. The finale's swim-through set."
+  },
+  {
+    "id": "castle",
+    "uid": "757d6f950bb047e690e412b0a0375cce",
+    "role": "castle",
+    "species": null,
+    "size": 110,
+    "triangles": 320000,
     "textures": true,
     "textureSize": 2048,
-    "dropIslands": 0.02,
-    "note": "Photogrammetry scan of a real Sagami grenadier (Ventrifossa garmani, CC0, ffishAsia), standing in for the abyssal grenadier: same family (Macrouridae) and rattail body plan."
+    "note": "Photogrammetry of the Borgholm Castle ruin (Öland, Sweden): a roofless fortress with round corner towers on its earthworks, scaled to ~58 m across the walls and sunk into the sand beyond the wreck as the finale's last set. Not a Guam site: artistic licence."
+  },
+  {
+    "id": "chest",
+    "uid": "b124919b7bc3470c82daeef72823f941",
+    "role": "prop",
+    "species": null,
+    "size": 1.1,
+    "triangles": 5000,
+    "textures": true,
+    "rig": true,
+    "note": "Iron-bound wooden chest with its lid-opening animation; what the diver came for waits inside."
+  },
+  {
+    "id": "crown",
+    "uid": "5689a9525a2c425d93f7d483b93d8cfa",
+    "role": "prop",
+    "species": null,
+    "size": 0.3,
+    "triangles": 9000,
+    "textures": true,
+    "note": "A gold crown, resting in the chest in the castle's last room."
+  },
+  {
+    "id": "trident",
+    "uid": "501a5c57ec124678841b4954eb15e30e",
+    "role": "prop",
+    "species": null,
+    "size": 0.37,
+    "triangles": 6000,
+    "textures": true,
+    "note": "A gold trident (generic mythological sea-god's emblem), formed in the diver's hand as he becomes the king of the sea. Size is its widest horizontal extent (the prongs): the shaft is ~2.3 m."
+  },
+  {
+    "id": "seaking",
+    "uid": "e3978fb660cf47278485d44eeba488ef",
+    "role": "character",
+    "species": null,
+    "size": 1.95,
+    "triangles": 20000,
+    "textures": true,
+    "rig": true,
+    "note": "A rigged, bearded king in gold armour with a crown-helm (an original fantasy character), recoloured in the shader to the sea's blues and greens: what the diver becomes at the end of the finale."
   }
 ]

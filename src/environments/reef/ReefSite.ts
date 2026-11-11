@@ -21,8 +21,64 @@ function warp(z: number): number {
   return 4 * Math.sin(z * 0.045) + 1.5 * Math.sin(z * 0.13 + 1);
 }
 
+/**
+ * The wreck terrace: the wall's foot levels out onto a sand shelf at ~150 m, where the wreck lies.
+ * Low dunes and a gentle offshore fall keep it from reading as a flat plane.
+ */
+export const TERRACE_DEPTH = 150;
+const TERRACE_TOE = 3;
+
+/**
+ * Where the wreck lies on the terrace: hull centre (x, z), heading of the bow (radians about +y,
+ * applied to the model's +z axis) and length (m). The stern faces the camera's last position on
+ * the dive path, the bow points offshore and away.
+ */
+export const WRECK_SITE = { x: 104, z: -152, yaw: Math.PI - Math.atan2(0.5, 1), length: 28 } as const;
+
+/**
+ * The castle: a ruined fortress further out on the terrace (centre x, z; heading of the model's
+ * gate face; size = the scan's widest extent in metres). Its gate face looks back toward the wreck.
+ */
+export const CASTLE_SITE = { x: 150, z: -225, yaw: -1.46, size: 110 } as const;
+
+/** 0..1: under the castle and its earthworks, where the terrace is level. */
+export function castleBed(x: number, z: number): number {
+  return 1 - smoothstepN(52, 68, Math.hypot(x - CASTLE_SITE.x, z - CASTLE_SITE.z));
+}
+
+/** 0..1: inside the wreck's bed (an ellipse around the hull, a little longer and wider). */
+export function wreckBed(x: number, z: number): number {
+  const dx = x - WRECK_SITE.x, dz = z - WRECK_SITE.z;
+  const s = Math.sin(WRECK_SITE.yaw), c = Math.cos(WRECK_SITE.yaw);
+  const along = dx * s + dz * c;
+  const across = dx * c - dz * s;
+  const r = Math.hypot(along / (WRECK_SITE.length * 0.62), across / 9);
+  return 1 - smoothstepN(0.75, 1.25, r);
+}
+
+function terraceDepth(x: number, z: number): number {
+  const dunes = TERRACE_DEPTH + Math.max(0, x - 90) * 0.02 + fbm3(x * 0.04, 2.2, z * 0.04, 3) * 1.4 + fbm3(x * 0.25, 6.4, z * 0.25, 2) * 0.25;
+  // The hull has settled into a level bed of sand; only fine ripples remain under it.
+  const ripples = fbm3(x * 0.25, 6.4, z * 0.25, 2) * 0.12;
+  const wreck = TERRACE_DEPTH + Math.max(0, WRECK_SITE.x - 90) * 0.02 + ripples;
+  const castle = TERRACE_DEPTH + Math.max(0, CASTLE_SITE.x - 90) * 0.02 + ripples;
+  const ww = wreckBed(x, z), wc = castleBed(x, z);
+  return dunes + (wreck - dunes) * ww + (castle - dunes) * wc * (1 - ww);
+}
+
+/** Smooth minimum: the wall meets the terrace in a rounded toe; above ~135 m it changes nothing. */
+function softMin(a: number, b: number, k: number): number {
+  const lo = Math.min(a, b);
+  return lo - k * Math.log(Math.exp((lo - a) / k) + Math.exp((lo - b) / k));
+}
+
 /** Seafloor depth (positive metres) at world x, z. */
 export function reefFloorDepth(x: number, z: number): number {
+  return softMin(wallDepth(x, z), terraceDepth(x, z), TERRACE_TOE);
+}
+
+/** The fore-reef and wall profile, as it would continue into the deep without the terrace. */
+function wallDepth(x: number, z: number): number {
   const xs = x + warp(z);
   const base = PROFILE(xs);
   // Spur-and-groove: ridges running offshore on the slope, fading on the flat and wall.

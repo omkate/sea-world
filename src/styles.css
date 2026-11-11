@@ -4,6 +4,9 @@
   --abyss: #02070b;
   --font: ui-sans-serif, 'Inter', 'Helvetica Neue', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  /* The film's type: inscriptional capitals for titles, a classical italic for its lines. */
+  --title: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  --story: 'Cormorant Garamond', 'Cormorant', Georgia, serif;
 }
 
 * {
@@ -84,7 +87,7 @@ body.ready #hud {
   inset: 0;
   display: grid;
   place-items: center;
-  font: 11px var(--mono);
+  font: 12px var(--title);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ink-dim);
@@ -106,7 +109,8 @@ body.fallback-mode #loading {
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  font-size: 10px;
+  font-family: var(--title);
+  font-size: 11px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--ink-dim);
@@ -244,6 +248,7 @@ body.fallback-mode {
 
 .credits-toggle {
   position: fixed;
+  z-index: 3;
   right: max(20px, env(safe-area-inset-right));
   bottom: max(18px, env(safe-area-inset-bottom));
   font: 10px var(--mono);
@@ -263,6 +268,7 @@ body.fallback-mode {
 
 .credits-panel {
   position: fixed;
+  z-index: 3;
   right: 16px;
   bottom: 52px;
   width: min(420px, calc(100vw - 32px));
@@ -757,4 +763,160 @@ dd.is-uncertain small {
   .glyph {
     transition: opacity 0.4s ease;
   }
+}
+
+/* The wreck finale: letterbox (2.39:1 on a 16:9 screen), HUD stepping back, end card. */
+.cinema {
+  --bars: 0;
+  --card: 0;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cinema-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 12.6vh;
+  background: #000;
+  transition: transform 0.12s linear;
+}
+
+.cinema-top {
+  top: 0;
+  transform: translateY(calc((var(--bars) - 1) * 100%));
+}
+
+.cinema-bottom {
+  bottom: 0;
+  transform: translateY(calc((1 - var(--bars)) * 100%));
+}
+
+.cinema-black {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+}
+
+.end-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 16px;
+  text-align: center;
+  opacity: var(--card);
+  transform: translateY(calc((1 - var(--card)) * 10px));
+  transition: opacity 0.12s linear, transform 0.12s linear;
+  text-shadow: 0 0 24px rgba(0, 0, 0, 0.55);
+}
+
+.end-card h2 {
+  margin: 0;
+  font-family: var(--title);
+  font-weight: 400;
+  font-size: clamp(40px, 8vw, 88px);
+  letter-spacing: 0.28em;
+  margin-right: -0.28em;
+  color: var(--ink);
+}
+
+.end-eyebrow {
+  margin: 0;
+  font-family: var(--title);
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.end-line {
+  margin: 0;
+  font-family: var(--story);
+  font-style: italic;
+  font-size: clamp(18px, 2.2vw, 24px);
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.end-next {
+  margin: 14px 0 0;
+  font-family: var(--title);
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.end-replay {
+  margin-top: 22px;
+  padding: 10px 20px;
+  font: 600 11px var(--title);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: rgba(2, 10, 16, 0.35);
+  border: 1px solid rgba(232, 244, 248, 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+.cinema.card-on .end-replay {
+  pointer-events: auto;
+}
+
+.end-replay:hover,
+.end-replay:focus-visible {
+  background: rgba(2, 10, 16, 0.6);
+  border-color: var(--ink);
+}
+
+/*
+ * The episode's opening title at the start, in the lower third over the darker sea (the sky
+ * behind the boat is too bright for it), on a soft film-title gradient; it fades as the dive begins.
+ */
+.opening-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 16px calc(170px + env(safe-area-inset-bottom));
+  text-align: center;
+  background: linear-gradient(to top, rgba(2, 7, 11, 0.62), rgba(2, 7, 11, 0.25) 32%, transparent 55%);
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.opening-card .end-eyebrow {
+  color: var(--ink);
+}
+
+body.ready .cinema:not(.opening-gone) .opening-card {
+  opacity: 1;
+  transition-delay: 1.2s;
+}
+
+.opening-card h1 {
+  margin: 0;
+  font-family: var(--title);
+  font-weight: 400;
+  font-size: clamp(30px, 5.4vw, 62px);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+body.ready.cinema-mode #hud {
+  opacity: 0;
+  transition: opacity 1.2s ease;
 }

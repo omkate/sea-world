@@ -1,5 +1,6 @@
 import type { WebGPURenderer } from 'three/webgpu';
 import type { DepthState } from '../../depth/DepthState';
+import { DIVE_END_DEPTH, DIVE_START_DEPTH } from '../../depth/diveCurve';
 
 export interface DebugHooks {
   renderer: WebGPURenderer;
@@ -38,7 +39,7 @@ export class DebugPanel {
     const { GUI } = await import('lil-gui');
     const gui = new GUI({ title: 'ABYSS · dev' });
     const params = { depth: 0 };
-    gui.add(params, 'depth', -3.5, 10935, 1).name('jump to depth (m)').onFinishChange((d: number) => hooks.jumpToDepth(d));
+    gui.add(params, 'depth', DIVE_START_DEPTH, DIVE_END_DEPTH, 1).name('jump to depth (m)').onFinishChange((d: number) => hooks.jumpToDepth(d));
     const fx = gui.addFolder('Systems');
     const view = hooks.toggles['view'];
     if (view) {

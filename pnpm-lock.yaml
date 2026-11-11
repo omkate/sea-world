@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/cinzel':
+        specifier: 5.2.5
+        version: 5.2.5
+      '@fontsource/cormorant-garamond':
+        specifier: 5.2.5
+        version: 5.2.5
       three:
         specifier: ^0.186.0
         version: 0.186.0
@@ -218,6 +224,12 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@fontsource/cinzel@5.2.5':
+    resolution: {integrity: sha512-rtWRRViKOMLsCx0j+duTUIDuuDf3ke9uJoss108M/yFHPdxowxTvkehP0D1IrfzR+xM7pFU/tJGGmBflVHohHA==}
+
+  '@fontsource/cormorant-garamond@5.2.5':
+    resolution: {integrity: sha512-B+DBRpc+FfnaVgdWefITPXwx6NHASQoyiO+luPiJZtUjunjhDXgesR9aTk8hxfsa945UCV1JFyVvZsdvzE8ahQ==}
 
   '@gltf-transform/core@4.5.0':
     resolution: {integrity: sha512-JlvShvnB4AtfGZqjnESS/wfPJbpVnyHhTwJBbWN4qXqkB3C5HIoxxpu/orwGBge6Pc0zObeWj70lVf+4gbuu0A==}
@@ -1099,6 +1111,10 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.2':
     optional: true
+
+  '@fontsource/cinzel@5.2.5': {}
+
+  '@fontsource/cormorant-garamond@5.2.5': {}
 
   '@gltf-transform/core@4.5.0':
     dependencies:

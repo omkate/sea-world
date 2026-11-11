@@ -1,4 +1,4 @@
-import { BufferGeometry, DoubleSide, Euler, FrontSide, type PerspectiveCamera, type Texture, Group, InstancedBufferAttribute, InstancedMesh, Matrix4, MeshBasicNodeMaterial, Quaternion, Vector3 } from 'three/webgpu';
+import { BufferGeometry, DoubleSide, Euler, FrontSide, type PerspectiveCamera, type Texture, Group, InstancedBufferAttribute, InstancedMesh, Matrix4, type Mesh, MeshBasicNodeMaterial, Quaternion, Vector3 } from 'three/webgpu';
 import { attribute, float, mix, mx_noise_vec3, normalize, normalWorld, positionLocal, positionWorld, sin, smoothstep, texture, uv, vec3 } from 'three/tsl';
 import type { ShaderNode } from '../../shaders/tsl/types';
 import type { FrameUniforms } from '../../core/engine/uniforms';
@@ -150,6 +150,11 @@ function aheadOfCamera(depth: number, ahead: number, toReef: number): Vector3 {
  */
 export class ReefChapter {
   readonly group = new Group();
+  /**
+   * The terrain is kept out of `group`: the reef's life switches off below 130 m, but the wall and
+   * the wreck terrace stay in view through the finale.
+   */
+  readonly seabed: Mesh;
   private readonly fish: SchoolSet;
   private readonly culled: CulledInstances[] = [];
 
@@ -177,7 +182,7 @@ export class ReefChapter {
 
   private constructor(u: FrameUniforms, kd: readonly [number, number, number], library: AssetLibrary, private readonly surface: (x: number, z: number) => number) {
     this.group.name = 'reef-chapter';
-    this.group.add(createReefTerrain(u, kd));
+    this.seabed = createReefTerrain(u, kd);
     const species = loadSpecies();
     const scanTypes: CoralType[] = SCANS.filter((spec) => scanAllowed(library.get(spec.id).entry.species, species)).map((spec) => {
       const asset = library.get(spec.id);
