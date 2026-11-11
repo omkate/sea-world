@@ -1,8 +1,7 @@
 import { clamp } from '../core/math/monotoneCubic';
 import { stepCriticalSpring, type Spring } from './spring';
+import { DIVE_SCREENS } from './diveCurve';
 
-/** Screen heights of scrolling for the whole dive. */
-const DIVE_SCREENS = 42;
 const SPRING_OMEGA = 2.6;
 
 /**

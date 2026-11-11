@@ -23,4 +23,6 @@
 
 ## Assets
 
-None yet. Every future asset must have an entry (source URL, author, license, modifications) in `assets/manifest.json` before it ships.
+Third-party 3D models are listed in `assets/manifest.json` (author, source, licence, modifications) and credited in the site's **Credits** panel. Only CC0 and CC BY are accepted; tests enforce this. Current set: *Porites lutea* colony (QQman, CC BY), green turtle (C.J. Goldman, CC BY), and Smithsonian CC0 scans of *Acropora cytherea*, *A. humilis*, *Pocillopora grandis*, *Seriatopora hystrix* and *Tridacna squamosa*.
+
+Rejected after review, and not shipped: two *Acropora* museum fragments (a single branch or piece, wrong at colony scale), a *Platygyra* and an Okinawa reef scan (their cut seabed read as boxes from the dive camera), an extra *Porites* scan (incomplete capture), and *Stylaster sanguineus* (not confirmed at Guam).

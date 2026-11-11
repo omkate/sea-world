@@ -1,7 +1,14 @@
+// The film's type, bundled with the site (no third-party font requests): Cinzel for titles (after
+// classical inscriptions: crowns, a castle, a king of the sea), Cormorant Garamond for its lines.
+import '@fontsource/cinzel/latin-400.css';
+import '@fontsource/cinzel/latin-600.css';
+import '@fontsource/cormorant-garamond/latin-400-italic.css';
+import '@fontsource/cormorant-garamond/latin-500.css';
 import './styles.css';
 import { createRenderer } from './core/renderer/createRenderer';
 import { parseTier, selectTier } from './core/quality/tiers';
 import { showFallback } from './ui/fallback/fallback';
+import { mountCredits } from './ui/credits/Credits';
 
 async function boot(): Promise<void> {
   const params = new URLSearchParams(location.search);
@@ -45,8 +52,11 @@ async function boot(): Promise<void> {
     },
     startDepth,
     debug: params.has('debug'),
+    companion: params.get('companion') !== '0',
   });
+  await experience.prepare();
   experience.start();
+  mountCredits(document.body);
   document.body.classList.add('ready');
   document.body.dataset.backend = info.backend;
   document.body.dataset.tier = tier;

@@ -4,7 +4,7 @@
 
 | Budget | Target | Phase 1 measured* |
 |---|---|---|
-| Frame time | 16.6 ms | 16.7 ms (vsync-locked at 60 FPS) |
+| Frame time | 16.6 ms | 60 FPS; dynamic resolution settles at 0.68–0.76 scale at 1856×960 on an Iris Xe (a discrete GPU should run at full resolution) |
 | Draw calls | ≤ 250 | 6 |
 | Triangles | ≤ 3 M | 0.37 M |
 | Suspended particles | 36 k (Ultra 60 k, Low 8 k) | 36 k |
@@ -14,12 +14,14 @@
 
 ## Quality tiers (`src/core/quality/tiers.ts`)
 
-| Tier | Render scale | Pixel cap | Surface grid | Waves | Particles | Lens FX |
-|---|---|---|---|---|---|---|
-| Ultra | 0.6–1.0 | 3840×2160 | 384 rings | 12 | 60 k | yes |
-| High | 0.55–1.0 | 2560×1440 | 288 | 10 | 36 k | yes |
-| Medium | 0.5–0.85 | 1920×1080 | 192 | 8 | 18 k | yes |
-| Low | 0.45–0.7 | 1280×720 | 128 | 6 | 8 k | no |
+| Tier | Render scale | Pixel cap | Surface grid | Waves | Particles | Shaft samples | Lens FX |
+|---|---|---|---|---|---|---|---|
+| Ultra | 0.6–1.0 | 3840×2160 | 384 rings | 12 | 60 k | 14 | yes |
+| High | 0.55–1.0 | 2560×1440 | 288 | 10 | 36 k | 9 | yes |
+| Medium | 0.5–0.85 | 1920×1080 | 192 | 8 | 18 k | 6 | yes |
+| Low | 0.45–0.7 | 1280×720 | 128 | 6 | 8 k | 4 | no |
+
+The most expensive per-pixel work is the shaft ray march (skipped entirely above water and below 220 m) and the surface fragment shader (Gerstner waves plus two vector-noise ripple octaves).
 
 - **Selection.** Mobile gets Low. Desktop is scored on WebGPU availability, core count, memory, max texture size and GPU vendor. `?quality=ultra|high|medium|low` overrides the choice.
 - **Dynamic resolution.** Averages the frame *interval* (so GPU-bound frames count) over 0.75 s. It steps the scale down above 112% of budget and up below 78%. The dead band prevents oscillation.
@@ -29,3 +31,11 @@
 
 - Open `/?debug`, or press the backtick key: FPS, frame time, draw calls, triangles, textures, backend, tier, render resolution and particle count.
 - `pnpm test:e2e` runs both backends headless.
+
+## Episode 1 (measured)
+
+Played end to end at a steady scroll (Intel Iris Xe, headless Chrome, WebGPU, 1280×720, High tier, dynamic resolution at its floor): median frame 16.7 ms in every section; 22–72 draw calls; 0.7–1.5 M triangles (most on the reef, with its coral colonies).
+
+- **No first-appearance stalls.** Shaders are built per object and textures upload on first draw, so the finale's sets (wreck, castle, chest, crown, king, trident, whale), which start hidden, used to stall the frame they first appeared (up to 283 ms). `Experience.warmUp` shows, compiles and draws every hidden and off-screen object once behind the loading screen, then restores it: the worst frame is now ~67 ms, no worse than the rest of the dive under the headless timer.
+- **Sets drawn only in their part of the film.** The wreck stops drawing once the camera has crossed to the castle (finale t ≥ 0.5); the castle starts at the swim across (t > 0.28).
+

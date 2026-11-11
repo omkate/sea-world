@@ -1,8 +1,8 @@
 # ABYSS species catalogue (Mariana)
 
-Source of truth: `src/data/species/mariana.json` (70 entries; validates against `SpeciesManifestSchema`). Depth in metres, size in metres.
+Source of truth: `src/data/species/mariana.json` (50 entries; validates against `SpeciesManifestSchema`). Depth in metres, size in metres. The dive now ends at the wreck terrace (~150 m), so species that live only deeper than 150 m were removed from the manifest; deep-water species listed below are those whose recorded range reaches into the dive.
 
-Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `uncertain` if *any* field could not be confirmed from a fetched source; those fields are listed in `uncertainFields` (most are only `visual.coloration` / `sizeTypical`). Entries flagged on depth/region are called out in the key note.
+Verification: **14 verified**, **36 uncertain**, 0 unverified. An entry is `uncertain` if *any* field could not be confirmed from a fetched source; those fields are listed in `uncertainFields` (most are only `visual.coloration` / `sizeTypical`). Entries flagged on depth/region are called out in the key note.
 
 ## Surface
 
@@ -39,6 +39,11 @@ Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `unce
 | Whitetip reef shark | *Triaenodon obesus* | 0–330 | verified | Usually 8-40 m. |
 | Green sea turtle | *Chelonia mydas* | 0–200 | verified | Adults 3-4 ft (0.9-1.2 m). |
 | Hawksbill turtle | *Eretmochelys imbricata* | 0–300 | verified | Fewer than 10 females nest annually in Guam + CNMI (NMFS/USFWS 5-year review). |
+| Lesser valley brain coral | *Platygyra daedalea* | 3–30 | uncertain (sizeTypical, depthMax) | Listed for the Marianas (Randall 2003); 149 OBIS records in the Mariana box incl. NOAA CRED at Guam. |
+| Bird's-nest coral | *Seriatopora hystrix* | 0–40 | uncertain (depthMax, sizeTypical) | Listed for the Marianas (Randall 2003); SeaLifeBase 0-183 m judged implausible, capped at documented ~40 m mesophotic colonies. |
+| Lace hydrocoral (stylasterid) | *Stylaster sanguineus* | 30–128 | uncertain (regions, depthMin, sizeTypical, sizeMax, visual.coloration) | Mariana occurrence NOT confirmed: Randall 2003 lists Marianas Stylaster only to letter-group level; no OBIS/GBIF records in the box. Hydrozoan filed under Corals. |
+| Fluted giant clam | *Tridacna squamosa* | 0–42 | verified | Guam voucher in Paulay 2003 + OBIS Guam records since 1963; SeaLifeBase/NMFS call it introduced at Guam, so native status is disputed. |
+| Crown jellyfish | *Cephea cephea* | 0–30 | uncertain (depthMax, sizeTypical, visual.coloration) | Florida Museum records from Merizo and Orote Peninsula (near Blue Hole), 1997–98. |
 
 ## Reef micro
 
@@ -53,12 +58,14 @@ Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `unce
 
 | Common name | Scientific name | Depth (m) | Verification | Key note |
 |---|---|---|---|---|
+| Mackerel scad | *Decapterus macarellus* | 0–400 | verified | Usually 40–200 m (FishBase); NOAA PIFSC records in the Mariana box (2014). Bait-ball prey of tunas. |
 | Yellowfin tuna | *Thunnus albacares* | 1–1602 | uncertain (visual.coloration) | Usually 1-250 m; rarely below 250 m in the tropics due to oxygen sensitivity. |
 | Skipjack tuna | *Katsuwonus pelamis* | 0–260 | uncertain (visual.coloration) | Schools at the surface with birds, drifting objects, sharks and whales. |
 | Spinner dolphin | *Stenella longirostris* | 0–300 | uncertain (depthMax) | Most frequently encountered nearshore cetacean in the Pacific Islands region; NOAA photo-ID work around Guam/CNMI. |
 | Oceanic whitetip shark | *Carcharhinus longimanus* | 0–1082 | verified | Usually 0-152 m. |
 | Reef manta ray | *Mobula alfredi* | 0–120 | uncertain (sizeTypical, visual.coloration) | Documented in Tumon Bay, Guam. |
 | Sperm whale | *Physeter macrocephalus* | 0–3200 | verified | Most frequently sighted cetacean (18 sightings) on NOAA's Mariana Archipelago Cetacean Survey. |
+| Cuvier's beaked whale | *Ziphius cavirostris* | 0–2992 | verified | Deepest-diving mammal known (2,992 m, Schorr et al. 2014); 7 OBIS records in the Mariana box. |
 
 ## Twilight
 
@@ -66,10 +73,7 @@ Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `unce
 |---|---|---|---|---|
 | Headlight lanternfishes | *Diaphus* (genus) | 100–1400 | uncertain (sizeTypical, sizeMax, visual.coloration, visual.bioluminescenceColor, diet) | Genus-level. |
 | Half-naked hatchetfish | *Argyropelecus hemigymnus* | 100–700 | uncertain (regions, visual.photophores, sizeTypical) | Usual range 100-700 m (recorded 0-2400 m). |
-| Bristlemouths | *Cyclothone* (genus) | 200–2700 | uncertain (visual.photophores, sizeTypical) | Genus-level; among the most abundant vertebrates. |
 | Common siphonophore | *Nanomia bijuga* | 0–800 | uncertain (regions, bioluminescent, visual.coloration) | Mostly 200-400 m. |
-| Cock-eyed (jewel) squids | *Histioteuthis* (genus) | 200–1000 | uncertain (regions, diet, sizeMax) | Size from H. |
-| Atolla jellyfish (alarm jelly) | *Atolla wyvillei* | 500–4000 | uncertain (regions, depthMax) | MBARI gives Atolla spp. |
 | Krill | *Euphausiacea* (order) | 0–1000 | uncertain (depthMax, diet, visual.coloration) | Group-level. |
 
 ## Midnight
@@ -77,47 +81,14 @@ Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `unce
 | Common name | Scientific name | Depth (m) | Verification | Key note |
 |---|---|---|---|---|
 | Scaleless black dragonfishes | *Melanostomias* (genus) | 50–1500 | uncertain (diet, sizeTypical) | Genus-level in place of M. |
-| Sloane's viperfish | *Chauliodus sloani* | 200–4700 | uncertain (sizeTypical, visual.coloration) | Usually 494-1000 m; may migrate toward the surface at night. |
 | Humpback anglerfish (black seadevil) | *Melanocetus johnsonii* | 100–4500 | uncertain (visual.coloration, visual.bioluminescenceColor, sizeTypical) | Usually 100-1500 m. |
-| Pelican eel (gulper eel) | *Eurypharynx pelecanoides* | 500–7625 | uncertain (regions, visual.coloration) | Usually 1200-1400 m. |
-| Common fangtooth | *Anoplogaster cornuta* | 500–4992 | uncertain (sizeTypical, visual.coloration) | Adults mainly 500-2000 m (young near surface). |
-| Vampire squid | *Vampyroteuthis infernalis* | 600–1200 | uncertain (regions, sizeTypical, visual.coloration) | MBARI 600-900 m; SeaLifeBase 100-3000 m (usually 900-1100). |
-| Stoplight loosejaw | *Malacosteus niger* | 500–3886 | uncertain (visual.coloration, sizeTypical) | Does not undergo substantial diel migration; remains below 500 m. |
-| Giant squid | *Architeuthis dux* | 200–1000 | uncertain (regions, sizeTypical, diet, visual.coloration) | Nearest OBIS record: ~27N 142E (Ogasawara, ~900 m depth). |
-
-## Vents
-
-| Common name | Scientific name | Depth (m) | Verification | Key note |
-|---|---|---|---|---|
-| Hessler's hairy snail | *Alviniconcha hessleri* | 1400–3600 | uncertain (sizeTypical, sizeMax, visual.coloration) | Foundation species of Mariana back-arc vents; described from Alice Springs (~3600 m); Forecast Vent at 1470 m. |
-| Mariana vent crab | *Austinograea williamsi* | 1450–3676 | uncertain (sizeTypical, sizeMax, diet, visual.coloration) | Lives among Alviniconcha beds at Mariana back-arc vents. |
-| Mariana vent shrimp | *Rimicaris vandoverae* | 1470–3640 | uncertain (depthMin, sizeTypical, sizeMax, diet, visual.coloration) | Candidate 'Chorocaris vandoverae' is a superseded combination (WoRMS). |
-| Deep-sea vent mussel | *Bathymodiolus septemdierum* | 1300–3600 | uncertain (depthMax, sizeTypical, sizeMax, diet, visual.coloration) | Occurs on both Mariana arc and back-arc vents in areas of diffuse venting. |
-| Yunohana vent crab | *Gandalfus yunohana* | 400–1500 | uncertain (depthMin, depthMax, sizeTypical, sizeMax, diet, visual.coloration) | The only species found at all sampled Mariana volcanic-arc vent sites (Thomas et al. 2021). |
-| Satsuma tubeworm | *Lamellibrachia satsuma* | 400–500 | uncertain (sizeTypical, sizeMax, visual.coloration) | Answers the siboglinid question: no vestimentiferans are reported from Mariana back-arc vents, but L. |
-| Giant tube worm | *Riftia pachyptila* | 2500–2700 | uncertain (depthMin, depthMax, visual.coloration) | NOT present at Mariana; East Pacific Rise only. |
 
 ## Abyssal
 
 | Common name | Scientific name | Depth (m) | Verification | Key note |
 |---|---|---|---|---|
-| Peniagone sea cucumber | *Peniagone leander* | 5571–5571 | uncertain (depthMin, depthMax, sizeTypical, diet, visual.coloration) | Replaces Scotoplanes: first recorded from the Mariana Trench area at 5,571 m (J. |
-| Gummy squirrel | *Psychropotes longicauda* | 1100–5173 | uncertain (regions, sizeTypical, sizeMax, visual.coloration) | No Mariana record confirmed (1 OBIS record in the W Pacific box). |
-| Tripodfishes | *Bathypterois* (genus) | 878–5610 | uncertain (regions, sizeTypical, sizeMax, visual.coloration) | Genus-level. |
-| Dumbo octopuses | *Grimpoteuthis* (genus) | 1000–7000 | uncertain (regions) | Mariana occurrence unconfirmed; OBIS W Pacific records ~23N 154E at 5.5-5.8 km depth. |
-| Abyssal grenadier (Pacific) | *Coryphaenoides yaquinae* | 3400–7012 | uncertain (sizeTypical, diet, visual.coloration) | Deepest macrourid record: 7,012 m in the Mariana Trench (observed 4,506-7,012 m; trapped 4,441-6,081 m) (Linley et al. 2016). |
 | Bone-eating worms | *Osedax* (genus) | 10–4000 | uncertain (regions) | Genus-level; 32+ species at 10-4000 m. |
-| Giant hagfish | *Eptatretus carlhubbsi* | 481–1574 | uncertain (sizeTypical, sizeMax, diet, visual.coloration) | Bathyal rather than abyssal (481-1574 m) but the only deep hagfish confirmed for the region: FishBase range 'Wake Island, Guam, and Hawaii'; OBIS record at 1,016 m, 15N 145.2E. |
 
-## Hadal
-
-| Common name | Scientific name | Depth (m) | Verification | Key note |
-|---|---|---|---|---|
-| Eurythenes plasticus (scavenging amphipod) | *Eurythenes plasticus* | 6010–6949 | uncertain (sizeTypical, visual.coloration) | Described from baited traps at 6,010-6,949 m in the Mariana Trench (Weston et al. 2020). |
-| Mariana snailfish | *Pseudoliparis swirei* | 6198–8178 | uncertain (sizeTypical, visual.coloration) | Usually 7,000-8,000 m; aggregates at bait and feeds on amphipod swarms. |
-| Giant hadal amphipod | *Hirondellea gigas* | 7353–10900 | uncertain (depthMin, visual.coloration) | Collected ~10,897 m in Challenger Deep; lives in swarms at or below ~10,000 m (NatGeo); shallowest OBIS record seen 7,353 m. |
-| Hadal sea cucumbers (cf. Peniagone) | *Elpidiidae* (family) | 10876–10908 | uncertain (sizeTypical, sizeMax, diet) | 65 individuals seen at 10,876-10,908 m in Challenger Deep submersible video, tentatively Peniagone (Gallo et al. 2015). |
-| Xenophyophores (giant foraminifera) | *Xenophyophoroidea* (group) | 500–10641 | uncertain (depthMin, visual.coloration) | Recorded to 10,641 m in the Sirena Deep, Mariana Trench (Scripps 2011). |
 ## Dropped / replaced
 
 | Candidate | Action | Reason |
@@ -131,21 +102,12 @@ Verification: **11 verified**, **59 uncertain**, 0 unverified. An entry is `unce
 | *Spirobranchus giganteus* | Genus-level *Spirobranchus* | *S. giganteus* in the strict sense is Caribbean; Indo-Pacific animals belong to the *S. corniculatus* complex. Both names occur in Mariana OBIS data. |
 | *Mobula birostris* | Dropped | No confirmed post-2009 Guam record found. The 2003 checklist entry "Manta birostris" came before the split and lists *Manta alfredi* as its synonym. The NOAA giant manta page does not mention Guam. *M. alfredi* is documented (Tumon Bay, OBIS). |
 | *Melanostomias melanops* | Genus-level *Melanostomias* | NOAA describes it from the North Atlantic (50–1,500 m). No Mariana record found. The OBIS Mariana box has *M. valdiviae*, *M. tentaculatus* and *M. margaritifer*. |
-| *Chorocaris vandoverae* | Renamed *Rimicaris vandoverae* | Superseded combination in WoRMS. |
-| Siboglinid at Mariana vents | Added *Lamellibrachia satsuma* (Mariana Arc) | No vestimentiferans are reported from Mariana back-arc vents (Thomas et al. 2021). *L. satsuma* is recorded from Nikko/Daikoku seamounts on the northern Mariana Arc (~400–500 m). |
-| *Riftia pachyptila* | Kept, site `east-pacific-rise` | East Pacific Rise only; not in the Mariana region. |
-| *Scotoplanes* | Replaced by *Peniagone leander* | No *Scotoplanes* record in the W Pacific OBIS box. *P. leander* is recorded from the Mariana Trench area (5,571 m). |
-| *Coryphaenoides* (abyssal) | Resolved to *C. yaquinae* | Observed at 4,506–7,012 m in the Mariana Trench (the deepest macrourid record). |
-| *Eurythenes* (genus) | Resolved to *E. plasticus* | Described from the Mariana Trench (6,010–6,949 m). |
-| Hagfish (*Eptatretus*) | Resolved to *E. carlhubbsi* | FishBase range includes Guam. OBIS record at 1,016 m near 15N 145E. Bathyal, not abyssal. |
-| Elpidiid holothurian (hadal) | Family-level Elpidiidae (cf. *Peniagone*) | Challenger Deep video, 10,876–10,908 m, genus only tentative. |
-| Added | *Gandalfus yunohana* | Only species found at every sampled Mariana volcanic-arc vent. |
 
 ## Open questions
 
-- **Occurrence not confirmed locally** (only W Pacific or global records): *Nanomia bijuga*, *Histioteuthis*, *Atolla wyvillei*, *Argyropelecus hemigymnus* (genus only in box), *Eurypharynx*, *Vampyroteuthis*, *Architeuthis* (nearest record Ogasawara ~27N), *Psychropotes*, *Bathypterois*, *Grimpoteuthis*, *Osedax*. These are marked `uncertain` on `regions`. Consider tagging them in the UI as "expected, not yet documented here".
-- **Depth ranges from single localities**: *Phyllidia varicosa* (10–20 m), *Riftia* (2,564–2,673 m), *Peniagone leander* (5,571 m), *Bathymodiolus septemdierum* (1,300–1,400 m, extended to back-arc sites), *Gandalfus yunohana* (placeholder), *Hirondellea gigas* (lower bound = shallowest OBIS record seen).
+- **Occurrence not confirmed locally** (only W Pacific or global records): *Nanomia bijuga*, *Argyropelecus hemigymnus* (genus only in box), *Osedax*. These are marked `uncertain` on `regions`. Consider tagging them in the UI as "expected, not yet documented here".
+- **Depth ranges from single localities**: *Phyllidia varicosa* (10–20 m).
 - **Coloration**: many `visual.coloration` strings are standard descriptions that were not in the fetched source text (flagged). Check them against reference imagery before modelling.
-- **Sizes**: typical sizes for corals, vent fauna and several reef fish are rendering estimates (flagged).
+- **Sizes**: typical sizes for corals and several reef fish are rendering estimates (flagged).
 - Guam OBIS counts use a bounding box of 10–24N, 140–150E. That box includes the Mariana Trench, Trough and Arc, but also open Philippine Sea.
 - *Bolbometopon muricatum* is nearly extirpated at Guam. Decide whether the experience should show it at all, or only as a rare encounter (currently `rarity: rare`).

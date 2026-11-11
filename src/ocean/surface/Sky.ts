@@ -1,13 +1,15 @@
-import { DirectionalLight, HemisphereLight, MathUtils, PMREMGenerator, Scene, Vector3, type Texture, type WebGPURenderer } from 'three/webgpu';
+import { BackSide, SphereGeometry, Color, DirectionalLight, HemisphereLight, MathUtils, Mesh, MeshBasicNodeMaterial, PMREMGenerator, Scene, Vector3, type Texture, type WebGPURenderer } from 'three/webgpu';
 import { SkyMesh } from 'three/addons/objects/SkyMesh.js';
+import { normalize, positionWorld, smoothstep } from 'three/tsl';
+import type { ShaderNode } from '../../shaders/tsl/types';
 
 export interface SunConfig {
   elevationDeg: number;
   azimuthDeg: number;
 }
 
-/** Mid-morning trade-wind sky over Guam: high sun, scattered cumulus. */
-export const MORNING_SUN: SunConfig = { elevationDeg: 34, azimuthDeg: 160 };
+/** Morning trade-wind sky over Guam: sun low enough to lay a glitter path, scattered cumulus. */
+export const MORNING_SUN: SunConfig = { elevationDeg: 24, azimuthDeg: 168 };
 
 export function sunDirection(cfg: SunConfig, out = new Vector3()): Vector3 {
   const phi = MathUtils.degToRad(90 - cfg.elevationDeg);
@@ -24,9 +26,9 @@ export function refractedSunDirection(sun: Vector3, ior = 1.333, out = new Vecto
 }
 
 function configureSky(sky: SkyMesh, sun: Vector3): void {
-  sky.turbidity.value = 2.2;
-  sky.rayleigh.value = 1.2;
-  sky.mieCoefficient.value = 0.004;
+  sky.turbidity.value = 1.7;
+  sky.rayleigh.value = 1.7;
+  sky.mieCoefficient.value = 0.0028;
   sky.mieDirectionalG.value = 0.82;
   sky.cloudCoverage.value = 0.34;
   sky.cloudDensity.value = 0.5;
@@ -61,9 +63,19 @@ export class OceanSky {
     configureSky(sky, this.sunDir);
     sky.showSunDisc.value = 1;
     envScene.add(sky);
+    // Below the horizon a sea-level camera sees more ocean, not the sky model's brown haze.
+    // The sky fades into deep ocean blue over ~17° so tilted wave facets darken smoothly.
+    const seaMaterial = new MeshBasicNodeMaterial({ side: BackSide, transparent: true, depthWrite: false, color: new Color(0.012, 0.045, 0.085) });
+    const dirY: ShaderNode = (normalize(positionWorld) as ShaderNode).y;
+    seaMaterial.opacityNode = smoothstep(0.0, 0.3, dirY.negate());
+    const sea = new Mesh(new SphereGeometry(90, 48, 24), seaMaterial);
+    sea.renderOrder = 1;
+    envScene.add(sea);
     const pmrem = new PMREMGenerator(renderer);
     const target = pmrem.fromScene(envScene, 0, 0.1, 100);
     pmrem.dispose();
+    sea.geometry.dispose();
+    seaMaterial.dispose();
     this.environment = target.texture;
     return target.texture;
   }
