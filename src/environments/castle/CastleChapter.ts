@@ -11,6 +11,8 @@ import { smoothstep } from '../../core/math/monotoneCubic';
 import { ruinMaterial } from '../finale/ruinMaterial';
 import { FINALE_VISIBLE_FROM } from '../wreck/WreckChapter';
 
+/** Finale progress from which the castle can be seen (the wreck's part of the film ends ~0.3). */
+const CASTLE_FROM = 0.28;
 /** The chest model's front faces its local +z. */
 const CHEST_FRONT = 0;
 /** How far the crown rises out of the chest as it lights up (m), and the height of its flight to his head. */
@@ -99,7 +101,8 @@ export class CastleChapter {
    * as it lands, and stays.
    */
   update(t: number, depth: number, time: number, head: { pos: Vector3; up: Vector3 } | null): void {
-    this.group.visible = depth > FINALE_VISIBLE_FROM;
+    // Drawn from the swim across the sand onward, when it starts to loom out of the blue.
+    this.group.visible = depth > FINALE_VISIBLE_FROM && t > CASTLE_FROM;
     const { lid, glow, crownFly, flash, sweep } = finaleWeights(t);
     if (this.lid) {
       this.lid.time = lid * this.lid.getClip().duration * 0.999;

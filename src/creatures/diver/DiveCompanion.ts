@@ -30,6 +30,7 @@ import { School } from '../../ecosystem/schooling/School';
 import { forEachBigAnimal } from '../bigAnimals';
 import { divePathX, divePathZ, reefFloorY } from '../../environments/reef/ReefSite';
 import { DIVE_START_DEPTH } from '../../depth/diveCurve';
+import { createRng } from '../../core/math/rng';
 import { stepCriticalSpring, type Spring } from '../../depth/spring';
 import { DIVER_RANGE, Embers, KING_RANGE, burnAway, formIn, kingMaterial, type KingUniforms } from './seaKing';
 
@@ -185,15 +186,79 @@ const CROWN_ON_HEAD = 0.2;
 const KNEEL: Pose = body({ thigh: 100, knee: -120, arm: 20, elbow: 30 });
 
 /**
- * The rest of the dive group, seated on the tubes (boat-local position, facing in), each in a slightly
- * different attitude: one checking the computer, one with a hand on the knee, one adjusting the mask.
+ * The rest of the dive group, seated on the tubes (boat-local position, facing in), hands resting
+ * toward their knees (each a touch differently), chatting (BoatTalk).
  * The lead diver's seat is the port tube amidships (−0.8, 0.95, 0.35).
  */
 const CREW: readonly { at: readonly [number, number, number]; yaw: number; pose: Pose }[] = [
-  { at: [-0.8, 0.95, -0.95], yaw: Math.PI / 2, pose: body({ ...SEATED_BODY, arm: [45, 22], elbow: [95, 52], neck: -35 }) },
-  { at: [0.8, 0.95, 0.5], yaw: -Math.PI / 2, pose: body({ ...SEATED_BODY, arm: [22, 30], elbow: [52, 40] }) },
-  { at: [0.8, 0.95, -0.8], yaw: -Math.PI / 2, pose: body({ ...SEATED_BODY, arm: [22, 62], elbow: [52, 112], neck: -10 }) },
+  { at: [-0.8, 0.95, -0.95], yaw: Math.PI / 2, pose: body({ ...SEATED_BODY, arm: [20, 24], elbow: [50, 55] }) },
+  { at: [0.8, 0.95, 0.5], yaw: -Math.PI / 2, pose: body({ ...SEATED_BODY, arm: [24, 20], elbow: [56, 48] }) },
+  { at: [0.8, 0.95, -0.8], yaw: -Math.PI / 2, pose: body({ ...SEATED_BODY, arm: 22, elbow: 52 }) },
 ];
+
+/** Where the lead diver sits on the boat (boat-local) and which way he faces. */
+const LEAD_SEAT = { at: [-0.8, 0.95, 0.35] as const, yaw: Math.PI / 2 };
+/** The furthest a seated diver turns his head while talking (degrees): the rest would be shoulders. */
+const MAX_LOOK = 35;
+/** Bones the conversation moves, on top of each diver's seated pose. */
+const TALK_BONES = ['neck_015', 'spine1_013'] as const;
+type TalkOffsets = Record<(typeof TALK_BONES)[number], [number, number, number]>;
+
+/**
+ * The group on the boat, chatting while they wait, kept quiet and natural: one speaks at a time
+ * and looks at one listener (holding that gaze), the others turn their heads a little toward him,
+ * slowly, and nod now and then; hands stay where they rest; everyone breathes and sways with the
+ * boat. Offsets are Euler degrees on the rig's own axes (measured): neck z+ turns the head to his
+ * left, neck y− nods it down, spine x+ twists the torso to his left, spine z+ leans it to his right.
+ */
+class BoatTalk {
+  private speaker = 1;
+  private listener = 0;
+  private nextSwitch = 3;
+  private readonly look: number[];
+  private readonly rng = createRng(4711);
+
+  constructor(private readonly seats: readonly { at: readonly [number, number, number]; yaw: number }[]) {
+    this.look = seats.map(() => 0);
+  }
+
+  /** Head angle (degrees, + = his left) for `from` to look toward `to`, limited to what a neck turns comfortably. */
+  private toward(from: number, to: number): number {
+    const a = this.seats[from]!, b = this.seats[to]!;
+    const dx = b.at[0] - a.at[0], dz = b.at[2] - a.at[2];
+    const fwd = dx * Math.sin(a.yaw) + dz * Math.cos(a.yaw);
+    const left = dx * Math.cos(a.yaw) - dz * Math.sin(a.yaw);
+    return Math.max(-MAX_LOOK, Math.min(MAX_LOOK, ((Math.atan2(left, fwd) * 180) / Math.PI) * 0.6));
+  }
+
+  /** Offsets for every diver at time `t` (s). */
+  update(t: number, dt: number, out: TalkOffsets[]): void {
+    if (t >= this.nextSwitch) {
+      // Someone else picks up the conversation, talking to one of the others.
+      let next = Math.floor(this.rng() * (this.seats.length - 1));
+      if (next >= this.speaker) next++;
+      this.speaker = next;
+      let l = Math.floor(this.rng() * (this.seats.length - 1));
+      if (l >= this.speaker) l++;
+      this.listener = l;
+      this.nextSwitch = t + 4.5 + this.rng() * 3;
+    }
+    this.seats.forEach((_, i) => {
+      const o = out[i]!;
+      for (const b of TALK_BONES) o[b] = [0, 0, 0];
+      const goal = i === this.speaker ? this.toward(i, this.listener) : this.toward(i, this.speaker);
+      // Heads turn slowly, as people's do when the talk moves round the group.
+      this.look[i]! += (goal - this.look[i]!) * Math.min(1, dt * 0.9);
+      const look = this.look[i]!;
+      const breathe = Math.sin(t * 1.2 + i * 1.7);
+      const sway = Math.sin(t * 0.5 + i * 2.1);
+      // An occasional small nod (listeners agreeing; the speaker as he talks).
+      const nod = -2.5 * Math.max(0, Math.sin(t * (i === this.speaker ? 1.6 : 0.7) + i * 2.3)) ** 4;
+      o.neck_015 = [0, nod, look];
+      o.spine1_013 = [look * 0.15, breathe * 1.2, sway * 1.5];
+    });
+  }
+}
 
 /** A full diver state: place, orientation, how much the pose overrides the swim cycle, and the pose. */
 interface DiverState {
@@ -533,6 +598,10 @@ export class DiveCompanion {
   private readonly reefPush = new Vector3();
   private readonly reefGoal = new Vector3();
   private armHold = 0;
+  /** The conversation on the boat: the lead diver (seat 0) and the crew. */
+  private readonly talk = new BoatTalk([LEAD_SEAT, ...CREW]);
+  private readonly talkOffsets: TalkOffsets[] = [LEAD_SEAT, ...CREW].map(() => ({}) as TalkOffsets);
+  private readonly crewBones: Map<string, { bone: Bone; base: Quaternion }>[] = [];
   private readonly pushSprings: Spring[] = [{ value: 0, velocity: 0 }, { value: 0, velocity: 0 }, { value: 0, velocity: 0 }];
   private readonly bodyAxis = new Vector3(0, 0.85, 0);
   private readonly probe = new Vector3();
@@ -620,12 +689,15 @@ export class DiveCompanion {
     // The rest of the group, seated on the tubes; they ride with the boat and stay aboard.
     for (const c of CREW) {
       const mate = cloneRig(this.diver) as Group;
+      const bones = new Map<string, { bone: Bone; base: Quaternion }>();
       mate.traverse((o) => {
         const bone = o as Bone;
         const e = bone.isBone ? c.pose[o.name] : undefined;
         if (e) bone.quaternion.multiply(this.qe.setFromEuler(this.e.set((e[0] * Math.PI) / 180, (e[1] * Math.PI) / 180, (e[2] * Math.PI) / 180)));
+        if (bone.isBone && (TALK_BONES as readonly string[]).includes(o.name)) bones.set(o.name, { bone, base: bone.quaternion.clone() });
         if ((o as Mesh).isMesh) o.frustumCulled = false;
       });
+      this.crewBones.push(bones);
       mate.position.set(c.at[0], c.at[1], c.at[2]);
       orient(mate.quaternion, c.yaw, (-84 * Math.PI) / 180);
       this.boat.add(mate);
@@ -893,6 +965,32 @@ export class DiveCompanion {
   }
 
   /** Applies a state's pose over the swim cycle the mixer has just written. */
+  /**
+   * While the group waits on the boat, they talk: the crew always (they stay aboard), the lead diver
+   * only while seated (it fades out as he readies himself to roll in, and back in once he sits again).
+   */
+  private converse(dt: number, depth: number): void {
+    if (!this.boat.visible) return;
+    this.talk.update(this.time, dt, this.talkOffsets);
+    this.crewBones.forEach((bones, k) => {
+      const o = this.talkOffsets[k + 1]!;
+      for (const [name, { bone, base }] of bones) {
+        const e = o[name as (typeof TALK_BONES)[number]];
+        bone.quaternion.copy(base).multiply(this.qe.setFromEuler(this.e.set((e[0] * Math.PI) / 180, (e[1] * Math.PI) / 180, (e[2] * Math.PI) / 180)));
+      }
+    });
+    const seated = 1 - smooth(SEATED - 0.1, READY, depth);
+    if (seated <= 0.001) return;
+    const o = this.talkOffsets[0]!;
+    for (const name of TALK_BONES) {
+      const b = this.bones.get(name);
+      if (!b) continue;
+      const e = o[name];
+      this.e.set((e[0] * seated * Math.PI) / 180, (e[1] * seated * Math.PI) / 180, (e[2] * seated * Math.PI) / 180);
+      b.bone.quaternion.multiply(this.qe.setFromEuler(this.e));
+    }
+  }
+
   private holdArms(weight: number): void {
     if (weight <= 0.001) return;
     for (const name of ARM_BONES) {
@@ -1083,6 +1181,7 @@ export class DiveCompanion {
     const holdGoal = (1 - s.poseWeight) * (this.diver.position.y < -0.8 ? 1 : 0);
     this.armHold += (holdGoal - this.armHold) * Math.min(1, dt * 3);
     this.holdArms(this.armHold);
+    this.converse(dt, depth);
     this.diver.updateMatrixWorld(true);
 
     // Head torch: on once it gets dark, with a short flicker. It is strapped to the head: it sits on

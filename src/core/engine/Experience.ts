@@ -1,4 +1,4 @@
-import { PerspectiveCamera, Scene, Timer, Vector3 } from 'three/webgpu';
+import { PerspectiveCamera, Scene, Timer, Vector3, type Object3D } from 'three/webgpu';
 import type { RendererInfo } from '../renderer/createRenderer';
 import { createFrameUniforms } from './uniforms';
 import { QUALITY, effectivePixelRatio, stepDown, type QualityTier } from '../quality/tiers';
@@ -175,8 +175,31 @@ export class Experience {
       this.scene.add(this.companion.group);
     }
     this.mountDiscovery([...this.reef.sightings(), ...this.openBlue.sightings(), ...this.director.sightings()]);
+    await this.warmUp();
+  }
+
+  /**
+   * Everything the film will ever show is compiled and uploaded now, behind the loading screen:
+   * shaders are built per object and textures upload on first draw, so a set that starts hidden
+   * (the wreck, the castle, the chest and crown, the king, the trident, the whale) would otherwise
+   * stall the frame the moment it first appears, mid-scroll. Hidden and off-screen objects are
+   * shown and drawn once, then put back.
+   */
+  private async warmUp(): Promise<void> {
+    const { renderer } = this.o.info;
+    const hidden: Object3D[] = [];
+    const culled: Object3D[] = [];
+    for (const root of [this.scene, this.particles.scene]) {
+      root.traverse((o) => {
+        if (!o.visible) { hidden.push(o); o.visible = true; }
+        if (o.frustumCulled) { culled.push(o); o.frustumCulled = false; }
+      });
+    }
     await renderer.compileAsync(this.scene, this.camera);
     await renderer.compileAsync(this.particles.scene, this.camera);
+    this.pipeline.pipeline.render();
+    for (const o of hidden) o.visible = false;
+    for (const o of culled) o.frustumCulled = true;
   }
 
   /** Scanner, glyphs, cards and codex over the species this build can show. */
@@ -277,7 +300,7 @@ export class Experience {
     this.surface.under.visible = cam.position.y < 3;
     this.reef?.update(dt, this.time, cam, depth, QUALITY[this.tier].scenery);
     this.openBlue?.update(dt, this.time, cam, depth);
-    this.wreck?.update(depth);
+    this.wreck?.update(depth, finale);
     this.director?.update(dt, finale, this.time, cam, depth);
     const fw = finaleWeights(finale);
     if (this.companion && this.director) {

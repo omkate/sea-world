@@ -15,6 +15,8 @@ const KEEL_X = -1.21;
 const SIDE_LEAN = 0.1;
 /** Finale sets are drawn only once the camera is this deep (m); above 130 m they are out of frame. */
 export const FINALE_VISIBLE_FROM = 125;
+/** Finale progress after which the wreck is out of sight (the camera has crossed to the castle). */
+const WRECK_UNTIL = 0.5;
 
 /**
  * The first set of the finale: a rusted iron hull lying on the terrace at ~150 m, which the diver
@@ -49,7 +51,8 @@ export class WreckChapter {
     this.group.add(site);
   }
 
-  update(depth: number): void {
-    this.group.visible = depth > FINALE_VISIBLE_FROM;
+  /** Drawn only through its part of the film (the swim across leaves it behind in the blue). */
+  update(depth: number, t: number): void {
+    this.group.visible = depth > FINALE_VISIBLE_FROM && t < WRECK_UNTIL;
   }
 }

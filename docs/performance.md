@@ -31,3 +31,11 @@ The most expensive per-pixel work is the shaft ray march (skipped entirely above
 
 - Open `/?debug`, or press the backtick key: FPS, frame time, draw calls, triangles, textures, backend, tier, render resolution and particle count.
 - `pnpm test:e2e` runs both backends headless.
+
+## Episode 1 (measured)
+
+Played end to end at a steady scroll (Intel Iris Xe, headless Chrome, WebGPU, 1280×720, High tier, dynamic resolution at its floor): median frame 16.7 ms in every section; 22–72 draw calls; 0.7–1.5 M triangles (most on the reef, with its coral colonies).
+
+- **No first-appearance stalls.** Shaders are built per object and textures upload on first draw, so the finale's sets (wreck, castle, chest, crown, king, trident, whale), which start hidden, used to stall the frame they first appeared (up to 283 ms). `Experience.warmUp` shows, compiles and draws every hidden and off-screen object once behind the loading screen, then restores it: the worst frame is now ~67 ms, no worse than the rest of the dive under the headless timer.
+- **Sets drawn only in their part of the film.** The wreck stops drawing once the camera has crossed to the castle (finale t ≥ 0.5); the castle starts at the swim across (t > 0.28).
+
